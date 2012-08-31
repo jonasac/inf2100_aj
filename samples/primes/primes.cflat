@@ -1,0 +1,83 @@
+# Program 'primes'
+# ----------------
+#
+# Finds all prime numbers up to 1000 (using the technique called
+# "the sieve of Eratosthenes") and prints them nicely formatted.
+
+int prime[1001];  /* The sieve */
+int LF;           /* LF */
+
+int find_primes ()
+{
+   /* Remove all non-primes from the sieve: */
+
+   int i1;  int i2;
+   for (i1 = 2;  i1 <= 1000;  i1 = i1+1) {
+      for (i2 = 2*i1;  i2 <= 1000;  i2 = i2+i1) {
+	 prime[i2] = 0;
+      }
+   }
+}
+
+int mod (int a, int b)
+{
+   /* Computes a%b. */
+
+   return a - a/b*b;
+}
+
+int n_chars (int a)
+{
+   /* How many positions are needed to print 'a'? */
+
+   if (a < 0) { return 1+n_chars(0-a); }
+   if (a <= 9) { return 1; }
+   return n_chars(a/10)+1;
+}
+
+int pn (int v, int w)
+{
+   /* Does a 'printf("%*d", w, v)'. */
+   
+   int i;
+
+   for (i = n_chars(v)+1;  i <= w;  i = i+1) { putchar(' '); }
+   putint(v);
+}
+
+int and (int a, int b)
+{
+   /* Compute  a && b . */
+
+   if (a) { return b; }
+   else   { return 0; }
+}
+
+int print_primes ()
+{
+   /* Print the primes, 10 on each line. */
+
+   int n_printed;  int i;
+   n_printed = 0;
+   for (i = 1;  i <= 1000;  i = i + 1) {
+      if (prime[i]) {
+	 if (and(mod(n_printed,10)==0, n_printed>0)) { putchar(LF); }
+	 putchar(' ');   pn(i,3);   n_printed = n_printed+1;
+      }
+   }
+   putchar(LF);
+}
+
+int main ()
+{
+   int i;
+   LF = 10;
+
+   /* Initialize the sieve by assuming all numbers >1 to be primes: */
+   prime[1] = 0;
+   for (i=2; i<=1000; i=i+1) { prime[i] = 1; }
+
+   /* Find and print the primes: */
+   find_primes();  print_primes();
+   return 0;
+}

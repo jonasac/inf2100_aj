@@ -1,0 +1,9 @@
+int x;
+
+int main ()
+{
+  int x;
+  x = 1+2+(3)+4+5;
+  putint(x);
+  putchar(10); /* needs a linebreak to see the number from putint */
+}
