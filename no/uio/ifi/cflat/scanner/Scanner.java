@@ -38,9 +38,17 @@ public class Scanner {
 
 	    if (! CharGenerator.isMoreToRead()) {
 		nextNextToken = eofToken;
-	    } else 
-	    //-- Must be changed in part 0:
-	    {
+	    } else {
+		// part 0
+		
+		/* ------ placeholder code ---------- */
+		boolean allGood = true;
+		if (allGood) {
+    		    curToken = forToken;
+    		    return;
+		}
+		/* ---------------------------------- */
+
 		Error.error(nextNextLine,
 			    "Illegal symbol: '" + CharGenerator.curC + "'!");
 	    }

@@ -70,11 +70,13 @@ public class Log {
      * @param line     The actual line
      */
     public static void noteSourceLine(int lineNum, String line) {
+	// part 0
 	if (! doLogParser && ! doLogScanner) return;
 	System.out.printf("\t%d:\t%s\n", lineNum, line);
     }
 
     public static void test_noteSourceLine() {
+	// part 0
 	System.out.println("noteSourceLine TEST");
 	noteSourceLine(0, "Ost ost ost");
     }
@@ -85,8 +87,8 @@ public class Log {
      * This note will only be made if the user has requested it.
      */
     public static void noteToken() {
+	// part 0
 	if (! doLogScanner) return;
-	//-- Must be changed in part 0:
 	System.out.println();
 	System.out.println("--- Log:noteToken ---");
 	System.out.println("cur token: " + Scanner.curToken);
