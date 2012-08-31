@@ -1,4 +1,6 @@
+*.jar
 *.class
 *.s
 *.o
 *.log
+!refence_compiler/Cflat.jar
