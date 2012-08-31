@@ -88,7 +88,10 @@ public class Log {
 	if (! doLogScanner) return;
 	//-- Must be changed in part 0:
 	System.out.println();
-	System.out.println("NOTE TOKEN!");
+	System.out.println("--- Log:noteToken ---");
+	System.out.println("cur token: " + Scanner.curToken);
+	System.out.println("next token: " + Scanner.nextToken);
+	System.out.println("next next token: " + Scanner.nextNextToken);
 	System.out.println();
     }
 
