@@ -1,4 +1,4 @@
 *.class
 *.jar
-.s
-.o
+*.s
+*.o
