@@ -1,4 +1,4 @@
 #!/bin/sh
-make clean
-make
+make clean --quiet
+make err.log
 exec ./test.sh

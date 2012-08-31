@@ -31,6 +31,7 @@ public class Cflat {
 	System.out.println("Starting tests.");
 	Scanner.init();
 	Scanner.test_isLetterAZ();
+	Log.doLogScanner = true;
 	Log.test_noteSourceLine();
 	System.out.println("Testing done.");
     }
@@ -44,8 +45,7 @@ public class Cflat {
      * @param args The command line arguments.
      */
     public static void main(String[] args) {
-	//test_all();
-	//System.exit(0);
+	test_all();
 
 	boolean testParser = false, testScanner = false;
 

@@ -10,7 +10,9 @@ if [ ! -e Cflat.jar ]; then
   make
 fi
 java -jar $1 -testscanner samples/gcd/gcd.cflat
-cat samples/gcd/gcd.log
+if [ -e samples/gcd/gcd.log ]; then
+    cat samples/gcd/gcd.log
+fi
 if [ -e samples/gcd/gcd.s ]; then
   rm -f samples/gcd/gcd.s
 fi

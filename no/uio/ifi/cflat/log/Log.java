@@ -86,8 +86,10 @@ public class Log {
      */
     public static void noteToken() {
 	if (! doLogScanner) return;
-
 	//-- Must be changed in part 0:
+	System.out.println();
+	System.out.println("NOTE TOKEN!");
+	System.out.println();
     }
 
     public static void noteBinding(String name, int lineNum, int useLineNum) {
