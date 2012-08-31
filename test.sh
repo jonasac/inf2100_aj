@@ -1,6 +1,6 @@
 #!/bin/sh
-if [ -e samples/gcd/gcd.cflat ]; then
-  echo "Could not find gdc.cflat, aborting"
+if [ ! -e samples/gcd/gcd.cflat ]; then
+  echo "Could not find gcd.cflat, aborting"
   exit 1
 fi
 if [ -e samples/gcd/gcd.log ]; then
