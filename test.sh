@@ -1,4 +1,8 @@
 #!/bin/sh
+if [ -e samples/gcd/gcd.cflat ]; then
+  echo "Could not find gdc.cflat, aborting"
+  exit 1
+fi
 if [ -e samples/gcd/gcd.log ]; then
   rm -f samples/gcd/gcd.log
 fi
