@@ -50,7 +50,17 @@ public class Scanner {
 	
     private static boolean isLetterAZ(char c) {
 	//-- Must be changed in part 0:
-	return false;
+	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
+    }
+
+    public static void test_isLetterAZ() {
+	boolean pass = true;
+	pass = pass && (isLetterAZ('!') == false);
+	pass = pass && (isLetterAZ('a') == true);
+	pass = pass && (isLetterAZ('Z') == true);
+	if (pass) {
+	    System.out.println("isLetterAZ: All tests pass");
+	}
     }
 	
     public static void check(Token t) {
