@@ -1,7 +1,7 @@
 BRUKER = $(USER)
 
 Cflat.jar: ALWAYS
-	(cd no/uio/ifi/cflat/cflat; make)
+	for D in no/uio/ifi/cflat/*; do (cd $$D; make); done
 	jar cmf manifest.txt Cflat.jar no/uio/ifi/cflat/*/*.class
 
 delivery: ALWAYS
