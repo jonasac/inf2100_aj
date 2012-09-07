@@ -45,10 +45,9 @@ public class CharGenerator {
 		try { 
 			sourceLine = sourceFile.readLine();
 			sourcePos = 0;
-			System.out.println(sourceLine);
+			Log.noteSourceLine(curLineNum(), sourceLine);
 		} catch (IOException e) {
-			// TODO: give a better error, use the error module
-			System.out.println("CharGenerator: " + e.toString());
+			Error.error(e.toString());
 		}
 	}
 

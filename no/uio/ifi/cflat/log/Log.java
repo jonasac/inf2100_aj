@@ -72,7 +72,7 @@ public class Log {
     public static void noteSourceLine(int lineNum, String line) {
 	// part 0
 	if (! doLogParser && ! doLogScanner) return;
-	System.out.printf("\t%d:\t%s\n", lineNum, line);
+	System.out.printf("%4d:    %s\n", lineNum, line);
     }
 
     public static void test_noteSourceLine() {
