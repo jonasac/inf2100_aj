@@ -41,23 +41,38 @@ public class CharGenerator {
 		}
 	}
 
-	public static boolean isMoreToRead() {
-		//-- Must be changed in part 0:
-		return (sourceLine != null);
-	}
-
-	public static int curLineNum() {
-		return (sourceFile == null ? 0 : sourceFile.getLineNumber());
-	}
-
 	private static void readOneLine() {
 		try { 
 			sourceLine = sourceFile.readLine();
 			sourcePos = 0;
+			System.out.println(sourceLine);
 		} catch (IOException e) {
 			// TODO: give a better error, use the error module
 			System.out.println("CharGenerator: " + e.toString());
 		}
+	}
+
+	/** isMoreToRead
+	 * Checks if there is more content to read. Handles EOF as well.
+	 *
+	 * @returns true if there is another character available, false if not
+	 */
+	public static boolean isMoreToRead() {
+		if (sourceLine == null) {
+			return false;
+		}
+		while (sourceLine.startsWith("#") || sourceLine.isEmpty()) {
+			readOneLine();
+			// If end of line, return false
+			if (sourceLine == null) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	public static int curLineNum() {
+		return (sourceFile == null ? 0 : sourceFile.getLineNumber());
 	}
 
 	public static void readNext() {
@@ -67,12 +82,6 @@ public class CharGenerator {
 		// Must be changed in part 0:
 		if (sourcePos < (sourceLine.length() - 1)) {
 			sourcePos++;
-		} else {
-			readOneLine();
-			while (sourceLine.startsWith("#") || sourceLine.isEmpty()) {
-				readOneLine();
-				System.out.println(sourceLine);
-			}
 		}
 		assert(sourcePos <= sourceLine.length());
 		nextC = sourceLine.charAt(sourcePos);
