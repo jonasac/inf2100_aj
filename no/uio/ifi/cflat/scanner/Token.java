@@ -43,7 +43,8 @@ public enum Token {
     }
 
     public static boolean isTypeName(Token t) {
-	//-- Must be changed in part 0:
+	// part 0
+	if (t == intToken || t == doubleToken) return true;
 	return false;
     }
 }

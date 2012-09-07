@@ -51,6 +51,10 @@ public class CharGenerator {
 		}
 	}
 
+	private static boolean isAtEndOfLine() {
+		 return (sourcePos == (sourceLine.length() - 1));
+	}
+
 	/** isMoreToRead
 	 * Checks if there is more content to read. Handles EOF as well.
 	 *
@@ -60,7 +64,7 @@ public class CharGenerator {
 		if (sourceLine == null) {
 			return false;
 		}
-		while (sourceLine.startsWith("#") || sourceLine.isEmpty()) {
+		while (sourceLine.startsWith("#") || sourceLine.isEmpty() || isAtEndOfLine()) {
 			readOneLine();
 			// If end of line, return false
 			if (sourceLine == null) {
@@ -75,14 +79,12 @@ public class CharGenerator {
 	}
 
 	public static void readNext() {
+		// part 0
 		curC = nextC;
+
 		if (!isMoreToRead()) return;
 
-		// Must be changed in part 0:
-		if (sourcePos < (sourceLine.length() - 1)) {
-			sourcePos++;
-		}
-		assert(sourcePos <= sourceLine.length());
 		nextC = sourceLine.charAt(sourcePos);
+		sourcePos++;
 	}
 }

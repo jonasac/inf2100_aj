@@ -13,19 +13,20 @@ import static no.uio.ifi.cflat.scanner.Token.*;
  * Module for forming characters into tokens.
  */
 
-/*
- 	    while (Scanner.nextNextToken != eofToken) 
-		Scanner.readNext();
-*/
-
 public class Scanner {
 	public static Token curToken, nextToken, nextNextToken;
 	public static String curName, nextName, nextNextName;
 	public static int curNum, nextNum, nextNextNum;
 	public static int curLine, nextLine, nextNextLine;
 
+	// this is the same order as the tokens in Token.java
+	private static final String[] tokenNames = new String[]{"+", "=", ",", "/", "double", "else", "?", "==", "for", ">=", ">", "if", "int", "[", "{", "(", "<=", "<", "*", "?", "!=", "?", "]", "}", ")", "return", ";", "-", "while"};
+
 	public static void init() {
 		//-- Must be changed in part 0:
+		curName = "";
+		nextName = "";
+		nextNextName = "";
 	}
 
 	public static void finish() {
@@ -45,18 +46,57 @@ public class Scanner {
 			if (! CharGenerator.isMoreToRead()) {
 				nextNextToken = eofToken;
 			} else {
+
+				// curName is the string of the token we are collecting so far
+				curName = "";
+
+
+				// first, check if we can collect a token consisting of only letters
+				if (isLetterAZ(CharGenerator.curC)) {
+					while (isLetterAZ(CharGenerator.curC)) {
+						curName += CharGenerator.curC;
+						CharGenerator.readNext();
+					}
+
+					// Assign the right tokens, based on the content of curName
+					// a long list of checks:
+					for (int i=0; i < tokenNames.length; i++) {
+						if (tokenNames[i].equals(curName)) {
+							curToken = Token.values()[i];
+							System.out.println(curName + " er en " + curToken);
+						}
+					}
+
+
+				} else {
+					// we are at a non-letter, skip to the next letter
+					while (!isLetterAZ(CharGenerator.curC)) {
+						//System.out.print(".");
+						if (CharGenerator.isMoreToRead()) {
+							CharGenerator.readNext();
+						} else {
+							break;
+						}
+					}
+				}
+
+				// ok, we have a token!
+
+				// TODO: print out the token
+
 				// part 0
 
 				/* ------ placeholder code ---------- */
-				boolean allGood = true;
-				if (allGood) {
-					curToken = forToken;
-					return;
-				}
+				//boolean allGood = true;
+				//if (allGood) {
+				//	curToken = forToken;
+				//	return;
+				//}
 				/* ---------------------------------- */
 
-				Error.error(nextNextLine,
-						"Illegal symbol: '" + CharGenerator.curC + "'!");
+				// Error breaks out
+				//Error.error(nextNextLine,
+				//		"Illegal symbol: '" + CharGenerator.curC + "'!");
 			}
 		}
 		Log.noteToken();
