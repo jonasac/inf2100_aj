@@ -20,7 +20,7 @@ public class Scanner {
 	public static int curLine, nextLine, nextNextLine;
 
 	// this is the same order as the tokens in Token.java
-	private static final String[] tokenNames = new String[]{"+", "=", ",", "/", "double", "else", "?", "==", "for", ">=", ">", "if", "int", "[", "{", "(", "<=", "<", "*", "?", "!=", "?", "]", "}", ")", "return", ";", "-", "while"};
+	private static final String[] TOKEN_NAMES = new String[]{"+", "=", ",", "/", "double", "else", "", "==", "for", ">=", ">", "if", "int", "[", "{", "(", "<=", "<", "*", "", "!=", "", "]", "}", ")", "return", ";", "-", "while"};
 
 	public static void init() {
 		//-- Must be changed in part 0:
@@ -31,6 +31,15 @@ public class Scanner {
 
 	public static void finish() {
 		//-- Must be changed in part 0:
+	}
+
+	private static Token string2token(String tokenstring) {
+	  for (int i=0; i < TOKEN_NAMES.length; i++) {
+		  if (TOKEN_NAMES[i].equals(tokenstring)) {
+			  return Token.values()[i];
+		  }
+	   }
+	   return null;
 	}
 
 	public static void readNext() {
@@ -47,26 +56,27 @@ public class Scanner {
 				nextNextToken = eofToken;
 			} else {
 
-				// curName is the string of the token we are collecting so far
-				curName = "";
+			        // part 0
 
+				// curName is the string of the token we are collecting so far
+				nextNextName = "";
 
 				// first, check if we can collect a token consisting of only letters
 				if (isLetterAZ(CharGenerator.curC)) {
 					while (isLetterAZ(CharGenerator.curC)) {
-						curName += CharGenerator.curC;
+						nextNextName += CharGenerator.curC;
 						CharGenerator.readNext();
 					}
 
 					// Assign the right tokens, based on the content of curName
 					// a long list of checks:
-					for (int i=0; i < tokenNames.length; i++) {
-						if (tokenNames[i].equals(curName)) {
-							curToken = Token.values()[i];
-							System.out.println(curName + " er en " + curToken);
-						}
+					nextNextToken = string2token(nextNextName);
+					if (nextNextToken == null) {
+					  // Vi vet her at dette var tekst, men ikke en gyldig token
+					  System.out.println("error: unrecognized sequence of characters: " + curName);
+					} else {
+					  System.out.println(nextNextName + " er en " + nextNextToken);
 					}
-
 
 				} else {
 					// we are at a non-letter, skip to the next letter
