@@ -113,7 +113,9 @@ public class Scanner {
 	while (nextNextToken == null) {
 	    nextNextLine = CharGenerator.curLineNum();
 
-	    if (!CharGenerator.isMoreToRead()) {
+	    // TODO: Something is weird here. Also check that this corresponds to the hand-out code
+	    if (!CharGenerator.isMoreToReadWithoutSideEffects()) {
+	    //if (!CharGenerator.isMoreToRead()) {
 		nextNextToken = eofToken;
 	    } else {
 

@@ -30,7 +30,18 @@ public class CharGenerator {
 		}
 		sourceLine = "";  sourcePos = 0;  curC = nextC = ' ';
 		readNext();  readNext();
-		lastLine = null;
+	}
+
+	public static void test_chargenerator() {
+		init();
+		while (isMoreToRead()) {
+			readNext();
+		}
+		finish();
+	}
+
+	public static boolean isMoreToReadWithoutSideEffects() {
+		return (sourceLine != null);
 	}
 
 	public static void finish() {
@@ -45,9 +56,9 @@ public class CharGenerator {
 
 	private static void readOneLine() {
 		try { 
+			Log.noteSourceLine(curLineNum(), sourceLine);
 			sourceLine = sourceFile.readLine();
 			sourcePos = 0;
-			Log.noteSourceLine(curLineNum(), sourceLine);
 		} catch (IOException e) {
 			Error.error(e.toString());
 		}
@@ -70,17 +81,10 @@ public class CharGenerator {
 			return false;
 		}
 		while (sourceLine.startsWith("#") || sourceLine.isEmpty() || isAtEndOfLine()) {
-			String temp = new String(sourceLine);
 			readOneLine();
 			// If end of line, return false
 			if (sourceLine == null) {
-				if (lastLine == null) {
-					lastLine = temp;
-					sourceLine = new String(lastLine);
-					return true;
-				} else {
-					return false;
-				}
+				return false;
 			}
 		}
 		return true;
@@ -95,7 +99,7 @@ public class CharGenerator {
 		curC = nextC;
 
 		// Not really needed if the callees check with isMoreToRead
-		if (!isMoreToRead())  return;
+		if (!isMoreToRead()) return;
 
 		nextC = sourceLine.charAt(sourcePos);
 		sourcePos++;

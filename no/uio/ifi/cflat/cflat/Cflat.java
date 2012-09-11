@@ -34,6 +34,8 @@ public class Cflat {
 		Scanner.test_isSymbol();
 		Log.doLogScanner = true;
 		Log.test_noteSourceLine();
+		//sourceName = "samples/gcd/gcd.cflat";
+		//CharGenerator.test_chargenerator();
 		System.out.println("Testing done.");
     }
 
