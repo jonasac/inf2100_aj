@@ -20,6 +20,7 @@ public class CharGenerator {
 	private static LineNumberReader sourceFile = null;
 	private static String sourceLine;
 	private static int sourcePos;
+	private static String lastLine;
 
 	public static void init() {
 		try {
@@ -29,6 +30,7 @@ public class CharGenerator {
 		}
 		sourceLine = "";  sourcePos = 0;  curC = nextC = ' ';
 		readNext();  readNext();
+		lastLine = null;
 	}
 
 	public static void finish() {
@@ -68,10 +70,17 @@ public class CharGenerator {
 			return false;
 		}
 		while (sourceLine.startsWith("#") || sourceLine.isEmpty() || isAtEndOfLine()) {
+			String temp = new String(sourceLine);
 			readOneLine();
 			// If end of line, return false
 			if (sourceLine == null) {
-				return false;
+				if (lastLine == null) {
+					lastLine = temp;
+					sourceLine = new String(lastLine);
+					return true;
+				} else {
+					return false;
+				}
 			}
 		}
 		return true;
@@ -85,7 +94,9 @@ public class CharGenerator {
 		// part 0
 		curC = nextC;
 
-		if (!isMoreToRead()) return;
+		// Not really needed if the callees check with isMoreToRead
+		if (!isMoreToRead())  return;
+
 		nextC = sourceLine.charAt(sourcePos);
 		sourcePos++;
 	}
