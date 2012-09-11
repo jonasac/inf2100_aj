@@ -22,24 +22,78 @@ public class Scanner {
 	// this is the same order as the tokens in Token.java
 	private static final String[] TOKEN_NAMES = new String[]{"+", "=", ",", "/", "double", "else", "", "==", "for", ">=", ">", "if", "int", "[", "{", "(", "<=", "<", "*", "", "!=", "", "]", "}", ")", "return", ";", "-", "while"};
 
+	private static boolean inComment;
+
 	public static void init() {
 		//-- Must be changed in part 0:
 		curName = "";
 		nextName = "";
 		nextNextName = "";
+
+		inComment = false;
 	}
 
 	public static void finish() {
 		//-- Must be changed in part 0:
 	}
 
+	/** string2token
+	 *
+	 * Tries to find the token that corresponds to a given string
+	 *
+	 * @param tokenstring A string that may represent a token (like "int")
+	 * @return A token if match, or null
+	 */
 	private static Token string2token(String tokenstring) {
-	  for (int i=0; i < TOKEN_NAMES.length; i++) {
-		  if (TOKEN_NAMES[i].equals(tokenstring)) {
-			  return Token.values()[i];
-		  }
-	   }
-	   return null;
+		if (0 == tokenstring.length()) {
+			return null;
+		}
+		for (int i=0; i < TOKEN_NAMES.length; i++) {
+			if (TOKEN_NAMES[i].equals(tokenstring)) {
+				return Token.values()[i];
+			}
+		}
+		return null;
+	}
+
+	/** collectWord
+	 *
+	 * Collects all characters that are letters, digits or underscore characters,
+	 * until a character that is not one of these is met. Both lower and uppercase
+	 * symbols are collected.
+	 *
+	 * @return A string that only consists of letters, digits and underscore characters.
+	 */
+	private static String collectWord() {
+		String temp = "";
+		while (isLetterAZ(CharGenerator.curC) || isDigit(CharGenerator.curC) || '_' == CharGenerator.curC) {
+			temp += CharGenerator.curC;
+			CharGenerator.readNext();
+		}
+		return temp;
+	}
+
+	private static String collectNumber() {
+		String temp = "";
+		while (isDigit(CharGenerator.curC) || '-' == CharGenerator.curC || '\'' == CharGenerator.curC) {
+			temp += CharGenerator.curC;
+			CharGenerator.readNext();
+		}
+		return temp;
+	}
+
+	private static String collectSymbol() {
+		String temp = Character.toString(CharGenerator.curC);
+		CharGenerator.readNext();
+		return temp;
+	}
+
+	private static void skipToNonWhitespace() {
+		String temp = Character.toString(CharGenerator.curC);
+		while (0 == temp.trim().length()) { // if whitespace
+			CharGenerator.readNext();
+			temp = Character.toString(CharGenerator.curC);
+		}
 	}
 
 	public static void readNext() {
@@ -48,68 +102,144 @@ public class Scanner {
 		curNum = nextNum;  nextNum = nextNextNum;
 		curLine = nextLine;  nextLine = nextNextLine;
 
+		// shuffle all the Name variables one step back and clear nextNextName
+		nextNextName = "";
+
 		nextNextToken = null;
+
 		while (nextNextToken == null) {
 			nextNextLine = CharGenerator.curLineNum();
 
-			if (! CharGenerator.isMoreToRead()) {
+			if (!CharGenerator.isMoreToRead()) {
 				nextNextToken = eofToken;
 			} else {
 
-			        // part 0
+				// part 0
+				
+				// If we are at a whitespace character, read a bit further
+				skipToNonWhitespace();
 
-				// curName is the string of the token we are collecting so far
-				nextNextName = "";
-
-				// first, check if we can collect a token consisting of only letters
+				// Check if we can collect a token consisting of only letters
 				if (isLetterAZ(CharGenerator.curC)) {
-					while (isLetterAZ(CharGenerator.curC)) {
-						nextNextName += CharGenerator.curC;
-						CharGenerator.readNext();
-					}
-
-					// Assign the right tokens, based on the content of curName
-					// a long list of checks:
+					// Collect characters until a non-variablename-character is reached
+					nextNextName = collectWord();
+					// Try to represent the string as a token, gives null if no representation is found
 					nextNextToken = string2token(nextNextName);
-					if (nextNextToken == null) {
-					  // Vi vet her at dette var tekst, men ikke en gyldig token
-					  System.out.println("error: unrecognized sequence of characters: " + curName);
-					} else {
-					  System.out.println(nextNextName + " er en " + nextNextToken);
+					if (null == nextNextToken) {
+						// We know know that we have a word that is not the name of one of the tokens, so it is a nameToken
+						nextNextToken = nameToken;
 					}
-
+					//System.out.println("success: " + nextNextName + " is a " + nextNextToken);
+					// success
+					break;
+				} else if (isDigit(CharGenerator.curC) || '-' == CharGenerator.curC || '\'' == CharGenerator.curC) { // digit, - or '
+					nextNextName = collectNumber();
+					nextNextToken = numberToken;
+					// success
+					//System.out.println("success: got number: " + nextNextName);
+					break;
 				} else {
-					// we are at a non-letter, skip to the next letter
-					while (!isLetterAZ(CharGenerator.curC)) {
-						//System.out.print(".");
-						if (CharGenerator.isMoreToRead()) {
-							CharGenerator.readNext();
-						} else {
+					// We are at a place where there is neither a word nor a number
+					// Check for various symbols and assign tokens
+					nextNextName = collectSymbol();
+					assert(!nextNextName.equals(" "));
+					// We are possibly at a symbol, like * or +
+					nextNextToken = string2token(nextNextName);
+
+					// Catch tokens that need more interpretation, like 'a'
+					if (null == nextNextToken) {
+						if (nextName.equals("'") && !nextNextName.equals("'")) {
+							// We are at a number that is being represented by a symbol enclosed in '
+							byte numval = 0;
+							try {
+								numval = nextNextName.getBytes("ISO-8859-1")[0];
+							} catch (java.io.UnsupportedEncodingException e) {
+								System.out.println("error: symbol from unsupported character set: " + nextNextName.charAt(0));
+							}
+							nextNextName = new Integer(numval).toString();
+							nextNextToken = numberToken;
+							// won't reach here if in comment
+							//System.out.println("success: number from symbol: " + nextNextName);
+							// success
 							break;
+						} else if (isCompoundEnd(CharGenerator.curC)) {
+							nextNextName = Character.toString(CharGenerator.curC);
+							System.out.println("HOI at " + nextNextName);
+							break;
+						} else {
+							// won't reach here if in comment
+							if (inComment) {
+								// SKIPPING ERROR WHILE IN COMMENT
+								break;
+							} else {
+								System.out.println("error: unknown letter, digit or symbol: " + nextNextName);
+							}
+							// error
 						}
+					} else {
+						//System.out.println("success: " + nextNextName + " is a " + nextNextToken);
+						// success
+						break;
 					}
 				}
 
-				// ok, we have a token!
+				if (inComment) {
+					// SKIPPING ERROR WHILE IN COMMENT
+					break;
+				}
 
-				// TODO: print out the token
+				System.out.println("ERRRORRRRR!");
 
-				// part 0
-
-				/* ------ placeholder code ---------- */
-				//boolean allGood = true;
-				//if (allGood) {
-				//	curToken = forToken;
-				//	return;
-				//}
-				/* ---------------------------------- */
-
-				// Error breaks out
+				//// Error stops everything
 				//Error.error(nextNextLine,
 				//		"Illegal symbol: '" + CharGenerator.curC + "'!");
 			}
 		}
-		Log.noteToken();
+
+		if ((!inComment) && (curToken != null)) {
+			//System.out.println("success: " + curName + " is a " + curToken);
+			Log.noteToken();
+		}
+		
+		// Check if we are in a comment or not
+		
+		if ((nextToken == divideToken) && (nextNextToken == multiplyToken)) {
+		    // We are at the start of a multiline comment
+		    inComment = true;
+			//System.out.println("INTO COMMENT");
+		    nextToken = null;
+		    nextNextToken = null;
+		}
+
+		if ((nextToken == multiplyToken) && (nextNextToken == divideToken)) {
+			inComment = false;
+			//System.out.println("OUT OF COMMENT");
+		    nextToken = null;
+		    nextNextToken = null;
+		}
+
+		// TODO: Find a way to catch the two last characters as well!
+
+	}
+
+	// Checks if a char could be the start of a compound symbol, like != or >=
+	private static boolean isCompoundStart(char c) {
+		for (int i=0; i < TOKEN_NAMES.length; i++) {
+			if ((TOKEN_NAMES[i].length() > 0) && (c == TOKEN_NAMES[i].charAt(0))) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	// Checks if a char could be the end of a compound symbol, like != or >=
+	private static boolean isCompoundEnd(char c) {
+		for (int i=0; i < TOKEN_NAMES.length; i++) {
+			if ((TOKEN_NAMES[i].length() > 1) && (c == TOKEN_NAMES[i].charAt(TOKEN_NAMES[i].length() - 1))) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private static boolean isLetterAZ(char c) {
@@ -124,6 +254,10 @@ public class Scanner {
 		if (pass) {
 			System.out.println("isLetterAZ: All tests pass");
 		}
+	}
+
+	private static boolean isDigit(char c) {
+		return ('0' <= c && '9' >= c);
 	}
 
 	public static void check(Token t) {

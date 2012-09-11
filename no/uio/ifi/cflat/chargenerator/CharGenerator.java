@@ -52,11 +52,14 @@ public class CharGenerator {
 	}
 
 	private static boolean isAtEndOfLine() {
-		 return (sourcePos == (sourceLine.length() - 1));
+		// does not look at length - 1 but length because this function checks if one is beyond the length of the line
+		// (which means that one is done reading every single character with readNext)
+		 return (sourcePos == sourceLine.length());
 	}
 
 	/** isMoreToRead
 	 * Checks if there is more content to read. Handles EOF as well.
+	 * NB! Has the side-effect of reading in one line!
 	 *
 	 * @returns true if there is another character available, false if not
 	 */
@@ -83,7 +86,6 @@ public class CharGenerator {
 		curC = nextC;
 
 		if (!isMoreToRead()) return;
-
 		nextC = sourceLine.charAt(sourcePos);
 		sourcePos++;
 	}
