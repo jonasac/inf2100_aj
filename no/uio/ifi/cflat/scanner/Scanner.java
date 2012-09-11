@@ -82,9 +82,12 @@ public class Scanner {
 		return temp;
 	}
 
-	private static String collectSymbol() {
-		String temp = Character.toString(CharGenerator.curC);
-		CharGenerator.readNext();
+	private static String collectSymbols() {
+		String temp = "";
+		while (isSymbol(CharGenerator.curC)) {
+			temp += CharGenerator.curC;
+			CharGenerator.readNext();
+		}
 		return temp;
 	}
 
@@ -138,13 +141,24 @@ public class Scanner {
 					// success
 					//System.out.println("success: got number: " + nextNextName);
 					break;
+				} else if (isSymbol(CharGenerator.curC)) {
+					nextNextName = collectSymbols();
+					nextNextToken = string2token(nextNextName);
+					if (null == nextNextToken) {
+						// We know know that we have a collection of symbols that is not recognized
+						System.out.println(nextNextName + ", what kind of symbol is that?");
+					} else {
+						//System.out.println("success: " + nextNextName + " is a " + nextNextToken);
+						// success
+						break;
+					}
 				} else {
 					// We are at a place where there is neither a word nor a number
 					// Check for various symbols and assign tokens
-					nextNextName = collectSymbol();
-					assert(!nextNextName.equals(" "));
-					// We are possibly at a symbol, like * or +
+					nextNextName = Character.toString(CharGenerator.curC);
+					CharGenerator.readNext();
 					nextNextToken = string2token(nextNextName);
+					// We are possibly at a symbol, like * or +
 
 					// Catch tokens that need more interpretation, like 'a'
 					if (null == nextNextToken) {
@@ -161,10 +175,6 @@ public class Scanner {
 							// won't reach here if in comment
 							//System.out.println("success: number from symbol: " + nextNextName);
 							// success
-							break;
-						} else if (isCompoundEnd(CharGenerator.curC)) {
-							nextNextName = Character.toString(CharGenerator.curC);
-							System.out.println("HOI at " + nextNextName);
 							break;
 						} else {
 							// won't reach here if in comment
@@ -188,17 +198,18 @@ public class Scanner {
 					break;
 				}
 
-				System.out.println("ERRRORRRRR!");
+				System.out.println("ERROR");
 
 				//// Error stops everything
-				//Error.error(nextNextLine,
+				// Error.error(nextNextLine,
 				//		"Illegal symbol: '" + CharGenerator.curC + "'!");
 			}
+
 		}
 
 		if ((!inComment) && (curToken != null)) {
-			//System.out.println("success: " + curName + " is a " + curToken);
-			Log.noteToken();
+			System.out.println("success: " + curName + " is a " + curToken);
+			//Log.noteToken();
 		}
 		
 		// Check if we are in a comment or not
@@ -219,7 +230,32 @@ public class Scanner {
 		}
 
 		// TODO: Find a way to catch the two last characters as well!
+		
+	}
 
+	// Checks if a char could be part of a compound symbol, like != or >=
+	private static boolean isSymbol(char c) {
+		for (int i=0; i < TOKEN_NAMES.length; i++) {
+			// for all tokens length 2 or longer ("!=", ">=" etc), check if c is part of it
+			if ((TOKEN_NAMES[i].length() > 1) && (-1 != TOKEN_NAMES[i].indexOf(c))) {
+				return true;
+			} // else keep searching
+		}
+		return false;
+	}
+
+	public static void test_isSymbol() {
+		boolean pass = true;
+		pass = pass && (isSymbol('z') == false);
+		pass = pass && (isSymbol('!') == true);
+		pass = pass && (isSymbol('<') == true);
+		pass = pass && (isSymbol('>') == true);
+		pass = pass && (isSymbol('=') == true);
+		pass = pass && (isSymbol('i') == true);
+		pass = pass && (isSymbol(' ') == false);
+		if (pass) {
+			System.out.println("isSymbol: All tests pass");
+		}
 	}
 
 	// Checks if a char could be the start of a compound symbol, like != or >=
@@ -227,7 +263,7 @@ public class Scanner {
 		for (int i=0; i < TOKEN_NAMES.length; i++) {
 			if ((TOKEN_NAMES[i].length() > 0) && (c == TOKEN_NAMES[i].charAt(0))) {
 				return true;
-			}
+			} // else keep searching
 		}
 		return false;
 	}
@@ -237,7 +273,7 @@ public class Scanner {
 		for (int i=0; i < TOKEN_NAMES.length; i++) {
 			if ((TOKEN_NAMES[i].length() > 1) && (c == TOKEN_NAMES[i].charAt(TOKEN_NAMES[i].length() - 1))) {
 				return true;
-			}
+			} // else keep searching
 		}
 		return false;
 	}

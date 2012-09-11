@@ -28,12 +28,13 @@ public class Cflat {
     public static String myOS;               // The current operating system
 
     public static void test_all() {
-	System.out.println("Starting tests.");
-	Scanner.init();
-	Scanner.test_isLetterAZ();
-	Log.doLogScanner = true;
-	Log.test_noteSourceLine();
-	System.out.println("Testing done.");
+		System.out.println("Starting tests.");
+		Scanner.init();
+		Scanner.test_isLetterAZ();
+		Scanner.test_isSymbol();
+		Log.doLogScanner = true;
+		Log.test_noteSourceLine();
+		System.out.println("Testing done.");
     }
 
     /**
