@@ -121,6 +121,7 @@ public class Scanner {
 	    }
 
 	    if (eofCounter == 3) {
+	      curToken = eofToken;
 	      nextNextToken = eofToken;
 	    }
 
@@ -278,6 +279,9 @@ public class Scanner {
 
     // Checks if a char could be part of a compound symbol, like != or >=
     private static boolean isSymbol(char c) {
+        if (isLetterAZ(c) || isDigit(c)) {
+	  return false;
+	}
 	for (int i=0; i < TOKEN_NAMES.length; i++) {
 	    // for all tokens length 2 or longer ("!=", ">=" etc), check if c is part of it
 	    if ((TOKEN_NAMES[i].length() > 1) && (-1 != TOKEN_NAMES[i].indexOf(c))) {
@@ -294,7 +298,7 @@ public class Scanner {
 	pass = pass && (isSymbol('<') == true);
 	pass = pass && (isSymbol('>') == true);
 	pass = pass && (isSymbol('=') == true);
-	pass = pass && (isSymbol('i') == true);
+	pass = pass && (isSymbol('i') == false);
 	pass = pass && (isSymbol(' ') == false);
 	if (pass) {
 	    System.out.println("isSymbol: All tests pass");
