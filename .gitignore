@@ -4,3 +4,4 @@
 *.o
 *.log
 !refence_compiler/Cflat.jar
+!refence_compiler/Cflat-6.jar
