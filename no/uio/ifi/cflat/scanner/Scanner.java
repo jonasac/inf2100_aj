@@ -23,6 +23,7 @@ public class Scanner {
     private static final String[] TOKEN_NAMES = new String[]{"+", "=", ",", "/", "double", "else", "", "==", "for", ">=", ">", "if", "int", "[", "{", "(", "<=", "<", "*", "", "!=", "", "]", "}", ")", "return", ";", "-", "while"};
 
     private static boolean inComment;
+    private static int eofCounter;
 
     public static void init() {
 	//-- Must be changed in part 0:
@@ -31,6 +32,7 @@ public class Scanner {
 	nextNextName = "";
 
 	inComment = false;
+	eofCounter = 0;
     }
 
     public static void finish() {
@@ -66,8 +68,8 @@ public class Scanner {
      */
     private static String collectWord() {
 	String temp = "";
-	while (isLetterAZ(CharGenerator.curC) || isDigit(CharGenerator.curC) || '_' == CharGenerator.curC) {
-	    temp += CharGenerator.curC;
+	while (isLetterAZ(CharGenerator.nextC) || isDigit(CharGenerator.nextC) || '_' == CharGenerator.nextC) {
+	    temp += CharGenerator.nextC;
 	    CharGenerator.readNext();
 	}
 	return temp;
@@ -75,8 +77,8 @@ public class Scanner {
 
     private static String collectNumber() {
 	String temp = "";
-	while (isDigit(CharGenerator.curC) || '-' == CharGenerator.curC || '\'' == CharGenerator.curC) {
-	    temp += CharGenerator.curC;
+	while (isDigit(CharGenerator.nextC) || '-' == CharGenerator.nextC || '\'' == CharGenerator.nextC) {
+	    temp += CharGenerator.nextC;
 	    CharGenerator.readNext();
 	}
 	return temp;
@@ -84,18 +86,18 @@ public class Scanner {
 
     private static String collectSymbols() {
 	String temp = "";
-	while (isSymbol(CharGenerator.curC)) {
-	    temp += CharGenerator.curC;
+	while (isSymbol(CharGenerator.nextC)) {
+	    temp += CharGenerator.nextC;
 	    CharGenerator.readNext();
 	}
 	return temp;
     }
 
     private static void skipToNonWhitespace() {
-	String temp = Character.toString(CharGenerator.curC);
+	String temp = Character.toString(CharGenerator.nextC);
 	while (0 == temp.trim().length()) { // if whitespace
 	    CharGenerator.readNext();
-	    temp = Character.toString(CharGenerator.curC);
+	    temp = Character.toString(CharGenerator.nextC);
 	}
     }
 
@@ -105,19 +107,24 @@ public class Scanner {
 	curNum = nextNum;  nextNum = nextNextNum;
 	curLine = nextLine;  nextLine = nextNextLine;
 
-	// shuffle all the Name variables one step back and clear nextNextName
-	nextNextName = "";
-
+	// clear the nextNext variables
+	//nextNextName = "";
 	nextNextToken = null;
 
 	while (nextNextToken == null) {
 	    nextNextLine = CharGenerator.curLineNum();
 
-	    // TODO: Something is weird here. Also check that this corresponds to the hand-out code
-	    if (!CharGenerator.isMoreToReadWithoutSideEffects()) {
-	    //if (!CharGenerator.isMoreToRead()) {
-		nextNextToken = eofToken;
-	    } else {
+            // TODO: replace eofCounter with a cleaner solution!
+
+	    if (!CharGenerator.isMoreToRead()) {
+	      eofCounter++;
+	    }
+
+	    if (eofCounter == 3) {
+	      nextNextToken = eofToken;
+	    }
+
+	    if (eofCounter < 3) {
 
 		// part 0
 
@@ -125,7 +132,7 @@ public class Scanner {
 		skipToNonWhitespace();
 
 		// Check if we can collect a token consisting of only letters
-		if (isLetterAZ(CharGenerator.curC)) {
+		if (isLetterAZ(CharGenerator.nextC)) {
 		    // Collect characters until a non-variablename-character is reached
 		    nextNextName = collectWord();
 		    // Try to represent the string as a token, gives null if no representation is found
@@ -147,7 +154,7 @@ public class Scanner {
 			// success
 		    }
 		    break;
-		} else if (isDigit(CharGenerator.curC) || '-' == CharGenerator.curC || '\'' == CharGenerator.curC) { // digit, - or '
+		} else if (isDigit(CharGenerator.nextC) || '-' == CharGenerator.nextC || '\'' == CharGenerator.nextC) { // digit, - or '
 		    nextNextName = collectNumber();
 		    if (nextNextName.equals("-")) {
 			nextNextToken = subtractToken;
@@ -162,7 +169,7 @@ public class Scanner {
 		    }
 		    // success
 		    break;
-		} else if (isSymbol(CharGenerator.curC)) {
+		} else if (isSymbol(CharGenerator.nextC)) {
 		    nextNextName = collectSymbols();
 		    nextNextToken = string2token(nextNextName);
 		    if (null == nextNextToken) {
@@ -179,7 +186,7 @@ public class Scanner {
 		} else {
 		    // We are at a place where there is neither a word nor a number
 		    // Check for various symbols and assign tokens
-		    nextNextName = Character.toString(CharGenerator.curC);
+		    nextNextName = Character.toString(CharGenerator.nextC);
 		    CharGenerator.readNext();
 		    nextNextToken = string2token(nextNextName);
 		    // We are possibly at a symbol, like * or +
@@ -231,7 +238,7 @@ public class Scanner {
 
 		// Error stops everything
 		//Error.error(nextNextLine,
-		//	"Illegal symbol: '" + CharGenerator.curC + "'!");
+		//	"Illegal symbol: '" + CharGenerator.nextC + "'!");
 	    }
 
 	}
