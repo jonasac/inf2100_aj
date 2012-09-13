@@ -1,21 +1,27 @@
 #!/bin/sh
-if [ ! -e samples/gcd/gcd.cflat ]; then
-  echo "Could not find gcd.cflat, aborting"
+
+E=samples/gcd/gcd
+
+f=$E.cflat
+l=$E.log
+s=$E.s
+if [ ! -e "$f" ]; then
+  echo "Could not find $f, aborting"
   exit 1
 fi
-if [ -e samples/gcd/gcd.log ]; then
-  rm -f samples/gcd/gcd.log
+if [ -e "$l" ]; then
+  rm -f "$l"
 fi
 if [ ! -e Cflat.jar ]; then
   make
 fi
-java -jar $1 -testscanner samples/gcd/gcd.cflat
-if [ -e samples/gcd/gcd.log ]; then
-    cat samples/gcd/gcd.log
+java -jar $1 -testscanner "$f"
+if [ -e "$l" ]; then
+    cat "$l"
 fi
-if [ -e samples/gcd/gcd.s ]; then
-  rm -f samples/gcd/gcd.s
+if [ -e "$s" ]; then
+  rm -f "$s"
 fi
-if [ -e samples/gcd/gcd ]; then
-  rm -f samples/gcd/gcd
+if [ -e "$E" ]; then
+  rm -f "$E"
 fi
