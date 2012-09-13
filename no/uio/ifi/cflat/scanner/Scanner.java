@@ -120,17 +120,14 @@ public class Scanner {
 	while (nextNextToken == null) {
 	    nextNextLine = CharGenerator.curLineNum();
 
-            // TODO: replace eofCounter with a cleaner solution!
-
 	    if (!CharGenerator.isMoreToRead()) {
 	      eofCounter++;
 	    }
 
 	    if (eofCounter == 4) {
+	      // Using the fact that the very last token must be a single character
 	      nextNextName = Character.toString(CharGenerator.nextC);
 	      nextNextToken = string2token(nextNextName);
-	      //curToken = eofToken;
-	      //nextNextToken = eofToken;
 	    }
 
 	    if (eofCounter == 5) {
@@ -147,7 +144,8 @@ public class Scanner {
 		skipToNonWhitespace();
 
 		// Check if we can collect a token consisting of only letters
-		if (isLetterAZ(CharGenerator.curC)) {
+		if (isLetterAZ(CharGenerator.curC) && (!nextName.equals("'"))) {
+
 		    // Collect characters until a non-variablename-character is reached
 		    nextNextName = collectWord();
 		    // Try to represent the string as a token, gives null if no representation is found

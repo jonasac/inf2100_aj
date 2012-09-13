@@ -1,6 +1,6 @@
 #!/bin/sh
 
-E=samples/gcd/gcd
+E=samples/mini/mini
 
 f=$E.cflat
 l=$E.log

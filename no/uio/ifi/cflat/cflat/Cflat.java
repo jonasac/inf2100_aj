@@ -90,7 +90,7 @@ public class Cflat {
 	CharGenerator.init();  Scanner.init();  Syntax.init();
 		
 	if (testScanner) {
-	    System.out.print("Scanning...");
+	    //System.out.print("Scanning...");
 	    while (Scanner.nextNextToken != eofToken) 
 		Scanner.readNext();
 	} else {
