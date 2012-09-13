@@ -1,10 +1,11 @@
 #!/bin/sh
 
-E=samples/mini/mini
+E=samples/gcd/gcd
 
 f=$E.cflat
 l=$E.log
 s=$E.s
+
 if [ ! -e "$f" ]; then
   echo "Could not find $f, aborting"
   exit 1
