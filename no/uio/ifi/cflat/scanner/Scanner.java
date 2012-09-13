@@ -94,6 +94,11 @@ public class Scanner {
     }
 
     private static void skipToNonWhitespace() {
+	// Avoid skipping spaces within '
+	if ((CharGenerator.curC == '\'') && (CharGenerator.nextC == ' ')) {
+	    return;
+	}
+	// Skip to non-whitespace
 	String temp = Character.toString(CharGenerator.nextC);
 	while (0 == temp.trim().length()) { // if whitespace
 	    CharGenerator.readNext();
@@ -156,12 +161,13 @@ public class Scanner {
 		    }
 		    break;
 		} else if (isDigit(CharGenerator.nextC) || '-' == CharGenerator.nextC || '\'' == CharGenerator.nextC) { // digit, - or '
+		    // TODO: make sure collectNumber only accepts - as first character
 		    nextNextName = collectNumber();
 		    if (nextNextName.equals("-")) {
 			nextNextToken = subtractToken;
 		    } else if (nextNextName.equals("'")) {
 			nextNextToken = null;
-		    } else {
+		   } else {
 			nextNextToken = numberToken;
 		    }
 		    if ((!inComment) && (isDigit(nextNextName.charAt(0)))) {
