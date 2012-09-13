@@ -318,6 +318,13 @@ public class Scanner {
 	}
     }
 
+    /** isLetterAZ
+     *
+     * Checks if a character is a letter
+     *
+     * @param c The character to check
+     * @return true if it is a-z or A-Z
+     */
     private static boolean isLetterAZ(char c) {
 	return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
     }
