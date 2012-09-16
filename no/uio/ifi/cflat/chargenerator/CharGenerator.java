@@ -15,93 +15,96 @@ import no.uio.ifi.cflat.log.Log;
  * Module for reading single characters.
  */
 public class CharGenerator {
-	public static char curC, nextC;
+    public static char curC, nextC;
 
-	private static LineNumberReader sourceFile = null;
-	private static String sourceLine;
-	private static int sourcePos;
-	private static String lastLine;
+    private static LineNumberReader sourceFile = null;
+    private static String sourceLine;
+    private static int sourcePos;
+    private static String lastLine;
 
-	public static void init() {
-		try {
-			sourceFile = new LineNumberReader(new FileReader(Cflat.sourceName));
-		} catch (FileNotFoundException e) {
-			Error.error("Cannot read " + Cflat.sourceName + "!");
-		}
-		sourceLine = "";  sourcePos = 0;  curC = nextC = ' ';
-		readNext();  readNext();
-	}
+    public static void init() {
+        try {
+            sourceFile = new LineNumberReader(new FileReader(Cflat.sourceName));
+        } catch (FileNotFoundException e) {
+            Error.error("Cannot read " + Cflat.sourceName + "!");
+        }
+        sourceLine = "";  sourcePos = 0;  curC = nextC = ' ';
+        readNext();  readNext();
+    }
 
-	public static void test_chargenerator() {
-		init();
-		while (isMoreToRead()) {
-			readNext();
-		}
-		finish();
-	}
+    public static void test_chargenerator() {
+        init();
+        while (isMoreToRead()) {
+            readNext();
+        }
+        finish();
+    }
 
-	public static boolean isMoreToReadWithoutSideEffects() {
-		return (sourceLine != null);
-	}
+    public static boolean isMoreToReadWithoutSideEffects() {
+        return (sourceLine != null);
+    }
 
-	public static void finish() {
-		if (sourceFile != null) {
-			try {
-				sourceFile.close();
-			} catch (IOException e) {
-				Error.error("Could not close source file!");
-			}
-		}
-	}
+    public static void finish() {
+        if (sourceFile != null) {
+            try {
+                sourceFile.close();
+            } catch (IOException e) {
+                Error.error("Could not close source file!");
+            }
+        }
+    }
 
-	private static void readOneLine() {
-		try { 
-			Log.noteSourceLine(curLineNum(), sourceLine);
-			sourceLine = sourceFile.readLine();
-			sourcePos = 0;
-		} catch (IOException e) {
-			Error.error(e.toString());
-		}
-	}
+    private static void readOneLine() {
+        try { 
+            Log.noteSourceLine(curLineNum(), sourceLine);
+            sourceLine = sourceFile.readLine();
+            sourcePos = 0;
+        } catch (IOException e) {
+            Error.error(e.toString());
+        }
+    }
 
-	private static boolean isAtEndOfLine() {
-		// does not look at length - 1 but length because this function checks if one is beyond the length of the line
-		// (which means that one is done reading every single character with readNext)
-		 return (sourcePos == sourceLine.length());
-	}
+    private static boolean isAtEndOfLine() {
+        // does not look at length - 1 but length because this function checks if one is beyond the length of the line
+        // (which means that one is done reading every single character with readNext)
+        return (sourcePos == sourceLine.length());
+    }
 
-	/** isMoreToRead
-	 * Checks if there is more content to read. Handles EOF as well.
-	 * NB! Has the side-effect of reading in one line!
-	 *
-	 * @returns true if there is another character available, false if not
-	 */
-	public static boolean isMoreToRead() {
-		if (sourceLine == null) {
-			return false;
-		}
-		while (sourceLine.startsWith("#") || sourceLine.isEmpty() || isAtEndOfLine()) {
-			readOneLine();
-			// If end of line, return false
-			if (sourceLine == null) {
-				return false;
-			}
-		}
-		return true;
-	}
+    /** isMoreToRead
+     * Checks if there is more content to read. Handles EOF as well.
+     * NB! Has the side-effect of reading in one line!
+     *
+     * @returns true if there is another character available, false if not
+     */
+    public static boolean isMoreToRead() {
+        if (sourceLine == null && curC == (char) -1) {
+            return false;
+        }
 
-	public static int curLineNum() {
-		return (sourceFile == null ? 0 : sourceFile.getLineNumber());
-	}
+        return true;
+    }
 
-	public static void readNext() {
-		// part 0
-		curC = nextC;
+    public static int curLineNum() {
+        return (sourceFile == null ? 0 : sourceFile.getLineNumber());
+    }
 
-		// Not really needed if the callees check with isMoreToRead
-		if (!isMoreToRead()) return;
+    public static void readNext() {
+        // part 0
+        curC = nextC;
+        // Not really needed if the callees check with isMoreToRead
+        if (!isMoreToRead()) return;
+        
+        while (sourceLine != null && (sourceLine.startsWith("#") || sourceLine.isEmpty() || isAtEndOfLine())) {
+            readOneLine();
+        }
 
-		nextC = sourceLine.charAt(sourcePos);
-		sourcePos++;
-	}
+        if (sourceLine == null) {
+            nextC = (char) -1;
+            return;
+        }
+
+        nextC = sourceLine.charAt(sourcePos);
+        sourcePos++;
+    }
 }
+
