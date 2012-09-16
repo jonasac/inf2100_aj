@@ -40,6 +40,7 @@ public class CharGenerator {
 		finish();
 	}
 
+    //TODO: consider removing this in final delivery
 	public static boolean isMoreToReadWithoutSideEffects() {
 		return (sourceLine != null);
 	}
@@ -54,6 +55,9 @@ public class CharGenerator {
 		}
 	}
 
+    /**
+     * Reads one line from sourcefile, resets sourcePos to 0 so we start at the beginning of the new string
+     */
 	private static void readOneLine() {
 		try { 
 			Log.noteSourceLine(curLineNum(), sourceLine);
@@ -64,15 +68,18 @@ public class CharGenerator {
 		}
 	}
 
+    /**
+     * Checks wether we are at the end of line in the current sourceLine
+     */
 	private static boolean isAtEndOfLine() {
 		// does not look at length - 1 but length because this function checks if one is beyond the length of the line
 		// (which means that one is done reading every single character with readNext)
 		 return (sourcePos == sourceLine.length());
 	}
 
-	/** isMoreToRead
+	/** 
 	 * Checks if there is more content to read. Handles EOF as well.
-	 * NB! Has the side-effect of reading in one line!
+	 * NB! Has the side-effect of reading in one line if sourceline equals "#*", "" or if sourcePos is at the end of the line
 	 *
 	 * @returns true if there is another character available, false if not
 	 */
