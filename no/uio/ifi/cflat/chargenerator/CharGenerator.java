@@ -40,10 +40,6 @@ public class CharGenerator {
         finish();
     }
 
-    public static boolean isMoreToReadWithoutSideEffects() {
-        return (sourceLine != null);
-    }
-
     public static void finish() {
         if (sourceFile != null) {
             try {
