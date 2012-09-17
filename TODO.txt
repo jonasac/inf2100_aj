@@ -1,0 +1,12 @@
+TODO:
+    * javadocs everywhere:
+	Cflat.java [_]
+	Scanner.java [_]
+	CharGenerator.java [_]
+    * check that the precode is still there in:
+	Cflat.java [_]
+	Scanner.java [_]
+	CharGenerator.java [_]
+    * Better error messages
+    * Logging to file instead of stdout (with flush)
+    * Doublecheck that it works
