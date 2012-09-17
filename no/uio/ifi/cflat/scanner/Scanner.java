@@ -45,14 +45,13 @@ public class Scanner {
      * @return A token if match, or null
      */
     private static Token string2token(String tokenstring) {
-        if (0 == tokenstring.length()) {
-            return null;
-        }
-        for (int i=0; i < TOKEN_NAMES.length; i++) {
-            if (TOKEN_NAMES[i].equals(tokenstring)) {
-                return Token.values()[i];
-            }
-        }
+        if (0 != tokenstring.length()) {
+	    for (int i=0; i < TOKEN_NAMES.length; i++) {
+	        if (TOKEN_NAMES[i].equals(tokenstring)) {
+                    return Token.values()[i];
+                }
+	    }
+	}
         return null;
     }
 
@@ -129,10 +128,7 @@ public class Scanner {
         curNum = nextNum;  nextNum = nextNextNum;
         curLine = nextLine;  nextLine = nextNextLine;
 
-        // clear the nextNext variables
-        //nextNextName = "";
         nextNextToken = null;
-        int loopcounter = 0;
         while (nextNextToken == null) {
             nextNextLine = CharGenerator.curLineNum();
 
@@ -187,22 +183,21 @@ public class Scanner {
             }
             Log.noteToken();
         }
-    }
+	}
 
-    private static boolean isSymbol(char c) {
-        if (isLetterAZ(c) || isDigit(c)) {
-            return false;
-        }
-        for (int i=0; i < TOKEN_NAMES.length; i++) {
-            // for all tokens length 2 or longer ("!=", ">=" etc), check if c is part of it
-            if ((TOKEN_NAMES[i].length() > 1) && (-1 != TOKEN_NAMES[i].indexOf(c))) {
-                return true;
-            } // else keep searching
-        }
-        return false;
-    }
+	private static boolean isSymbol(char c) {
+		if (!(isLetterAZ(c) || isDigit(c))) {
+			for (int i=0; i < TOKEN_NAMES.length; i++) {
+				// for all tokens length 2 or longer ("!=", ">=" etc), check if c is part of it
+				if ((TOKEN_NAMES[i].length() > 1) && (-1 != TOKEN_NAMES[i].indexOf(c))) {
+					return true;
+				} // else keep searching
+			}
+		}
+		return false;
+	}
 
-    public static void test_isSymbol() {
+	public static void test_isSymbol() {
         boolean pass = true;
         pass = pass && (isSymbol('z') == false);
         pass = pass && (isSymbol('!') == true);

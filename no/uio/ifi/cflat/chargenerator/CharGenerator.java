@@ -73,11 +73,7 @@ public class CharGenerator {
      * @returns true if there is another character available, false if not
      */
     public static boolean isMoreToRead() {
-        if (sourceLine == null && curC == (char) -1) {
-            return false;
-        }
-
-        return true;
+        return (!(sourceLine == null && curC == (char) -1));
     }
 
     public static int curLineNum() {
