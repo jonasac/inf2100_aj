@@ -22,6 +22,8 @@ public class CharGenerator {
     private static int sourcePos;
     private static String lastLine;
 
+    private static final char EOFCHAR = 0x4;
+
     public static void init() {
         try {
             sourceFile = new LineNumberReader(new FileReader(Cflat.sourceName));
@@ -73,7 +75,7 @@ public class CharGenerator {
      * @returns true if there is another character available, false if not
      */
     public static boolean isMoreToRead() {
-        return (!(sourceLine == null && curC == (char) -1));
+        return (!(sourceLine == null && curC == EOFCHAR));
     }
 
     public static int curLineNum() {
@@ -91,7 +93,7 @@ public class CharGenerator {
         }
 
         if (sourceLine == null) {
-            nextC = (char) -1;
+            nextC = EOFCHAR;
             return;
         }
 
