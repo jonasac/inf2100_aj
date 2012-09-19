@@ -52,6 +52,9 @@ public class CharGenerator {
         }
     }
 
+    /**
+     * reads one line from sourceFile, will reset sourcePos to null and log the new line
+     */
     private static void readOneLine() {
         try { 
             Log.noteSourceLine(curLineNum(), sourceLine);
@@ -62,30 +65,36 @@ public class CharGenerator {
         }
     }
 
+    /**
+     * returns a boolan that is true if we read the whole sourceLine
+     */
+    //TODO: This might be abit redundant as its own method?
     private static boolean isAtEndOfLine() {
         // does not look at length - 1 but length because this function checks if one is beyond the length of the line
         // (which means that one is done reading every single character with readNext)
         return (sourcePos == sourceLine.length());
     }
 
-    /** isMoreToRead
+    /** 
      * Checks if there is more content to read. Handles EOF as well.
-     * NB! Has the side-effect of reading in one line!
-     *
      * @returns true if there is another character available, false if not
      */
     public static boolean isMoreToRead() {
         return (!(sourceLine == null && curC == EOFCHAR));
     }
 
+    /**
+     * returns the linenumber of the line the Chargenerator is currently working on.
+     */
     public static int curLineNum() {
         return (sourceFile == null ? 0 : sourceFile.getLineNumber());
     }
 
+    /**
+     * reads the next char from sourceLine, will set the nextC vairable to EOFCHAR if there are no more chars in the file
+     */
     public static void readNext() {
-        // part 0
         curC = nextC;
-        // Not really needed if the callees check with isMoreToRead
         if (!isMoreToRead()) return;
         
         while (sourceLine != null && (sourceLine.startsWith("#") || sourceLine.isEmpty() || isAtEndOfLine())) {
