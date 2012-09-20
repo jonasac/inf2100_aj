@@ -20,7 +20,9 @@ public class Scanner {
     public static int curLine, nextLine, nextNextLine;
 
     // this is the same order as the tokens in Token.java
-    private static final String[] TOKEN_NAMES = new String[]{"+", "=", ",", "/", "double", "else", "", "==", "for", ">=", ">", "if", "int", "[", "{", "(", "<=", "<", "*", "", "!=", "", "]", "}", ")", "return", ";", "-", "while"};
+    private static final String[] TOKEN_NAMES = new String[]{"+", "=", ",", "/",
+        "double", "else", "", "==", "for", ">=", ">", "if", "int", "[", "{", "(", "<=", 
+        "<", "*", "", "!=", "", "]", "}", ")", "return", ";", "-", "while"};
 
     public static void init() {
         //-- Must be changed in part 0:
@@ -86,7 +88,7 @@ public class Scanner {
      */
     private static String collectSymbols() {
         String temp = "";
-        while (isSymbol(CharGenerator.curC)) {
+        while (isCompoundSymbol(CharGenerator.curC)) {
             temp += CharGenerator.curC;
             CharGenerator.readNext();
         }
@@ -121,6 +123,7 @@ public class Scanner {
             numval = s.getBytes("ISO-8859-1")[0];
         } catch (java.io.UnsupportedEncodingException e) {
             System.out.println("error: symbol from unsupported character set: " + s.charAt(0));
+            //TODO: better error message
         }
         return Integer.toString(numval);
     }
@@ -160,35 +163,31 @@ public class Scanner {
                 nextNextName = collectWord();
                 nextNextToken = string2token(nextNextName);
                 if (nextNextToken == null) nextNextToken = nameToken;
-            } else if (isDigit(CharGenerator.curC) || '-' == CharGenerator.curC || '\'' == CharGenerator.curC) {
+            } else if (isDigit(CharGenerator.curC) || '\'' == CharGenerator.curC) {
                 nextNextName = collectNumber();
-                if (nextNextName.equals("-")) {
-                    nextNextToken = subtractToken;
-                } else if (nextNextName.equals("'")) {
+                if (nextNextName.equals("'")) {
                     nextNextToken = numberToken;
                     nextNextName = charToIntstring(CharGenerator.curC);
                     CharGenerator.readNext();
-                    if (CharGenerator.curC == '\'')
-                        CharGenerator.readNext();
+                    CharGenerator.readNext(); // read past the closing quote
                 } else nextNextToken = numberToken;
-            } else if (isSymbol(CharGenerator.curC)) {
-                nextNextName = collectSymbols();
-                nextNextToken = string2token(nextNextName);
-                if (null == nextNextToken) 
-                    Error.error(nextNextName + " is not a valid symbol.");
-            } else if (Character.toString(CharGenerator.curC) != null) {
-                nextNextName = Character.toString(CharGenerator.curC);
-                nextNextToken = string2token(nextNextName);
-                CharGenerator.readNext();
             } else {
-                Error.error(nextNextLine,
-                        "Illegal symbol: '" + CharGenerator.curC + "'!");
+                if (isCompoundSymbol(CharGenerator.curC)) {
+                    nextNextName = collectSymbols();
+                } else {
+                    nextNextName = Character.toString(CharGenerator.curC);
+                    CharGenerator.readNext();
+                }
+                nextNextToken = string2token(nextNextName);
+                if (null == nextNextToken)
+                    Error.error(nextNextLine,
+                            "Illegal symbol: '" + CharGenerator.curC + "'!");
             }
+            Log.noteToken();
         }
-        Log.noteToken();
     }
 
-    private static boolean isSymbol(char c) {
+    private static boolean isCompoundSymbol(char c) {
         if (!(isLetterAZ(c) || isDigit(c))) {
             for (int i=0; i < TOKEN_NAMES.length; i++) {
                 // for all tokens length 2 or longer ("!=", ">=" etc), check if c is part of it
@@ -200,17 +199,17 @@ public class Scanner {
         return false;
     }
 
-    public static void test_isSymbol() {
+    public static void test_isCompoundSymbol() {
         boolean pass = true;
-        pass = pass && (isSymbol('z') == false);
-        pass = pass && (isSymbol('!') == true);
-        pass = pass && (isSymbol('<') == true);
-        pass = pass && (isSymbol('>') == true);
-        pass = pass && (isSymbol('=') == true);
-        pass = pass && (isSymbol('i') == false);
-        pass = pass && (isSymbol(' ') == false);
+        pass = pass && (isCompoundSymbol('z') == false);
+        pass = pass && (isCompoundSymbol('!') == true);
+        pass = pass && (isCompoundSymbol('<') == true);
+        pass = pass && (isCompoundSymbol('>') == true);
+        pass = pass && (isCompoundSymbol('=') == true);
+        pass = pass && (isCompoundSymbol('i') == false);
+        pass = pass && (isCompoundSymbol(' ') == false);
         if (pass) {
-            System.out.println("isSymbol: All tests pass");
+            System.out.println("isCompoundSymbol: All tests pass");
         }
     }
 

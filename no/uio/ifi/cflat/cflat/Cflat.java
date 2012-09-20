@@ -31,7 +31,7 @@ public class Cflat {
 		System.out.println("Starting tests.");
 		Scanner.init();
 		Scanner.test_isLetterAZ();
-		Scanner.test_isSymbol();
+		Scanner.test_isCompoundSymbol();
 		Log.doLogScanner = true;
 		Log.test_noteSourceLine();
 		//sourceName = "samples/gcd/gcd.cflat";
