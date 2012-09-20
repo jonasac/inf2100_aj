@@ -22,9 +22,6 @@ public class Scanner {
     // this is the same order as the tokens in Token.java
     private static final String[] TOKEN_NAMES = new String[]{"+", "=", ",", "/", "double", "else", "", "==", "for", ">=", ">", "if", "int", "[", "{", "(", "<=", "<", "*", "", "!=", "", "]", "}", ")", "return", ";", "-", "while"};
 
-    private static boolean inComment;
-    private static int eofCounter;
-
     public static void init() {
         //-- Must be changed in part 0:
         curName = "";
@@ -45,12 +42,12 @@ public class Scanner {
      */
     private static Token string2token(String tokenstring) {
         if (0 != tokenstring.length()) {
-	    for (int i=0; i < TOKEN_NAMES.length; i++) {
-	        if (TOKEN_NAMES[i].equals(tokenstring)) {
+            for (int i=0; i < TOKEN_NAMES.length; i++) {
+                if (TOKEN_NAMES[i].equals(tokenstring)) {
                     return Token.values()[i];
                 }
-	    }
-	}
+            }
+        }
         return null;
     }
 
@@ -191,21 +188,21 @@ public class Scanner {
             }
             Log.noteToken();
         }
-	}
+    }
 
-	private static boolean isSymbol(char c) {
-		if (!(isLetterAZ(c) || isDigit(c))) {
-			for (int i=0; i < TOKEN_NAMES.length; i++) {
-				// for all tokens length 2 or longer ("!=", ">=" etc), check if c is part of it
-				if ((TOKEN_NAMES[i].length() > 1) && (-1 != TOKEN_NAMES[i].indexOf(c))) {
-					return true;
-				} // else keep searching
-			}
-		}
-		return false;
-	}
+    private static boolean isSymbol(char c) {
+        if (!(isLetterAZ(c) || isDigit(c))) {
+            for (int i=0; i < TOKEN_NAMES.length; i++) {
+                // for all tokens length 2 or longer ("!=", ">=" etc), check if c is part of it
+                if ((TOKEN_NAMES[i].length() > 1) && (-1 != TOKEN_NAMES[i].indexOf(c))) {
+                    return true;
+                } // else keep searching
+            }
+        }
+        return false;
+    }
 
-	public static void test_isSymbol() {
+    public static void test_isSymbol() {
         boolean pass = true;
         pass = pass && (isSymbol('z') == false);
         pass = pass && (isSymbol('!') == true);
