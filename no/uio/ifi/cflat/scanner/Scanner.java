@@ -125,6 +125,23 @@ public class Scanner {
         return Integer.toString(numval);
     }
 
+    /**
+     * Skips the chargenerator forward aslong as we are within a multilinenumber
+     * NB! this might change the linenumber CharGenerator is at so calls to
+     * CharGenerator.curLineNum() must happen after this
+     */
+    private static void skipPastMultilineComment() {
+        if (!CharGenerator.isMoreToRead()) return;
+        skipToNonWhitespace();
+        if (CharGenerator.curC == '/' && CharGenerator.nextC == '*') {
+            while (! (CharGenerator.curC == '*' && CharGenerator.nextC == '/')) {
+                CharGenerator.readNext();
+            }
+            CharGenerator.readNext();
+            CharGenerator.readNext();
+            skipToNonWhitespace();
+        }
+    }
 
     public static void readNext() {
 
@@ -132,62 +149,43 @@ public class Scanner {
         curName = nextName;  nextName = nextNextName;
         curNum = nextNum;  nextNum = nextNextNum;
         curLine = nextLine;  nextLine = nextNextLine;
-
         nextNextToken = null;
-        while (nextNextToken == null) {
-            nextNextLine = CharGenerator.curLineNum();
 
+        while (nextNextToken == null) {
+            skipPastMultilineComment();
+            nextNextLine = CharGenerator.curLineNum();
             if (!CharGenerator.isMoreToRead()) {
                 nextNextToken = eofToken;
+            } else if (isLetterAZ(CharGenerator.curC)) {
+                nextNextName = collectWord();
+                nextNextToken = string2token(nextNextName);
+                if (nextNextToken == null) nextNextToken = nameToken;
+            } else if (isDigit(CharGenerator.curC) || '-' == CharGenerator.curC || '\'' == CharGenerator.curC) {
+                nextNextName = collectNumber();
+                if (nextNextName.equals("-")) {
+                    nextNextToken = subtractToken;
+                } else if (nextNextName.equals("'")) {
+                    nextNextToken = numberToken;
+                    nextNextName = charToIntstring(CharGenerator.curC);
+                    CharGenerator.readNext();
+                    if (CharGenerator.curC == '\'')
+                        CharGenerator.readNext();
+                } else nextNextToken = numberToken;
+            } else if (isSymbol(CharGenerator.curC)) {
+                nextNextName = collectSymbols();
+                nextNextToken = string2token(nextNextName);
+                if (null == nextNextToken) 
+                    Error.error(nextNextName + " is not a valid symbol.");
+            } else if (Character.toString(CharGenerator.curC) != null) {
+                nextNextName = Character.toString(CharGenerator.curC);
+                nextNextToken = string2token(nextNextName);
+                CharGenerator.readNext();
             } else {
-                skipToNonWhitespace();
-
-                // Speed ahead while in multiline comment
-                if (CharGenerator.curC == '/' && CharGenerator.nextC == '*') {
-                    while (! (CharGenerator.curC == '*' && CharGenerator.nextC == '/')) {
-                        CharGenerator.readNext();
-                    }
-                    CharGenerator.readNext();
-                    CharGenerator.readNext();
-                    skipToNonWhitespace();
-                }
-
-                if (isLetterAZ(CharGenerator.curC)) {
-                    nextNextName = collectWord();
-                    nextNextToken = string2token(nextNextName);
-                    if (nextNextToken == null) nextNextToken = nameToken;
-                } else if (isDigit(CharGenerator.curC) || '-' == CharGenerator.curC || '\'' == CharGenerator.curC) {
-                    nextNextName = collectNumber();
-                    if (nextNextName.equals("-")) {
-                        nextNextToken = subtractToken;
-                    } else if (nextNextName.equals("'")) {
-                        nextNextToken = numberToken;
-                        nextNextName = charToIntstring(CharGenerator.curC);
-                        CharGenerator.readNext();
-                        if (CharGenerator.curC == '\'') {
-                            CharGenerator.readNext();
-                        }
-                    } else {
-                        nextNextToken = numberToken;
-                    }
-                } else if (isSymbol(CharGenerator.curC)) {
-                    nextNextName = collectSymbols();
-                    nextNextToken = string2token(nextNextName);
-                    if (null == nextNextToken) {
-                        System.out.println(nextNextName + ", what kind of symbol is that?");
-                        //TODO: Give proper Error here
-                    }
-                } else {
-                    nextNextName = Character.toString(CharGenerator.curC);
-                    nextNextToken = string2token(nextNextName);
-                    CharGenerator.readNext();
-                }
-                //TODO: Figure out what the hell this is supposed to do
-                //Error.error(nextNextLine,
-                //"Illegal symbol: '" + CharGenerator.curC + "'!");
+                Error.error(nextNextLine,
+                        "Illegal symbol: '" + CharGenerator.curC + "'!");
             }
-            Log.noteToken();
         }
+        Log.noteToken();
     }
 
     private static boolean isSymbol(char c) {
