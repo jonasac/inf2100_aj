@@ -66,12 +66,14 @@ public class CharGenerator {
     }
 
     /**
-     * returns a boolan that is true if we read the whole sourceLine
+     * Checks if we are beyond the end of the current line
+     * @returns true if we have read the whole sourceLine
      */
-    //TODO: This might be abit redundant as its own method?
-    private static boolean isAtEndOfLine() {
-        // does not look at length - 1 but length because this function checks if one is beyond the length of the line
-        // (which means that one is done reading every single character with readNext)
+    private static boolean isEOL() {
+        /*
+	 * Does not look at length - 1 but length because this function checks if one is beyond the length of the line
+         * (which means that we are done reading every single character with readNext)
+	 */
         return (sourcePos == sourceLine.length());
     }
 
@@ -97,7 +99,7 @@ public class CharGenerator {
         curC = nextC;
         if (!isMoreToRead()) return;
         
-        while (sourceLine != null && (sourceLine.startsWith("#") || sourceLine.isEmpty() || isAtEndOfLine())) {
+        while (sourceLine != null && (sourceLine.startsWith("#") || sourceLine.isEmpty() || isEOL())) {
             readOneLine();
         }
 
