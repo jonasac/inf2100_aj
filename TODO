@@ -4,9 +4,9 @@ TODO:
 	Scanner.java [_] alexander
 	CharGenerator.java [x] (dont know if we should comment the already provided methods, commented the ones we changed and implemented)
     * check that the precode is still there in:
-	Cflat.java [_]
+	Cflat.java [x] jonas
 	Scanner.java [_]
-	CharGenerator.java [_]
+	CharGenerator.java [x] jonas
     * Better error messages
     * Logging to file instead of stdout (with flush) (depending on what is intended by the assignment)
     * Doublecheck that it works
