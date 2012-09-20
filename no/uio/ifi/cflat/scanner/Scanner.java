@@ -37,8 +37,7 @@ public class Scanner {
         //-- Must be changed in part 0:
     }
 
-    /** string2token
-     *
+    /** 
      * Tries to find the token that corresponds to a given string
      *
      * @param tokenstring A string that may represent a token (like "int")
@@ -55,8 +54,7 @@ public class Scanner {
         return null;
     }
 
-    /** collectWord
-     *
+    /** 
      * Collects all characters that are letters, digits or underscore characters,
      * until a character that is not one of these is met. Both lower and uppercase
      * symbols are collected.
@@ -72,6 +70,10 @@ public class Scanner {
         return temp;
     }
 
+    /**
+     * Collects a number from CharGenerator
+     * @return a string representing the number
+     */
     private static String collectNumber() {
         String temp = "";
         while (isDigit(CharGenerator.curC) || '-' == CharGenerator.curC || '\'' == CharGenerator.curC) {
@@ -81,6 +83,10 @@ public class Scanner {
         return temp;
     }
 
+    /**
+     * Collects a symbol from CharGenerator
+     * @return a string representing the symbol
+     */
     private static String collectSymbols() {
         String temp = "";
         while (isSymbol(CharGenerator.curC)) {
@@ -90,7 +96,9 @@ public class Scanner {
         return temp;
     }
 
-
+    /**
+     * Skips forward while CharGenerator.curC is a whitespace
+     */
     private static void skipToNonWhitespace() {
         // Avoid skipping spaces within '
         if ((CharGenerator.curC == ' ') && (CharGenerator.nextC == '\'')) {
