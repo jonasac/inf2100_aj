@@ -1,5 +1,0 @@
-Flere filer her:
-http://heim.ifi.uio.no/inf2100/oblig/test/
-
-Feil i prekoden, korreksjon her (har fikset det i vår kode):
-http://www.uio.no/studier/emner/matnat/ifi/INF2100/h12/kursprat.html#/discussion/133/inf2100-host-2012-feil-i-prekodefiler

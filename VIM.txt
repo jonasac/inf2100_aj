@@ -1,1 +1,0 @@
-map <F8> :!./compile_and_test.sh<CR>
