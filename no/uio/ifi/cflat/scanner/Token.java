@@ -26,6 +26,7 @@ public enum Token {
     private static final Token[] RELOPR = {equalToken, notEqualToken, lessToken, lessEqualToken, greaterToken, greaterEqualToken};
     private static final Token[] TERMOPR = {addToken, subtractToken};
     private static final Token[] FACTOROPR = {multiplyToken, divideToken};
+    private static final Token[] OPR = {numberToken};
 
     /*
      * Check if a given token exists in a given list of tokens
@@ -74,11 +75,22 @@ public enum Token {
 	return has(RELOPR, t);
     }
 
+    /*
+     * Checks if a given token is an opr
+     *
+     * @param t A token
+     * @return True or false
+     */
     public static boolean isOperand(Token t) {
-	//-- Must be changed in part 0:
-	return false;
+	return has(OPR, t);
     }
 
+    /*
+     * Checks if a given token is a type name
+     *
+     * @param t A token
+     * @return True or false
+     */
     public static boolean isTypeName(Token t) {
 	return (t.equals(intToken) || t.equals(doubleToken));
     }
