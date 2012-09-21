@@ -22,19 +22,56 @@ public enum Token {
     semicolonToken, subtractToken, 
     whileToken;
 
+    // Rel operators
+    private static final Token[] RELOPR = {equalToken, notEqualToken, lessToken, lessEqualToken, greaterToken, greaterEqualToken};
+    private static final Token[] TERMOPR = {addToken, subtractToken};
+    private static final Token[] FACTOROPR = {multiplyToken, divideToken};
+
+    /*
+     * Check if a given token exists in a given list of tokens
+     *
+     * @param tokens A list of tokens
+     * @param t A token
+     * @return True or false
+     */
+    private static boolean has(Token[] tokens, Token t) {
+	for (Token cur : tokens) {
+	    if (t.equals(cur)) {
+		return true;
+	    }
+	}
+	return false;
+    }
+
+    /*
+     * Check if a given token exists in a given list of tokens
+     *
+     * @param tokens A list of tokens
+     * @param t A token
+     * @return True or false
+     */
     public static boolean isFactorOperator(Token t) {
-	//-- Must be changed in part 0:
-	return false;
+	return has(FACTOROPR, t);
     }
 
+    /*
+     * Checks if a given token is a term opr
+     *
+     * @param t A token
+     * @return True or false
+     */
     public static boolean isTermOperator(Token t) {
-	//-- Must be changed in part 0:
-	return false;
+	return has(TERMOPR, t);
     }
 
+    /*
+     * Checks if a given token is a rel opr
+     *
+     * @param t A token
+     * @return True or false
+     */
     public static boolean isRelOperator(Token t) {
-	//-- Must be changed in part 0:
-	return false;
+	return has(RELOPR, t);
     }
 
     public static boolean isOperand(Token t) {
@@ -43,8 +80,6 @@ public enum Token {
     }
 
     public static boolean isTypeName(Token t) {
-	// part 0
-	if (t == intToken || t == doubleToken) return true;
-	return false;
+	return (t.equals(intToken) || t.equals(doubleToken));
     }
 }
