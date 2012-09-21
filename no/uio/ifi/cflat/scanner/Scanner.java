@@ -122,8 +122,7 @@ public class Scanner {
         try {
             numval = s.getBytes("ISO-8859-1")[0];
         } catch (java.io.UnsupportedEncodingException e) {
-            System.out.println("error: symbol from unsupported character set: " + s.charAt(0));
-            //TODO: better error message
+            Error.error(nextNextLine, "Symbol from unsupported character set: " + s.charAt(0));
         }
         return Integer.toString(numval);
     }

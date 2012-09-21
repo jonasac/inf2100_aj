@@ -1,6 +1,6 @@
 #!/bin/sh
 
-E=samples/mini/mini
+E=samples/gcd_with_euro_symbol/gcd_with_euro_symbol
 
 f=$E.cflat
 l=$E.log
