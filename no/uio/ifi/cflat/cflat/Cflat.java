@@ -33,7 +33,6 @@ public class Cflat {
 		Scanner.test_isLetterAZ();
 		Scanner.test_isCompoundSymbol();
 		Log.doLogScanner = true;
-		Log.test_noteSourceLine();
 		//sourceName = "samples/gcd/gcd.cflat";
 		//CharGenerator.test_chargenerator();
 		System.out.println("Testing done.");

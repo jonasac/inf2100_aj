@@ -72,13 +72,8 @@ public class Log {
     public static void noteSourceLine(int lineNum, String line) {
         // part 0
         if (! doLogParser && ! doLogScanner) return;
-        System.out.printf("%4d:    %s\n", lineNum, line);
-    }
-
-    public static void test_noteSourceLine() {
-        // part 0
-        System.out.println("noteSourceLine TEST");
-        noteSourceLine(0, "Ost ost ost");
+        //System.out.printf("%4d:    %s\n", lineNum, line);
+        writeLogLine(String.format("%4d:    %s\n", lineNum, line));
     }
 
     /**
@@ -90,9 +85,9 @@ public class Log {
         // part 0
         if (! doLogScanner) return;
         if ((Scanner.nextNextToken == nameToken) || (Scanner.nextNextToken == numberToken)) {
-            System.out.println("Scanner:  " + Scanner.nextNextToken + " " + Scanner.nextNextName);
+            writeLogLine(String.format("Scanner:  " + Scanner.nextNextToken + " " + Scanner.nextNextName));
         } else {
-            System.out.println("Scanner:  " + Scanner.nextNextToken);
+            writeLogLine(String.format("Scanner:  " + Scanner.nextNextToken));
         }
     }
 
