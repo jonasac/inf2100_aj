@@ -32,7 +32,6 @@ public class Scanner {
     }
 
     public static void finish() {
-        //TODO: Figure out what must be changed here if there is anything at all
         //-- Must be changed in part 0:
     }
 
