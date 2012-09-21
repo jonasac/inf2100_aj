@@ -28,7 +28,7 @@ public enum Token {
     private static final Token[] FACTOROPR = {multiplyToken, divideToken};
     private static final Token[] OPR = {numberToken};
 
-    /*
+    /**
      * Check if a given token exists in a given list of tokens
      *
      * @param tokens A list of tokens
@@ -44,7 +44,7 @@ public enum Token {
 	return false;
     }
 
-    /*
+    /**
      * Check if a given token exists in a given list of tokens
      *
      * @param tokens A list of tokens
@@ -55,7 +55,7 @@ public enum Token {
 	return has(FACTOROPR, t);
     }
 
-    /*
+    /**
      * Checks if a given token is a term opr
      *
      * @param t A token
@@ -65,7 +65,7 @@ public enum Token {
 	return has(TERMOPR, t);
     }
 
-    /*
+    /**
      * Checks if a given token is a rel opr
      *
      * @param t A token
@@ -75,7 +75,7 @@ public enum Token {
 	return has(RELOPR, t);
     }
 
-    /*
+    /**
      * Checks if a given token is an opr
      *
      * @param t A token
@@ -85,7 +85,7 @@ public enum Token {
 	return has(OPR, t);
     }
 
-    /*
+    /**
      * Checks if a given token is a type name
      *
      * @param t A token
