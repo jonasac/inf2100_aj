@@ -183,8 +183,8 @@ public class Scanner {
                     Error.error(nextNextLine,
                             "Illegal symbol: '" + CharGenerator.curC + "'!");
             }
-            Log.noteToken();
         }
+        Log.noteToken();
     }
 
     private static boolean isCompoundSymbol(char c) {
