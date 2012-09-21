@@ -1,5 +1,3 @@
-// # vim: set ts=4 #
-
 package no.uio.ifi.cflat.chargenerator;
 
 /*
@@ -32,14 +30,6 @@ public class CharGenerator {
         }
         sourceLine = "";  sourcePos = 0;  curC = nextC = ' ';
         readNext();  readNext();
-    }
-
-    public static void test_chargenerator() {
-        init();
-        while (isMoreToRead()) {
-            readNext();
-        }
-        finish();
     }
 
     public static void finish() {
@@ -85,9 +75,6 @@ public class CharGenerator {
         return (!(sourceLine == null && curC == EOFCHAR));
     }
 
-    /**
-     * returns the linenumber of the line the Chargenerator is currently working on.
-     */
     public static int curLineNum() {
         return (sourceFile == null ? 0 : sourceFile.getLineNumber());
     }

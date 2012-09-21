@@ -38,8 +38,8 @@ public class Log {
             Error.error("Cannot open log file " + logName + "!");
         }
     }
-
-    /*
+    
+    /**
      * Make a note in the log file that an error has occured.
      *
      * @param message  The error message
@@ -70,9 +70,7 @@ public class Log {
      * @param line     The actual line
      */
     public static void noteSourceLine(int lineNum, String line) {
-        // part 0
         if (! doLogParser && ! doLogScanner) return;
-        //System.out.printf("%4d:    %s\n", lineNum, line);
         writeLogLine(String.format("%4d:    %s", lineNum, line));
     }
 
@@ -82,7 +80,6 @@ public class Log {
      * This note will only be made if the user has requested it.
      */
     public static void noteToken() {
-        // part 0
         if (! doLogScanner) return;
         if ((Scanner.nextNextToken == nameToken) || (Scanner.nextNextToken == numberToken)) {
             writeLogLine(String.format("Scanner:  " + Scanner.nextNextToken + " " + Scanner.nextNextName));

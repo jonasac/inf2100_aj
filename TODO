@@ -1,7 +1,9 @@
 TODO:
-    * javadoc [x]
-    * check that the precode is still there [x]
-    * Better error messages we need to implement something here
-    * Logging to file instead of stdout (with flush) (depending on what is intended by the assignment)
-    * Doublecheck that it works
-    * See wether we need to do something about the Errors Class (WE DO i checked :p)
+    * javadocs everywhere:
+	Cflat.java [x] jonas
+	Scanner.java [_] alexander
+	CharGenerator.java [x] (dont know if we should comment the already provided methods, commented the ones we changed and implemented)
+    * check that the precode is still there in:
+	Cflat.java [x] jonas
+	Scanner.java [_] (should be checked once more)
+	CharGenerator.java [x] jonas

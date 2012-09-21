@@ -27,17 +27,6 @@ public class Cflat {
     public static boolean noLink = false;    // Should we drop linking?
     public static String myOS;               // The current operating system
 
-    public static void test_all() {
-		System.out.println("Starting tests.");
-		Scanner.init();
-		Scanner.test_isLetterAZ();
-		Scanner.test_isCompoundSymbol();
-		Log.doLogScanner = true;
-		//sourceName = "samples/gcd/gcd.cflat";
-		//CharGenerator.test_chargenerator();
-		System.out.println("Testing done.");
-    }
-
     /**
      * The actual main program of the Cb compiler.
      * It will initialize the various modules and start the
@@ -47,8 +36,6 @@ public class Cflat {
      * @param args The command line arguments.
      */
     public static void main(String[] args) {
-	test_all();
-
 	boolean testParser = false, testScanner = false;
 
 	myOS = System.getProperty("os.name");
