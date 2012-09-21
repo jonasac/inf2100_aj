@@ -73,7 +73,7 @@ public class Log {
         // part 0
         if (! doLogParser && ! doLogScanner) return;
         //System.out.printf("%4d:    %s\n", lineNum, line);
-        writeLogLine(String.format("%4d:    %s\n", lineNum, line));
+        writeLogLine(String.format("%4d:    %s", lineNum, line));
     }
 
     /**
