@@ -19,7 +19,7 @@ public class Scanner {
     public static int curNum, nextNum, nextNextNum;
     public static int curLine, nextLine, nextNextLine;
 
-    // this is the same order as the tokens in Token.java
+    // NOTE: This is the same order as the tokens in Token.java
     private static final String[] TOKEN_NAMES = new String[]{"+", "=", ",", "/",
         "double", "else", "", "==", "for", ">=", ">", "if", "int", "[", "{", "(", "<=", 
         "<", "*", "", "!=", "", "]", "}", ")", "return", ";", "-", "while"};
@@ -128,7 +128,7 @@ public class Scanner {
 
     /**
      * Skips the chargenerator forward aslong as we are within a multilinenumber
-     * NB! this might change the linenumber CharGenerator is at so calls to
+     * NOTE: this might change the linenumber CharGenerator is at so calls to
      * CharGenerator.curLineNum() must happen after this
      */
     private static void skipPastMultilineComment() {
@@ -185,6 +185,12 @@ public class Scanner {
         Log.noteToken();
     }
 
+    /*
+     * Checks if a given character could be part of a compound symbol (like >= or ==)
+     *
+     * @param c The character to check
+     * @return If it could be part of a compound symbol or not
+     */
     private static boolean isCompoundSymbol(char c) {
         if (!(isLetterAZ(c) || isDigit(c))) {
             for (int i=0; i < TOKEN_NAMES.length; i++) {
@@ -197,6 +203,9 @@ public class Scanner {
         return false;
     }
 
+    /*
+     * A small test to see if isCompoundSymbol behaves as desired
+     */
     public static void test_isCompoundSymbol() {
         boolean pass = true;
         pass = pass && (isCompoundSymbol('z') == false);
@@ -222,6 +231,9 @@ public class Scanner {
         return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
     }
 
+    /*
+     * A small test to see if isLatterAZ behaves as desired
+     */
     public static void test_isLetterAZ() {
         boolean pass = true;
         pass = pass && (isLetterAZ('!') == false);
@@ -232,6 +244,12 @@ public class Scanner {
         }
     }
 
+    /*
+     * Checks if a given character is a digit
+     *
+     * @param c A character
+     * @return If it represents a digit or not
+     */
     private static boolean isDigit(char c) {
         return ('0' <= c && '9' >= c);
     }

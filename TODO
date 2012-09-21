@@ -1,8 +1,8 @@
 TODO:
     * javadocs everywhere:
 	Cflat.java [_]
-	Scanner.java [_] alexander
-	CharGenerator.java [x] (dont know if we should comment the already provided methods, commented the ones we changed and implemented)
+	Scanner.java [x]
+	CharGenerator.java [x]
     * check that the precode is still there in:
 	Cflat.java [x] jonas
 	Scanner.java [_] (should be checked once more)
