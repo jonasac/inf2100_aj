@@ -169,16 +169,15 @@ public class Scanner {
                     CharGenerator.readNext();
                     CharGenerator.readNext(); // read past the closing quote
                 } else nextNextToken = numberToken;
-            } else {
-                if (isCompoundSymbol(CharGenerator.curC)) {
-                    nextNextName = collectSymbols();
-                } else {
-                    nextNextName = Character.toString(CharGenerator.curC);
-                    CharGenerator.readNext();
-                }
+            } else if (isCompoundSymbol(CharGenerator.curC)) {
+                nextNextName = collectSymbols();
                 nextNextToken = string2token(nextNextName);
-                if (null == nextNextToken)
-                    Error.error(nextNextLine,
+            } else if (isSymbol(CharGenerator.curC)) {
+                nextNextName = Character.toString(CharGenerator.curC);
+                nextNextToken = string2token(nextNextName);
+                CharGenerator.readNext();
+            } else {
+                Error.error(nextNextLine - 1,
                             "Illegal symbol: '" + CharGenerator.curC + "'!");
             }
         }
@@ -201,6 +200,10 @@ public class Scanner {
             }
         }
         return false;
+    }
+
+    private static boolean isSymbol(char c) {
+        return (null != string2token(Character.toString(c)));
     }
 
     /*
