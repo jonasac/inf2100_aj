@@ -111,7 +111,8 @@ public class Scanner {
     }
 
     /**
-     * converts a char to a string representing its ascii value
+     * Converts a char to a string representing its ascii value
+     *
      * @param the character to be converted
      * @return string representing the ascii value
      */
@@ -185,7 +186,7 @@ public class Scanner {
         Log.noteToken();
     }
 
-    /*
+    /**
      * Checks if a given character could be part of a compound symbol (like >= or ==)
      *
      * @param c The character to check
@@ -203,7 +204,7 @@ public class Scanner {
         return false;
     }
 
-    /*
+    /**
      * A small test to see if isCompoundSymbol behaves as desired
      */
     public static void test_isCompoundSymbol() {
@@ -220,7 +221,7 @@ public class Scanner {
         }
     }
 
-    /** isLetterAZ
+    /**
      *
      * Checks if a character is a letter
      *
@@ -231,7 +232,7 @@ public class Scanner {
         return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
     }
 
-    /*
+    /**
      * A small test to see if isLatterAZ behaves as desired
      */
     public static void test_isLetterAZ() {
@@ -244,7 +245,7 @@ public class Scanner {
         }
     }
 
-    /*
+    /**
      * Checks if a given character is a digit
      *
      * @param c A character
