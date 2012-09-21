@@ -1,12 +1,6 @@
 TODO:
-    * javadocs everywhere:
-	Cflat.java [_]
-	Scanner.java [x]
-	CharGenerator.java [x]
-    * check that the precode is still there in:
-	Cflat.java [x] jonas
-	Scanner.java [_] (should be checked once more)
-	CharGenerator.java [x] jonas
+    * javadoc [x]
+    * check that the precode is still there [x]
     * Better error messages we need to implement something here
     * Logging to file instead of stdout (with flush) (depending on what is intended by the assignment)
     * Doublecheck that it works
