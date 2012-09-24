@@ -154,8 +154,8 @@ public class Scanner {
         nextNextToken = null;
 
         while (nextNextToken == null) {
-            skipPastMultilineComment();
             nextNextLine = CharGenerator.curLineNum();
+            skipPastMultilineComment();
             if (!CharGenerator.isMoreToRead()) {
                 nextNextToken = eofToken;
             } else if (isLetterAZ(CharGenerator.curC)) {
@@ -178,7 +178,7 @@ public class Scanner {
                 nextNextToken = string2token(nextNextName);
                 CharGenerator.readNext();
             } else {
-                Error.error(nextNextLine - 1,
+                Error.error(nextNextLine,
                             "Illegal symbol: '" + CharGenerator.curC + "'!");
             }
         }
