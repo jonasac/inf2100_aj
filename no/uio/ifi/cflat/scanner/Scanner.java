@@ -163,13 +163,18 @@ public class Scanner {
                 nextNextToken = string2token(nextNextName);
                 if (nextNextToken == null) nextNextToken = nameToken;
             } else if (isDigit(CharGenerator.curC) || '\'' == CharGenerator.curC) {
-                nextNextName = collectNumber();
-                if (nextNextName.equals("'")) {
+                String tempnum = collectNumber();
+                if (tempnum.equals("'")) {
                     nextNextToken = numberToken;
                     nextNextName = charToIntstring(CharGenerator.curC);
+                    nextNextNum = Integer.parseInt(nextNextName);
                     CharGenerator.readNext();
                     CharGenerator.readNext(); // read past the closing quote
-                } else nextNextToken = numberToken;
+                } else {
+                    nextNextToken = numberToken;
+                    nextNextName = tempnum;
+                    nextNextNum = Integer.parseInt(nextNextName);
+                }
             } else if (isCompoundSymbol(CharGenerator.curC)) {
                 nextNextName = collectSymbols();
                 nextNextToken = string2token(nextNextName);
