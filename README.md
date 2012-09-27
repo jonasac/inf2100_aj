@@ -2,6 +2,8 @@ Description
 -----------
 Implementation of our inf2100 project
 
+![Success!](http://freelancefolder.com/wp-content/uploads/truth-about-success.jpg "Success!")
+
 Vim tips&tricks
 ---------------
 
