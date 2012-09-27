@@ -4,3 +4,12 @@ TODO
     part 0
 	innlevering [x]
 	fikse bug med feil linje ved ugjenkjennelig symbol [_]
+
+
+    part1
+
+        * Log.java
+            * enterParser()
+            * leaveParser()
+            * indentTree()
+            * outdentTree()
