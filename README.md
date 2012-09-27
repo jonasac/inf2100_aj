@@ -1,8 +1,12 @@
-Description
------------
-Implementation of our inf2100 project
+Our INF2100 Project
+===================
 
 ![Success!](http://freelancefolder.com/wp-content/uploads/truth-about-success.jpg "Success!")
+
+Description
+-----------
+
+Java project for INF2100, for implementing a compiler in Java.
 
 Vim tips&tricks
 ---------------
