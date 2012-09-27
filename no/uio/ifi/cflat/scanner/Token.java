@@ -25,9 +25,9 @@ public enum Token {
 	 * Check if a given token exists in a given list of tokens
 	 * 
 	 * @param tokens
-	 *          A list of tokens
+	 *          list of tokens
 	 * @param t
-	 *          A token
+	 *          token
 	 * @return True or false
 	 */
 	private static boolean has(Token[] tokens, Token t) {
@@ -89,7 +89,7 @@ public enum Token {
 	 * Checks if a given token is a type name
 	 * 
 	 * @param t
-	 *          A token
+	 *          token
 	 * @return True or false
 	 */
 	public static boolean isTypeName(Token t) {

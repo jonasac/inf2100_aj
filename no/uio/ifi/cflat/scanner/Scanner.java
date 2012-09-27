@@ -44,8 +44,8 @@ public class Scanner {
 	 * Tries to find the token that corresponds to a given string
 	 * 
 	 * @param tokenstring
-	 *          A string that may represent a token (like "int")
-	 * @return A token if match, or null
+	 *          string that may represent a token (like "int")
+	 * @return token if match, or null
 	 */
 	private static Token string2token(String tokenstring) {
 		if (0 != tokenstring.length()) {
@@ -122,8 +122,8 @@ public class Scanner {
 	/**
 	 * Converts a char to a string representing its ascii value
 	 * 
-	 * @param the
-	 *          character to be converted
+	 * @param character
+	 *          to be converted
 	 * @return string representing the ascii value
 	 */
 	public static String charToIntstring(char c) {
@@ -207,10 +207,10 @@ public class Scanner {
 
 	/**
 	 * Checks if a given character could be part of a compound symbol (like >= or
-	 * ==)
+	 * * ==)
 	 * 
 	 * @param c
-	 *          The character to check
+	 *          character to check
 	 * @return If it could be part of a compound symbol or not
 	 */
 	private static boolean isCompoundSymbol(char c) {
@@ -252,7 +252,7 @@ public class Scanner {
 	 * Checks if a character is a letter
 	 * 
 	 * @param c
-	 *          The character to check
+	 *          character to check
 	 * @return true if it is a-z or A-Z
 	 */
 	private static boolean isLetterAZ(char c) {
@@ -276,7 +276,7 @@ public class Scanner {
 	 * Checks if a given character is a digit
 	 * 
 	 * @param c
-	 *          A character
+	 *          character to check
 	 * @return If it represents a digit or not
 	 */
 	private static boolean isDigit(char c) {
