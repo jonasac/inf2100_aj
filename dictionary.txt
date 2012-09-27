@@ -1,3 +1,6 @@
 cflat
 dag
 cb
+chargenerator
+multilinenumber
+ascii
