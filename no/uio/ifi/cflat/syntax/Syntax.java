@@ -555,7 +555,7 @@ class ParamDecl extends VarDecl {
 		Log.enterParser("<param decl>");
 
 		// -- Must be changed in part 1:
-		System.our.ptinln("PARAM DECL: PARSE");
+		System.out.println("PARAM DECL: PARSE");
 
 		Log.leaveParser("</param decl>");
 	}
