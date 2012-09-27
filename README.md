@@ -1,6 +1,9 @@
 Our INF2100 Project
 ===================
 
+Expect success!
+---------------
+
 ![Success!](http://freelancefolder.com/wp-content/uploads/truth-about-success.jpg "Success!")
 
 Description
