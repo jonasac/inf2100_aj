@@ -100,7 +100,7 @@ public class CharGenerator {
 		if (!isMoreToRead())
 			return;
 
-		while (sourceLine != null && (sourceLine.startsWith("#") || sourceLine.isEmpty() || isEOL())) {
+		while (sourceLine != null && (sourceLine.startsWith("#") || isEOL())) {
 			readOneLine();
 		}
 
