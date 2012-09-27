@@ -1,8 +1,8 @@
 Our INF2100 Project
 ===================
 
-Expect success!
----------------
+Cflat, the syntax is like a warm breeze
+---------------------------------------
 
 ![Success!](http://freelancefolder.com/wp-content/uploads/truth-about-success.jpg "Success!")
 
