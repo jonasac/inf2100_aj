@@ -84,10 +84,8 @@ public class Log {
         String tokenstr = "Scanner:  " + Scanner.nextNextToken;
         if (Scanner.nextNextToken == nameToken) {
             tokenstr += " " + Scanner.nextNextName;
-            //writeLogLine(String.format("Scanner:  " + Scanner.nextNextToken + " " + Scanner.nextNextName));
         } else if (Scanner.nextNextToken == numberToken) {
             tokenstr += " " + Scanner.nextNextNum;
-            //writeLogLine(String.format("Scanner:  " + Scanner.nextNextNum));
         }
         writeLogLine(tokenstr);
     }
