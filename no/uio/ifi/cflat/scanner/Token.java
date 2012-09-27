@@ -49,7 +49,7 @@ public enum Token {
 	 * @return True or false
 	 */
 	public static boolean isFactorOperator(Token t) {
-		return has(FACTOROPR, t);
+		return (t != null) && has(FACTOROPR, t);
 	}
 
 	/**
@@ -60,7 +60,7 @@ public enum Token {
 	 * @return True or false
 	 */
 	public static boolean isTermOperator(Token t) {
-		return has(TERMOPR, t);
+		return (t != null) && has(TERMOPR, t);
 	}
 
 	/**
@@ -71,7 +71,7 @@ public enum Token {
 	 * @return True or false
 	 */
 	public static boolean isRelOperator(Token t) {
-		return has(RELOPR, t);
+		return (t != null) && has(RELOPR, t);
 	}
 
 	/**
@@ -82,7 +82,7 @@ public enum Token {
 	 * @return True or false
 	 */
 	public static boolean isOperand(Token t) {
-		return has(OPR, t);
+		return (t != null) && has(OPR, t);
 	}
 
 	/**
@@ -93,6 +93,6 @@ public enum Token {
 	 * @return True or false
 	 */
 	public static boolean isTypeName(Token t) {
-		return (t.equals(intToken) || t.equals(doubleToken));
+		return (t != null) && (t.equals(intToken) || t.equals(doubleToken));
 	}
 }

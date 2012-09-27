@@ -18,6 +18,7 @@ import no.uio.ifi.cflat.log.Log;
  */
 
 public class Scanner {
+
 	public static Token curToken, nextToken, nextNextToken;
 	public static String curName, nextName, nextNextName;
 	public static int curNum, nextNum, nextNextNum;
