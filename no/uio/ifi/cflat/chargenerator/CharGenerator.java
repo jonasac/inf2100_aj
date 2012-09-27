@@ -57,7 +57,7 @@ public class CharGenerator {
 	private static void readOneLine() {
 		try {
 			Log.noteSourceLine(curLineNum(), sourceLine);
-			sourceLine = sourceFile.readLine();
+			sourceLine = sourceFile.readLine() + " ";
 			sourcePos = 0;
 		} catch (IOException e) {
 			Error.error(e.toString());
