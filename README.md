@@ -1,14 +1,16 @@
-== Description ==
-
+Description
+===========
 Our implementation of the project for inf2100
 
 
-== Vim tips&tricks ==
+Vim tips&tricks
+===============
 
 map <F8> :!./compile_and_test.sh<CR>
 
 
-== Relevant URLs ==
+Relevant URLs
+=============
 
 More sample programs:
 http://heim.ifi.uio.no/inf2100/oblig/test/
@@ -17,13 +19,15 @@ Corrections to the precode:
 http://www.uio.no/studier/emner/matnat/ifi/INF2100/h12/kursprat.html#/discussion/133/inf2100-host-2012-feil-i-prekodefiler
 
 
-== Files that can be changed ==
+Files that can be changed
+=========================
 
 CharRenerator.java
 Scanner.java
 Token.java
 Cflat.java
 
-== Links to Jonas ==
+Links to Jonas
+==============
 
 http://futz.me/frugi url
