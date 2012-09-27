@@ -5,7 +5,7 @@ Implementation of our inf2100 project
 Vim tips&tricks
 ---------------
 
-map <F8> :!./compile_and_test.sh<CR>
+    map <F8> :!./compile_and_test.sh<CR>
 
 
 Relevant URLs
@@ -21,12 +21,14 @@ http://www.uio.no/studier/emner/matnat/ifi/INF2100/h12/kursprat.html#/discussion
 Files that can be changed
 -------------------------
 
-CharRenerator.java
-Scanner.java
-Token.java
-Cflat.java
+Part 0
+
+* CharRenerator.java
+* Scanner.java
+* Token.java
+* Cflat.java
 
 Links to Jonas
 --------------
 
-http://futz.me/frugi url
+    http://futz.me/frugi http://some/url/to/send
