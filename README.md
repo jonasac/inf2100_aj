@@ -1,8 +1,8 @@
 Our INF2100 Project
 ===================
 
-Cflat, the syntax is like a warm breeze
----------------------------------------
+Cflat, the syntax is like a warm summer breeze
+----------------------------------------------
 
 ![Success!](http://freelancefolder.com/wp-content/uploads/truth-about-success.jpg "Success!")
 
