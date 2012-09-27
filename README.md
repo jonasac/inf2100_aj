@@ -1,16 +1,15 @@
 Description
-===========
-Our implementation of the project for inf2100
-
+-----------
+Implementation of our inf2100 project
 
 Vim tips&tricks
-===============
+---------------
 
 map <F8> :!./compile_and_test.sh<CR>
 
 
 Relevant URLs
-=============
+-------------
 
 More sample programs:
 http://heim.ifi.uio.no/inf2100/oblig/test/
@@ -20,7 +19,7 @@ http://www.uio.no/studier/emner/matnat/ifi/INF2100/h12/kursprat.html#/discussion
 
 
 Files that can be changed
-=========================
+-------------------------
 
 CharRenerator.java
 Scanner.java
@@ -28,6 +27,6 @@ Token.java
 Cflat.java
 
 Links to Jonas
-==============
+--------------
 
 http://futz.me/frugi url
