@@ -13,3 +13,11 @@ TODO
             * leaveParser()
             * indentTree()
             * outdentTree()
+        * Syntax.java
+            * init()
+            * finish()
+            * DeclList()
+            * printTree()
+            * addDecl()
+            * class GlobalDeclList()
+            * class LocalDeclList() => parse()
