@@ -1,12 +1,20 @@
 #!/bin/sh
 
-#E=samples/gcd_with_euro_symbol/gcd_with_euro_symbol
-E=samples/gcd/gcd
-#E=samples/mini/mini
+if [ "$1" == "" ]; then
+  echo "First argument must be a .jar file"
+  exit 1
+fi
 
+# Read sample.conf to figure out which sample to use
+# This should result in $SAMPLE being set
+source ./sample.conf
+
+E="samples/$SAMPLE/$SAMPLE"
 f=$E.cflat
 l=$E.log
 s=$E.s
+
+echo "Testing with: $f"
 
 if [ ! -e "$f" ]; then
   echo "Could not find $f, aborting"
@@ -15,10 +23,15 @@ fi
 if [ -e "$l" ]; then
   rm -f "$l"
 fi
-if [ ! -e Cflat.jar ]; then
-  make
+if [ ! -e "$1" ]; then
+  make --quiet
+  if [ ! -e "$1" ]; then
+    echo "Unable to build $1\!"
+    exit 2
+  fi
 fi
-java -jar $1 -testscanner "$f"
+echo java -jar $1 -testparser "$f"
+java -jar $1 -testparser "$f"
 if [ -e "$l" ]; then
     cat "$l"
 fi
