@@ -40,12 +40,12 @@ public class Syntax {
 
 	public static void init() {
 		// -- Must be changed in part 1:
-		System.out.println("SYNTAX INIT!");
+		System.out.println("SYNTAX: INIT");
 	}
 
 	public static void finish() {
 		// -- Must be changed in part 1:
-		System.out.println("SYNTAX FINISH!");
+		System.out.println("SYNTAX: FINISH");
 	}
 
 	public static void checkProgram() {
@@ -141,6 +141,7 @@ abstract class DeclList extends SyntaxUnit {
 
 	DeclList() {
 		// -- Must be changed in part 1:
+		System.out.println("DECLLIST: CONSTRUCTOR");
 	}
 
 	@Override
@@ -157,10 +158,12 @@ abstract class DeclList extends SyntaxUnit {
 	@Override
 	void printTree() {
 		// -- Must be changed in part 1:
+		System.out.println("DECLLIST: PRINTTREE");
 	}
 
 	void addDecl(Declaration d) {
 		// -- Must be changed in part 1:
+		System.out.println("DECLLIST: ADDDECL");
 	}
 
 	int dataSize() {
@@ -193,7 +196,7 @@ class GlobalDeclList extends DeclList {
 
 	@Override
 	void parse() {
-		System.out.println("GLOBAL DECL LIST: PARSE");
+		System.out.println("GLOBALDECLLIST: PARSE");
 		while (Token.isTypeName(Scanner.curToken)) {
 			if (Scanner.nextToken == nameToken) {
 				if (Scanner.nextNextToken == leftParToken) {
@@ -206,7 +209,7 @@ class GlobalDeclList extends DeclList {
 					addDecl(gad);
 				} else {
 					// -- Must be changed in part 1:
-					System.out.println("OST!");
+					System.out.println("GLOBALDECLLIST: PARSE: WHILE: IF: ELSE");
 				}
 			} else {
 				Error.expected("A declaration");
@@ -229,7 +232,7 @@ class LocalDeclList extends DeclList {
 	@Override
 	void parse() {
 		// -- Must be changed in part 1:
-		System.out.println("KAFFE!");
+		System.out.println("LOCALDECLLIST: PARSE");
 	}
 }
 
@@ -247,6 +250,7 @@ class ParamDeclList extends DeclList {
 	@Override
 	void parse() {
 		// -- Must be changed in part 1:
+		System.out.println("PARAMDECLLIST: PARSE");
 	}
 }
 
@@ -380,7 +384,7 @@ class GlobalArrayDecl extends VarDecl {
 
 		// -- Must be changed in part 1:
 
-		System.out.println("GLOBAL ARRAY DECL: PARSE");
+		System.out.println("GLOBALARRAYDECL: PARSE");
 
 		Log.leaveParser("</var decl>");
 	}
@@ -388,7 +392,7 @@ class GlobalArrayDecl extends VarDecl {
 	@Override
 	void printTree() {
 		// -- Must be changed in part 1:
-		System.out.println("GLOBAL ARRAY DECL: PRINT TREE");
+		System.out.println("GLOBALARRAYDECL: PRINTTREE");
 	}
 }
 
@@ -475,6 +479,7 @@ class LocalArrayDecl extends VarDecl {
 	@Override
 	void printTree() {
 		// -- Must be changed in part 1:
+		System.out.println("LOCAL ARRAY DECL: PRINT TREE");
 	}
 
 }
@@ -658,6 +663,7 @@ class StatmList extends SyntaxUnit {
 	@Override
 	void printTree() {
 		// -- Must be changed in part 1:
+		System.out.println("STATM LIST: PRINT TREE");
 	}
 }
 
@@ -710,11 +716,13 @@ class EmptyStatm extends Statement {
 	@Override
 	void parse() {
 		// -- Must be changed in part 1:
+		System.out.println("EMPTY STATM: PARSE");
 	}
 
 	@Override
 	void printTree() {
 		// -- Must be changed in part 1:
+		System.out.println("EMPTY STATM: PRINT TREE");
 	}
 }
 
@@ -743,11 +751,13 @@ class IfStatm extends Statement {
 	@Override
 	void parse() {
 		// -- Must be changed in part 1:
+		System.out.println("IF STATM: PARSE");
 	}
 
 	@Override
 	void printTree() {
 		// -- Must be changed in part 1:
+		System.out.println("IF STATM: PRINT TREE");
 	}
 }
 
