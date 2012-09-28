@@ -14,6 +14,7 @@ import static no.uio.ifi.cflat.scanner.Token.*;
  */
 
 public class Scanner {
+
     public static Token curToken, nextToken, nextNextToken;
     public static String curName, nextName, nextNextName;
     public static int curNum, nextNum, nextNextNum;
@@ -113,7 +114,7 @@ public class Scanner {
     /**
      * Converts a char to a string representing its ascii value
      *
-     * @param the character to be converted
+     * @param character to be converted
      * @return string representing the ascii value
      */
     public static String charToIntstring(char c) {
