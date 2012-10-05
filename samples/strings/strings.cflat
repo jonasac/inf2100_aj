@@ -1,0 +1,93 @@
+/* Program 'strings'
+   -----------------
+   Implements C-like text strings, and demonstrates their use
+   with a palindrome checker.
+*/
+
+int s[201];            /* The actual text string */
+int true;  int false;  /* Boolean values */
+int LF;                /* Line feed character */
+
+/* Reading routines: */
+
+int getstring ()
+{
+   int i;  int c;
+
+   i = 0;
+   while (true) {
+      c = getchar();
+      if (c == LF) {
+	  s[i] = 0;   return 0;
+      }
+      s[i] = c;   i = i+1;
+   }
+}
+
+
+/* Printing routines: */
+
+int p1 (int c1) { putchar(c1); }
+int p2 (int c1, int c2) { p1(c1); p1(c2); }
+int p3 (int c1, int c2, int c3) { p2(c1,c2); p1(c3); }
+int p4 (int c1, int c2, int c3, int c4) { p3(c1,c2,c3); p1(c4); }
+int p12 (int c1, int c2, int c3, int c4, int c5, int c6, 
+  int c7, int c8, int c9, int c10, int c11, int c12) 
+{
+    p4(c1,c2,c3,c4);  p4(c5,c6,c7,c8);  p4(c9,c10,c11,c12);
+}
+
+int putstring ()
+{
+   int i;  int c;
+
+   i = 0;
+   while (s[i]) {
+      c = s[i];  i = i+1;  p1(c);
+   }
+}
+
+
+/* Utility functions */
+
+int strlen ()     /* How long is the text string? */
+{
+   int i;
+
+   i = 0;
+   while (s[i]) { i = i+1; }
+   return i;
+}
+
+int is_palindrome ()  /* Is the text string a palindrome? */
+{
+   int i1;  int i2;
+
+   i1 = 0;  i2 = strlen() - 1;
+   while (i1 < i2) {
+      if (s[i1] != s[i2]) { return false; }
+      i1 = i1 + 1;  i2 = i2 - 1;
+   }
+   return true;
+}
+
+
+/* The main program: */
+
+int main ()
+{
+   int no_p;
+
+   false = 0;  true = 1;  LF = 10;
+   while (true) {
+      p2('?', ' ');  getstring();
+      if (strlen() == 0) { exit(0); }
+
+      putchar('"');  putstring();  putchar('"');  p4(' ','i','s',' ');
+      no_p = is_palindrome() == 0;
+      if (no_p) {
+	 p3('n','o',' ');
+      }
+      p12('p','a','l','i','n','d','r','o','m','e','.',LF);
+   }
+}
