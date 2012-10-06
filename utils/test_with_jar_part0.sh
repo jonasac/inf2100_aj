@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #E=samples/gcd_with_euro_symbol/gcd_with_euro_symbol
-E=samples/gcd/gcd
+E=samples/easter/easter
 #E=samples/mini/mini
 
 f=$E.cflat
