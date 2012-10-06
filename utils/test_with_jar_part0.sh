@@ -1,8 +1,9 @@
 #!/bin/sh
 
 #E=samples/gcd_with_euro_symbol/gcd_with_euro_symbol
-E=samples/easter/easter
+#E=samples/easter/easter
 #E=samples/mini/mini
+E=samples/gcd/gcd
 
 f=$E.cflat
 l=$E.log
