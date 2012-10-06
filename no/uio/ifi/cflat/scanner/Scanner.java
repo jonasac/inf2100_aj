@@ -140,19 +140,35 @@ public class Scanner {
   private static void skipPastMultilineComment() {
     if (!CharGenerator.isMoreToRead())
       return;
-    skipToNonWhitespace();
     if (CharGenerator.curC == '/' && CharGenerator.nextC == '*') {
       while (!(CharGenerator.curC == '*' && CharGenerator.nextC == '/')) {
         CharGenerator.readNext();
       }
       CharGenerator.readNext();
       CharGenerator.readNext();
-      skipToNonWhitespace();
+    }
+  }
+
+  private static boolean isMultiLineComment() {
+      return (CharGenerator.curC == '/' &&
+              CharGenerator.nextC == '*');
+  }
+
+  private static boolean isWhiteSpace() {
+    return (CharGenerator.curC == ' '||
+            CharGenerator.curC == '\t');
+  }
+
+  private static void prepareScanner() {
+    boolean flag = false;
+    while (!flag) {
+      if (isWhiteSpace()) skipToNonWhitespace();
+      if (isMultiLineComment()) skipPastMultilineComment();
+      if (!isMultiLineComment() && !isWhiteSpace()) flag = true;
     }
   }
 
   public static void readNext() {
-
     curToken = nextToken;
     nextToken = nextNextToken;
     curName = nextName;
@@ -165,7 +181,7 @@ public class Scanner {
 
     while (nextNextToken == null) {
       nextNextLine = CharGenerator.curLineNum();
-      skipPastMultilineComment();
+      prepareScanner();
       if (!CharGenerator.isMoreToRead()) {
         nextNextToken = eofToken;
       } else if (isLetterAZ(CharGenerator.curC)) {
