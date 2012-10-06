@@ -1,0 +1,53 @@
+/* Using Heron's method of computing the square root.
+/* Ref: http://en.wikipedia.org/wiki/Methods_of_computing_square_roots
+/* --- */
+
+double ten;  double two;  double one;  double tenth;
+
+int mod (int a, int b)
+{
+  return a - (a/b)*b;
+}
+
+int rough_log (double x)
+{
+  if (x > ten) { return rough_log(x/ten) + 1; }
+  if (x < tenth) { return rough_log(x*ten) - 1; }
+  return 1;
+}
+
+double power (double x, int n)
+{
+  double p;  p = 1;
+
+  while (n > 0) { p = p*x;  n = n- 1; }
+  while (n < 0) { p = p/x;  n = n+1; }
+  return p;
+}
+
+double sqrt (double v)
+{
+  int d;  int ix;
+  double x[12];
+
+  d = rough_log(v);
+  if (mod(d,2) == 1) {
+    x[0] = 2;  x[0] = x[0]*power(ten,(d- 1)/2);
+  } else {
+    x[0] = 6;  x[0] = x[0]*power(ten,(d- 2)/2);
+  }
+
+  for (ix = 1;  ix < 12;  ix = ix+1) {
+    x[ix] = (x[ix-(1)]+v/x[ix-(1)])/two;
+  }
+  return x[11];
+}
+
+int main ()
+{
+  ten = 10;  two = 2;  one = 1;  tenth = one/ten;
+
+  putchar('?');
+  putdouble(sqrt(getdouble()));  putchar(10);
+  exit(0);
+}

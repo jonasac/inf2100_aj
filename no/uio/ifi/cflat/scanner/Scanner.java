@@ -82,7 +82,11 @@ public class Scanner {
    */
   private static String collectNumber() {
     String temp = "";
-    while (isDigit(CharGenerator.curC) || '-' == CharGenerator.curC || '\'' == CharGenerator.curC) {
+    if (CharGenerator.curC == '-') {
+      temp += CharGenerator.curC;
+      CharGenerator.readNext();
+    }
+    while (isDigit(CharGenerator.curC) || '\'' == CharGenerator.curC) {
       temp += CharGenerator.curC;
       CharGenerator.readNext();
     }
@@ -111,6 +115,7 @@ public class Scanner {
     while (0 == temp.trim().length()) { // if whitespace
       CharGenerator.readNext();
       temp = Character.toString(CharGenerator.curC);
+      if (!CharGenerator.isMoreToRead()) break; // in the case of trailing whitespace
     }
   }
 
@@ -189,8 +194,9 @@ public class Scanner {
         nextNextToken = string2token(nextNextName);
         if (nextNextToken == null)
           nextNextToken = nameToken;
-      } else if (isDigit(CharGenerator.curC) || '\'' == CharGenerator.curC) {
+      } else if (isDigit(CharGenerator.curC) || '\'' == CharGenerator.curC || CharGenerator.curC == '-' && isDigit(CharGenerator.nextC)) {
         String tempnum = collectNumber();
+        System.out.println(tempnum);
         if (tempnum.equals("'")) {
           nextNextToken = numberToken;
           nextNextName = charToIntstring(CharGenerator.curC);

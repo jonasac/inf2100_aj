@@ -1,0 +1,7 @@
+# Et minimalt testprogram:
+# Det ber om et tall v og skriver ut v+1.
+
+int main () {
+   putchar('?');  putchar(' ');
+   putint(getint()+1);  putchar(10 /*= LF*/);
+}

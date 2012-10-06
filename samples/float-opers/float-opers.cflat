@@ -1,0 +1,61 @@
+# Test all the double operators
+
+int LF;  int TAB;
+
+int print (double x, int op1, int op2, double y, double res)
+{
+  putdouble(x);  putchar(' ');  putchar(op1);  
+  if (op2 != ' ') { putchar(op2); }  
+  putchar(' ');  putdouble(y);  putchar(' ');  putchar('=');  
+  putchar(' ');  putdouble(res);  putchar(LF);
+}
+
+int prini (double x, int op1, int op2, double y, int res)
+{
+  putdouble(x);  putchar(' ');  putchar(op1);  
+  if (op2 != ' ') { putchar(op2); }  
+  putchar(' ');  putdouble(y);  putchar(' ');  putchar('=');  
+  putchar(' ');  putint(res);  putchar(LF);
+}
+
+int test (double a, double b)
+{
+  putchar(LF);
+
+  print(a, '+', ' ', b, a+b);
+  print(a, '-', ' ', b, a-b);
+  print(a, '*', ' ', b, a*b);
+  print(a, '/', ' ', b, a/b);
+
+  prini(a, '=', '=', b, a==b);
+  prini(a, '!', '=', b, a!=b);
+  prini(a, '<', ' ', b, a<b);
+  prini(a, '<', '=', b, a<=b);
+  prini(a, '>', ' ', b, a>b);
+  prini(a, '>', '=', b, a>=b);
+}
+
+int main () 
+{
+  double va[3];  double vb[3];  double c;  int ia;  int ib;
+
+  c = 100;  TAB = 9;  LF = 10;
+  va[0] = -314;  va[0] = va[0]/c;   va[1] = 0;  va[2] = 17;
+  vb[0] =   -5;  vb[0] = vb[0]/c;   vb[1] = 2;  vb[2] = 17;
+
+  for (ia = 0;  ia < 3;  ia = ia+1) {
+    putchar('v');  putchar('a');  putchar('[');  putint(ia);
+    putchar(']');  putchar(' ');  putchar('=');  putchar(' ');
+    putdouble(va[ia]);  putchar(TAB);
+    putchar('v');  putchar('b');  putchar('[');  putint(ia);
+    putchar(']');  putchar(' ');  putchar('=');  putchar(' ');
+    putdouble(vb[ia]);  putchar(LF);
+  }
+  putchar(LF);
+
+  for (ia = 0;  ia < 3;  ia = ia+1) {
+    for (ib = 0;  ib < 3;  ib = ib+1) {
+      test(va[ia], vb[ib]);
+    }
+  }
+}

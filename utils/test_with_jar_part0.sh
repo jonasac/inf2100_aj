@@ -5,7 +5,11 @@ E=samples/gcd_with_euro_symbol/gcd_with_euro_symbol
 #E=samples/mini/mini
 #E=samples/gcd/gcd
 #E=samples/strings/strings
-
+#E=samples/primes/primes
+#E=samples/heron/heron
+#E=samples/next/next
+#E=samples/opers/opers
+#E=samples/float-opers/float-opers
 f=$E.cflat
 l=$E.log
 s=$E.s

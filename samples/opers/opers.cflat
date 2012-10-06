@@ -1,0 +1,37 @@
+# Test all the operators
+
+int print (int x, int op1, int op2, int y, int res)
+{
+  putint(x);  putchar(' ');  putchar(op1);  
+  if (op2 != ' ') { putchar(op2); }  
+  putchar(' ');  putint(y);  putchar(' ');  putchar('=');  
+  putchar(' ');  putint(res);  putchar(10);
+}
+
+int test (int a, int b)
+{
+  print(a, '+', ' ', b, a+b);
+  print(a, '-', ' ', b, a-b);
+  print(a, '*', ' ', b, a*b);
+  print(a, '/', ' ', b, a/b);
+  print(a, '=', '=', b, a==b);
+  print(a, '!', '=', b, a!=b);
+  print(a, '<', ' ', b, a<b);
+  print(a, '<', '=', b, a<=b);
+  print(a, '>', ' ', b, a>b);
+  print(a, '>', '=', b, a>=b);
+}
+
+int main () 
+{
+  int va[3];  int vb[3];  int ia;  int ib;
+
+  va[0] = -3;   va[1] = 0;  va[2] = 17;
+  vb[0] = -32;  vb[1] = 2;  vb[2] = 17;
+
+  for (ia = 0;  ia < 3;  ia = ia+1) {
+    for (ib = 0;  ib < 3;  ib = ib+1) {
+      test(va[ia], vb[ib]);
+    }
+  }
+}
