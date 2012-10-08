@@ -17,11 +17,9 @@ class TestRunner
   end
 
   def run_tests
-    if File.exists?(@our_compiler)
-      `make clean`
-      `make`
-      puts "Fresh Cflat compiler ready!"
-    end
+    `make clean` if File.exists?(@our_compiler)
+    `make`
+    puts "Fresh Cflat compiler ready!"
     @sample_paths.each do |filename|
       logfile = filename.gsub(".cflat", ".log")
       our_log = "our_#{File.basename(logfile)}"
@@ -44,4 +42,3 @@ if __FILE__ == $0
   part0 = TestRunner.new('-testscanner')
   part0.run_tests
 end
-
