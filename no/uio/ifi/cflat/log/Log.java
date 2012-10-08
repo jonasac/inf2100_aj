@@ -71,7 +71,7 @@ public class Log {
      */
     public static void noteSourceLine(int lineNum, String line) {
         if (! doLogParser && ! doLogScanner) return;
-        writeLogLine(String.format("%4d:    %s", lineNum, line));
+        writeLogLine(String.format("%4d: %s", lineNum, line));
     }
 
     /**
