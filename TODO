@@ -1,13 +1,5 @@
 TODO
 
-alex jeg tror en av oss må skru av tabs eller bytte til spaces :p
-jeg er ikke noen bash ninja men tenke det kunne ha vært kjekt å ha
-en stor slags integration test fil, diff returnerer jo ingenting dersom filene er like
-så det burde kunne gå ann å benytte det som ett slags utgangspunkt for å ha et script
-som tester alle filene som ligger i samples, men som sagt jeg er ganske clueless når det gjelder bash,
-tror du det er mye jobb?
-
-    part 0
 	innlevering [x]
 	fikse bug med feil linje ved ugjenkjennelig symbol [_]
 
