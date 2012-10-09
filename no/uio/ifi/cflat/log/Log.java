@@ -54,12 +54,14 @@ public class Log {
         if (! doLogParser) return;
 
         //-- Must be changed in part 1:
+        writeLogLine("Parser: " + symbol);
     }
 
     public static void leaveParser(String symbol) {
         if (! doLogParser) return;
 
         //-- Must be changed in part 1:
+        writeLogLine("Parser: " + symbol);
     }
 
     /**
