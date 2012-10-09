@@ -34,6 +34,9 @@ public class Scanner {
     curName = "";
     nextName = "";
     nextNextName = "";
+    readNext();
+    readNext();
+    readNext();
   }
 
   public static void finish() {
