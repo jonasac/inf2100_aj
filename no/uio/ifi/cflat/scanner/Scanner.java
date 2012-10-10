@@ -199,7 +199,6 @@ public class Scanner {
           nextNextToken = nameToken;
       } else if (isDigit(CharGenerator.curC) || '\'' == CharGenerator.curC || CharGenerator.curC == '-' && isDigit(CharGenerator.nextC)) {
         String tempnum = collectNumber();
-        System.out.println(tempnum);
         if (tempnum.equals("'")) {
           nextNextToken = numberToken;
           nextNextName = charToIntstring(CharGenerator.curC);
