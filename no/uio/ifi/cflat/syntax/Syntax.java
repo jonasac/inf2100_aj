@@ -974,23 +974,28 @@ class ExprList extends SyntaxUnit {
     void parse() {
       Expression lastExpr = null;
 
+      System.out.println("PARSER IN EXPRESSION LIST");
+      System.out.println("CURRENT TOKEN IS : " + Scanner.curToken);
       Log.enterParser("<expr list>");
 
       // -- Must be changed in part 1:
-      if (firstExpr == null) {
-        firstExpr = new Expression();
-        firstExpr.parse();
-        lastExpr = firstExpr;
-      } else {
-        firstExpr.nextExpr = new Expression();
-        lastExpr = firstExpr.nextExpr;
-        lastExpr.parse();
-        while (Scanner.curToken == commaToken) {
+      if (Scanner.curToken != rightParToken) {
+        if (firstExpr == null) {
+          firstExpr = new Expression();
+          firstExpr.parse();
+          lastExpr = firstExpr;
+        } else {
           firstExpr.nextExpr = new Expression();
           lastExpr = firstExpr.nextExpr;
           lastExpr.parse();
+          while (Scanner.curToken == commaToken) {
+            firstExpr.nextExpr = new Expression();
+            lastExpr = firstExpr.nextExpr;
+            lastExpr.parse();
+          }
         }
       }
+      System.out.println("PARSER LEAVING EXPRLIST");
       Log.leaveParser("</expr list>");
     }
 
@@ -1024,6 +1029,7 @@ class Expression extends Operand {
   @Override
     void parse() {
       Log.enterParser("<expression>");
+      System.out.println("PARSER IN EXPRESSION");
 
       firstTerm.parse();
       if (Token.isRelOperator(Scanner.curToken)) {
@@ -1032,7 +1038,7 @@ class Expression extends Operand {
         secondTerm = new Term();
         secondTerm.parse();
       } else {
-        System.out.println("MONGNOMONOG" + Scanner.curToken);
+        System.out.println("EXPRESSION ELSE");
       }
 
       Log.leaveParser("</expression>");
@@ -1067,6 +1073,7 @@ class Term extends SyntaxUnit {
   @Override
     void parse() {
       // -- Must be changed in part 1:
+      System.out.println("PARSER IN TERM");
       Factor lastFactor = null;
       Operator lastOp = null;
       Log.enterParser("<term>");
@@ -1113,9 +1120,16 @@ class Factor extends SyntaxUnit {
       Operator lastFo = null;
       Operand lastOperand = null;
       Log.enterParser("<factor>");
+      System.out.println("PARSER IN FACTOR");
+      System.out.println("CURRENT TOKEN IS " + Scanner.curToken);
+      System.out.println("CURRENT TOKEN NAME IS " + Scanner.curName);
+      System.out.println("NEXT TOKEN IS " + Scanner.nextToken);
+      System.out.println("NEXT TOKEN NAME IS " + Scanner.nextName);
+      System.out.println("NEXT NEXT TOKEN NAME IS " + Scanner.nextNextName);
       do {
         Log.enterParser("<operand>");
         if (Scanner.curToken == numberToken) {
+          System.out.println("PARSER IN FACTOR/NUMBER");
           if (firstOperand == null) {
             firstOperand = new Number();
             lastOperand = firstOperand;
@@ -1125,6 +1139,7 @@ class Factor extends SyntaxUnit {
           }
           lastOperand.parse();
         } else if (Scanner.curToken == nameToken && Scanner.nextToken == leftBracketToken) {
+          System.out.println("PARSER IN FACTOR/VARIABLE");
           if (firstOperand == null) {
             firstOperand = new Variable();
             lastOperand = firstOperand;
@@ -1134,6 +1149,7 @@ class Factor extends SyntaxUnit {
           }
           lastOperand.parse();
         } else if (Scanner.curToken == nameToken && Scanner.nextToken == leftParToken) {
+          System.out.println("PARSER IN FACTOR/FUNCTIONCALL");
           if (firstOperand == null) {
             firstOperand = new FunctionCall();
             lastOperand = firstOperand;
@@ -1143,6 +1159,7 @@ class Factor extends SyntaxUnit {
           }
           lastOperand.parse();
         } else if (Scanner.curToken == leftParToken) {
+          System.out.println("PARSER IN FACTOR/EXPRESSION");
           Scanner.skip(leftParToken);
           if (firstOperand == null) {
             firstOperand = new Expression();
@@ -1153,6 +1170,7 @@ class Factor extends SyntaxUnit {
           }
           lastOperand.parse();
         } else {
+          System.out.println("WE ARE HERE LOLOLOLOL");
           Error.expected("An operand");
         }
         Log.leaveParser("</operand>");
@@ -1227,6 +1245,13 @@ class TermOperator extends Operator {
   @Override
     void parse() {
       //TODO
+      Log.enterParser("<term>");
+      if (Token.isTermOperator(Scanner.curToken)) {
+        Scanner.skip(Scanner.curToken);
+      } else {
+        Error.expected("An term operator");
+      }
+      Log.leaveParser("</term>");
     }
 
   @Override
@@ -1340,6 +1365,7 @@ class FunctionCall extends Operand {
   @Override
     void parse() {
       // -- Must be changed in part 1:
+      System.out.println("PARSER IN FUNCTIONCALL");
       Log.enterParser("<function call>");
       Scanner.skip(nameToken);
       Scanner.skip(leftParToken);
@@ -1375,6 +1401,7 @@ class Number extends Operand {
     void parse() {
       // -- Must be changed in part 1:
       Log.enterParser("<number>");
+      System.out.println("PARSER IN NUMBER");
       numVal = Scanner.curNum;
       Scanner.skip(numberToken);
       Log.leaveParser("</number>");
