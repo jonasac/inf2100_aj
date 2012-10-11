@@ -658,7 +658,7 @@ class FuncDecl extends Declaration {
       }
       sl.parse();
       Scanner.skip(rightCurlToken);
-      Log.enterParser("</func body>");
+      Log.leaveParser("</func body>");
       Log.leaveParser("</func decl>");
     }
 
@@ -704,8 +704,8 @@ class StatmList extends SyntaxUnit {
           tail.nextStatm = Statement.makeNewStatement();
           tail = tail.nextStatm;
           tail.parse();
-          Log.leaveParser("</statement>");
         }
+        Log.leaveParser("</statement>");
 
         Log.leaveParser("</statm list>");
       }
@@ -816,10 +816,10 @@ class CallStatm extends Statement {
 
   @Override
     void parse() {
-      Log.enterParser("<call statm>");
+      Log.enterParser("<call-statm>");
       fc.parse();
       Scanner.skip(semicolonToken);
-      Log.leaveParser("</call statm>");
+      Log.leaveParser("</call-statm>");
     }
 
   @Override
@@ -990,8 +990,8 @@ class ExprList extends SyntaxUnit {
           lastExpr = firstExpr.nextExpr;
           lastExpr.parse();
         }
-        Log.leaveParser("</expr list>");
       }
+      Log.leaveParser("</expr list>");
     }
 
   @Override
@@ -1114,8 +1114,8 @@ class Factor extends SyntaxUnit {
       Operand lastOperand = null;
       Log.enterParser("<factor>");
       do {
+        Log.enterParser("<operand>");
         if (Scanner.curToken == numberToken) {
-          Log.enterParser("<operand>");
           if (firstOperand == null) {
             firstOperand = new Number();
             lastOperand = firstOperand;
@@ -1344,7 +1344,6 @@ class FunctionCall extends Operand {
       Scanner.skip(nameToken);
       Scanner.skip(leftParToken);
       el.parse();
-      System.out.println("HERE NAO NAO NAO " + Scanner.curName);
       Scanner.skip(rightParToken);
       Log.leaveParser("</function call>");
     }
@@ -1378,7 +1377,7 @@ class Number extends Operand {
       Log.enterParser("<number>");
       numVal = Scanner.curNum;
       Scanner.skip(numberToken);
-      Log.enterParser("</number>");
+      Log.leaveParser("</number>");
     }
 
   @Override

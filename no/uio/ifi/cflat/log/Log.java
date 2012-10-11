@@ -54,14 +54,16 @@ public class Log {
         if (! doLogParser) return;
 
         //-- Must be changed in part 1:
-        writeLogLine("Parser: " + symbol);
+        writeLogLine("Parser: "+ createIndent() + symbol);
+        parseLevel++;
     }
 
     public static void leaveParser(String symbol) {
         if (! doLogParser) return;
 
         //-- Must be changed in part 1:
-        writeLogLine("Parser: " + symbol);
+        parseLevel--;
+        writeLogLine("Parser: "+ createIndent() + symbol);
     }
 
     /**
@@ -121,4 +123,13 @@ public class Log {
     public static void outdentTree() {
         //-- Must be changed in part 1:
     }
+
+    public static String createIndent() {
+      String indent = "  ";
+      for (int i = 0; i < parseLevel; i++) {
+        indent += "  ";
+      }
+      return indent;
+    }
 }
+
