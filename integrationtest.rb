@@ -1,3 +1,4 @@
+#!/usr/bin/env ruby
 # This little script runs all the tests it finds in the samples directory, if there is conflicting files
 # their logs will end up in a folder called testresults. If the diff outputs nothing then nothing is added to the folder.
 # Im soring the output since lines can be placed differently, sorting them and then plain diffing them shoud tell us whether the content is the same
@@ -58,4 +59,7 @@ if __FILE__ == $0
 
   part0 = TestRunner.new('-testscanner', settings, true)
   part0.run_tests
+
+  part1 = TestRunner.new('-testparser', settings, true)
+  part1.run_tests
 end
