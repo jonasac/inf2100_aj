@@ -247,6 +247,8 @@ class LocalDeclList extends DeclList {
     void parse() {
       // -- Must be changed in part 1:
       System.out.println("LOCALDECLLIST: PARSE");
+      System.out.println("EXITED FROM LOCALDECLLIST");
+      System.exit(1);
     }
 }
 
@@ -264,7 +266,7 @@ class ParamDeclList extends DeclList {
   @Override
     void parse() {
       // -- Must be changed in part 1:
-      System.out.println("WE GOT HERE!!!");
+      System.out.println("EXITED FROM PARAMDECLLIST");
       System.exit(1);
       System.out.println("PARAMDECLLIST: PARSE");
     }
@@ -400,7 +402,8 @@ class GlobalArrayDecl extends VarDecl {
 
       // -- Must be changed in part 1:
 
-      System.out.println("GLOBALARRAYDECL: PARSE");
+      System.out.println("EXITED FROM GLOBALARRAYDECL");
+      System.exit(1);
 
       Log.leaveParser("</var decl>");
     }
@@ -445,13 +448,10 @@ class GlobalSimpleVarDecl extends VarDecl {
   @Override
     void parse() {
       Log.enterParser("<var decl>");
-
       // -- Must be changed in part 1:
       Scanner.skip(intToken);
       Scanner.skip(nameToken);
       Scanner.skip(semicolonToken);
-      System.out.println("GLOBAL SIMPLE VAR DECL: PARSE");
-
       Log.leaveParser("</var decl>");
     }
 }
@@ -490,7 +490,8 @@ class LocalArrayDecl extends VarDecl {
       Log.enterParser("<var decl>");
 
       // -- Must be changed in part 1:
-      System.out.println("LOCAL ARRAY DECL: PARSE");
+      System.out.println("EXITED FROM LOCALARRAYDECL");
+      System.exit(1);
 
       Log.leaveParser("</var decl>");
     }
@@ -537,8 +538,8 @@ class LocalSimpleVarDecl extends VarDecl {
       Log.enterParser("<var decl>");
 
       // -- Must be changed in part 1:
-      System.out.println("LOCAL SIMPLE VAR DECL: PARSE");
-
+      System.out.println("EXITED FROM LOCALSIMPLECARDECL");
+      System.exit(1);
       Log.leaveParser("</var decl>");
     }
 }
@@ -579,8 +580,8 @@ class ParamDecl extends VarDecl {
       Log.enterParser("<param decl>");
 
       // -- Must be changed in part 1:
-      System.out.println("PARAM DECL: PARSE");
-
+      System.out.println("EXITED FROM PARAMDECLS");
+      System.exit(1);
       Log.leaveParser("</param decl>");
     }
 }
@@ -602,7 +603,6 @@ class FuncDecl extends Declaration {
     assemblerName = (Cflat.underscoredGlobals() ? "_" : "") + n;
     // -- Must be changed in part 1:
     type = Types.getType(Scanner.curToken);
-    System.out.println("FUNC DECL: CONSTRUCTOR");
   }
 
   @Override
@@ -771,6 +771,8 @@ class EmptyStatm extends Statement {
     void parse() {
       // -- Must be changed in part 1:
       System.out.println("EMPTY STATM: PARSE");
+      System.out.println("EXITED FROM EMPTY STATM");
+      System.exit(1);
     }
 
   @Override
@@ -797,6 +799,8 @@ class ForStatm extends Statement {
   @Override
     void parse() {
       System.out.println("HELLO FORM FOR STATEMENT");
+      System.out.println("EXITED FROM FORSTATM");
+      System.exit(1);
     }
 
   @Override
@@ -838,6 +842,8 @@ class AssignStatm extends Statement {
   @Override
     void parse() {
       System.out.println("HELLO FORM ASSIGNSTATM STATEMENT");
+      System.out.println("EXITED FROM ASSIGNSTATM");
+      System.exit(1);
     }
 
   @Override
@@ -865,6 +871,8 @@ class IfStatm extends Statement {
     void parse() {
       // -- Must be changed in part 1:
       System.out.println("IF STATM: PARSE");
+      System.out.println("EXITED FROM IF STATM");
+      System.exit(1);
     }
 
   @Override
@@ -890,7 +898,8 @@ class ReturnStatm extends Statement {
 
   @Override
     void parse() {
-      System.out.println("HELLO FORM RETURN STATEMENT");
+      System.out.println("EXITED FROM RETURN STATM");
+      System.exit(1);
     }
 
   @Override
@@ -1120,12 +1129,6 @@ class Factor extends SyntaxUnit {
       Operator lastFo = null;
       Operand lastOperand = null;
       Log.enterParser("<factor>");
-      System.out.println("PARSER IN FACTOR");
-      System.out.println("CURRENT TOKEN IS " + Scanner.curToken);
-      System.out.println("CURRENT TOKEN NAME IS " + Scanner.curName);
-      System.out.println("NEXT TOKEN IS " + Scanner.nextToken);
-      System.out.println("NEXT TOKEN NAME IS " + Scanner.nextName);
-      System.out.println("NEXT NEXT TOKEN NAME IS " + Scanner.nextNextName);
       do {
         Log.enterParser("<operand>");
         if (Scanner.curToken == numberToken) {
@@ -1224,7 +1227,8 @@ class FactOperator extends Operator {
 
   @Override
     void parse() {
-      //TODO
+      System.out.println("EXITED FROM FACTOPERATOR");
+      System.exit(1);
     }
 
   @Override
@@ -1244,7 +1248,6 @@ class TermOperator extends Operator {
 
   @Override
     void parse() {
-      //TODO
       Log.enterParser("<term>");
       if (Token.isTermOperator(Scanner.curToken)) {
         Scanner.skip(Scanner.curToken);
@@ -1447,6 +1450,8 @@ class Variable extends Operand {
     void parse() {
       Log.enterParser("<variable>");
       // -- Must be changed in part 1:
+      System.out.println("EXITED FROM VARIABLE");
+      System.exit(1);
     }
 
   @Override
