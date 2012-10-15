@@ -16,6 +16,10 @@ Vim tips&tricks
 
     map <F8> :!./compile_and_test.sh<CR>
 
+    Hvilken av disse er best?
+
+    http://www.vim.org/scripts/script.php?script_id=1954
+    http://www.vim.org/scripts/script.php?script_id=1154
 
 Relevant URLs
 -------------
