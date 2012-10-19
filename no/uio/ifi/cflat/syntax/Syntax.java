@@ -707,8 +707,8 @@ class StatmList extends SyntaxUnit {
         }
         Log.leaveParser("</statement>");
 
-        Log.leaveParser("</statm list>");
       }
+        Log.leaveParser("</statm list>");
     }
 
   @Override
@@ -995,6 +995,8 @@ class ExprList extends SyntaxUnit {
           }
         }
       }
+      System.out.println(Scanner.curToken);
+      System.out.println(Scanner.nextNextToken);
       System.out.println("PARSER LEAVING EXPRLIST");
       Log.leaveParser("</expr list>");
     }
@@ -1037,9 +1039,7 @@ class Expression extends Operand {
         relOp.parse();
         secondTerm = new Term();
         secondTerm.parse();
-      } else {
-        System.out.println("EXPRESSION ELSE");
-      }
+      } 
 
       Log.leaveParser("</expression>");
     }
@@ -1224,7 +1224,8 @@ class FactOperator extends Operator {
 
   @Override
     void parse() {
-      //TODO
+      System.out.println("PARSER IN OPERATOR");
+      System.exit(1);
     }
 
   @Override
@@ -1245,13 +1246,13 @@ class TermOperator extends Operator {
   @Override
     void parse() {
       //TODO
-      Log.enterParser("<term>");
+      Log.enterParser("<term operator>");
       if (Token.isTermOperator(Scanner.curToken)) {
         Scanner.skip(Scanner.curToken);
       } else {
         Error.expected("An term operator");
       }
-      Log.leaveParser("</term>");
+      Log.leaveParser("</term operator>");
     }
 
   @Override
@@ -1446,6 +1447,8 @@ class Variable extends Operand {
   @Override
     void parse() {
       Log.enterParser("<variable>");
+      System.out.println("PARSER IN VARIABLE");
+      System.exit(1);
       // -- Must be changed in part 1:
     }
 
