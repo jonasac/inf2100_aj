@@ -32,6 +32,22 @@ public class Types {
 		    Code.genInstr("", "je", jumpLabel, "");
 		}
 	    };
+	intType = new BasicType() {
+		@Override public int size() {
+		    return 2;
+		}
+
+		@Override public String typeName() {
+		    return "int";
+		}
+
+		@Override public void genJumpIfZero(String jumpLabel) {
+		    //-- Must be changed in part 2:
+		    //Code.genInstr("", "fstps", Code.tmpLabel, "");
+		    //Code.genInstr("", "cmpl", "$0,"+Code.tmpLabel, "");
+		    Code.genInstr("", "je", jumpLabel, "");
+		}
+	};
 	//-- Must be changed in part 2:
     }
 

@@ -149,7 +149,8 @@ abstract class DeclList extends SyntaxUnit {
 
   DeclList() {
     // -- Must be changed in part 1:
-    System.out.println("DECLLIST: CONSTRUCTOR");
+    Log.wTreeLn("DECLLIST: CONSTRUCTOR");
+		//outerScope = ?
   }
 
   @Override
@@ -165,8 +166,17 @@ abstract class DeclList extends SyntaxUnit {
 
   @Override
     void printTree() {
+			String typeName = "???";
       // -- Must be changed in part 1:
-			Log.wTreeLn("DECL LIST");
+			Declaration dx = firstDecl;
+			while (null != dx) {
+				if (null != dx.type) {
+					typeName = dx.type.typeName();
+				}
+				Log.wTreeLn(typeName + " " + dx.name + "()");
+				dx = dx.nextDecl;
+			}
+			//outerScope.printTree();
     }
 
   void addDecl(Declaration d) {
@@ -619,7 +629,9 @@ class FuncDecl extends Declaration {
     super(n);
     assemblerName = (Cflat.underscoredGlobals() ? "_" : "") + n;
     // -- Must be changed in part 1:
+		//System.out.println("CUR TOKEN WHEN SETTING TYPE: " + Scanner.curToken);
     type = Types.getType(Scanner.curToken);
+		//System.out.println("TYPE WHEN SETTING TYPE: " + type.typeName());
   }
 
   @Override
@@ -683,7 +695,7 @@ class FuncDecl extends Declaration {
   @Override
     void printTree() {
       // -- Must be changed in part 1:
-      System.out.println("FUNC DECL: PRINT TREE");
+			Log.wTreeLn("OSTOSTOST");
     }
 }
 
@@ -1086,6 +1098,8 @@ class ExprList extends SyntaxUnit {
   @Override
     void printTree() {
       // -- Must be changed in part 1:
+			// NEVER CALLED?
+			Log.wTreeLn("OST OST OST OST");
     }
   // -- Must be changed in part 1:
 }
@@ -1469,8 +1483,8 @@ class FunctionCall extends Operand {
   @Override
     void printTree() {
       // -- Must be changed in part 1:
-			System.out.println("OST OST OST");
-			Log.wTreeLn("function call");
+			// TODO
+			Log.wTreeLn("function call, woot, never called?");
     }
   // -- Must be changed in part 1+2:
 }
