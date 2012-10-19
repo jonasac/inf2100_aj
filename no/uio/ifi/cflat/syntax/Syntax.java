@@ -245,6 +245,7 @@ class LocalDeclList extends DeclList {
       // -- Must be changed in part 1:
       VarDecl d = null;
       while (Token.isTypeName(Scanner.curToken) && Scanner.nextToken == nameToken) {
+        System.out.println("GETTING HERE HERE HERE");
         if (Scanner.nextNextToken == leftBracketToken) {
           d = new LocalArrayDecl(Scanner.nextName);
           addDecl(d);
@@ -501,12 +502,16 @@ class LocalArrayDecl extends VarDecl {
   @Override
     void parse() {
       Log.enterParser("<var decl>");
-
-      // -- Must be changed in part 1:
-      System.out.println("EXITED FROM LOCALARRAYDECL");
-      System.exit(1);
-
+      type = Types.getType(Scanner.curToken);
+      Scanner.skip(Scanner.curToken);
+      Scanner.skip(nameToken);
+      Scanner.skip(leftBracketToken);
+      System.out.println("CURRENT TOKEN IN LOCALARRAY DECL" + Scanner.curToken);
+      if (Scanner.curToken == numberToken) Scanner.skip(Scanner.curToken);
+      Scanner.skip(rightBracketToken);
+      Scanner.skip(semicolonToken);
       Log.leaveParser("</var decl>");
+      // -- Must be changed in part 1:
     }
 
   @Override
@@ -732,6 +737,8 @@ class StatmList extends SyntaxUnit {
         Log.leaveParser("</statement>");
 
       }
+      System.out.println("CURRENT TOKEN " + Scanner.curToken);
+      System.out.println("Next TOKEN "  + Scanner.nextToken);
         Log.leaveParser("</statm list>");
     }
 
@@ -771,6 +778,9 @@ abstract class Statement extends SyntaxUnit {
     } else if (Scanner.curToken == whileToken) {
       return new WhileStatm();
     } else if (Scanner.curToken == semicolonToken) {
+      System.out.println("Current token " + Scanner.curToken);
+      System.out.println("Next token " + Scanner.nextToken);
+      System.out.println("Next next token " + Scanner.nextNextToken);
       return new EmptyStatm();
     } else {
       Error.expected("A statement");
@@ -852,6 +862,7 @@ class CallStatm extends Statement {
       System.out.println("PARSER IN CALL STATM");
       Log.enterParser("<call-statm>");
       fc.parse();
+      System.out.println("We are getting the error here!!!!");
       Scanner.skip(semicolonToken);
       Log.leaveParser("</call-statm>");
     }
@@ -1087,10 +1098,6 @@ class ExprList extends SyntaxUnit {
           lastExpr.parse();
         }
       }
-      System.out.println(Scanner.curToken);
-      System.out.println(Scanner.nextNextToken);
-      System.out.println("PARSER LEAVING EXPRLIST");
-      System.out.println("EXPRLIST CURRENT TOKEN: " + Scanner.curToken);
       System.out.println("EXPRLIST CURRENT NAME: " + Scanner.curName);
       System.out.println("EXPRLIST NEXT TOKEN: " + Scanner.nextToken);
       System.out.println("EXPRELIST NEXT NAME: " + Scanner.nextName);
@@ -1131,6 +1138,7 @@ class Expression extends Operand {
       System.out.println("HELLO FROM EXPRESSION");
       Log.enterParser("<expression>");
       firstTerm.parse();
+      /* if (Scanner.curToken == leftParToken) Scanner.skip(leftParToken); */
       if (Token.isRelOperator(Scanner.curToken)) {
         System.out.println("GOT HERE");
         relOp = new RelOperator();
@@ -1138,6 +1146,7 @@ class Expression extends Operand {
         secondTerm = new Term();
         secondTerm.parse();
       }
+      /* if (Scanner.curToken == rightParToken) Scanner.skip(rightParToken); */
       Log.leaveParser("</expression>");
     }
 
@@ -1190,6 +1199,9 @@ class Term extends SyntaxUnit {
         lastFactor = lastFactor.nextFactor;
         lastFactor.parse();
       }
+      System.out.println("CURRENT TOKEN " + Scanner.curToken);
+      System.out.println("NEXT TOKEN " + Scanner.nextToken);
+      System.out.println("NEXT NEXT TOKEN " + Scanner.nextNextToken);
       System.out.println("PARSER LEAVING TERM");
       Log.leaveParser("</term>");
     }
@@ -1265,9 +1277,14 @@ class Factor extends SyntaxUnit {
             lastOperand = lastOperand.nextOperand;
           }
           lastOperand.parse();
+          System.out.println(Scanner.curName);
+          System.out.println(Scanner.nextName);
+          System.out.println(Scanner.nextNextName);
+          Scanner.skip(rightParToken);
+          lastOperand.parse();
         } else {
           System.out.println("WE ARE HERE LOLOLOLOL");
-          Error.expected("An operand");
+          Error.expected("An operand" + Scanner.curToken);
         }
         Log.leaveParser("</operand>");
         if (Token.isFactorOperator(Scanner.curToken)) {
@@ -1322,14 +1339,14 @@ class FactOperator extends Operator {
   @Override
     void parse() {
       System.out.println("PARSER IN FACT OPERATOR");
-      Log.enterParser("<fact operator>");
+      Log.enterParser("<factor operator>");
       if (Token.isFactorOperator(Scanner.curToken)) {
         opToken = Scanner.curToken;
         Scanner.skip(Scanner.curToken);
       } else {
         Error.expected("An factor operator");
       }
-      Log.leaveParser("</fact operator>");
+      Log.leaveParser("</factor operator>");
     }
 
   @Override
@@ -1471,7 +1488,6 @@ class FunctionCall extends Operand {
   @Override
     void parse() {
       // -- Must be changed in part 1:
-      System.out.println("PARSER IN FUNCTIONCALL");
       Log.enterParser("<function call>");
       Scanner.skip(nameToken);
       Scanner.skip(leftParToken);
@@ -1479,7 +1495,6 @@ class FunctionCall extends Operand {
       el.parse();
       System.out.println("FUNCTIONCALL 2 CURRENT TOKEN: " + Scanner.curToken);
       Scanner.skip(rightParToken);
-      System.out.println("NOT GETTING HERE");
       Log.leaveParser("</function call>");
     }
 
@@ -1512,7 +1527,6 @@ class Number extends Operand {
     void parse() {
       // -- Must be changed in part 1:
       Log.enterParser("<number>");
-      System.out.println("PARSER IN NUMBER");
       numVal = Scanner.curNum;
       Scanner.skip(numberToken);
       Log.leaveParser("</number>");
