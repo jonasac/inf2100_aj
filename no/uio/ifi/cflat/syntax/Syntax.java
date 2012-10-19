@@ -69,6 +69,7 @@ public class Syntax {
   }
 
   public static void printProgram() {
+		Log.wTreeLn("printProgram");
     program.printTree();
   }
 
@@ -134,6 +135,7 @@ class Program extends SyntaxUnit {
 
   @Override
     void printTree() {
+			Log.wTreeLn("class Program");
       progDecls.printTree();
     }
 }
@@ -173,10 +175,9 @@ abstract class DeclList extends SyntaxUnit {
 				if (null != dx.type) {
 					typeName = dx.type.typeName();
 				}
-				Log.wTreeLn(typeName + " " + dx.name + "()");
+				Log.wTreeLn(typeName + " " + dx.name + " ()");
 				dx = dx.nextDecl;
 			}
-			//outerScope.printTree();
     }
 
   void addDecl(Declaration d) {
@@ -745,7 +746,7 @@ class StatmList extends SyntaxUnit {
   @Override
     void printTree() {
       // -- Must be changed in part 1:
-      System.out.println("STATM LIST: PRINT TREE");
+      Log.wTreeLn("class StatmList");
     }
 }
 
@@ -1286,6 +1287,7 @@ class Factor extends SyntaxUnit {
   @Override
     void printTree() {
       // TODO: here
+			Log.wTreeLn("class Factor");
     }
 }
 // -- Must be changed in part 1+2:
