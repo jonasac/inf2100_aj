@@ -1066,24 +1066,22 @@ class ExprList extends SyntaxUnit {
       Log.enterParser("<expr list>");
 
       // -- Must be changed in part 1:
-      if (Scanner.curToken != rightParToken) {
-        if (firstExpr == null) {
-          firstExpr = new Expression();
-          firstExpr.parse();
-          lastExpr = firstExpr;
-        } else {
-          System.out.println("GOT HERE!");
+      if (Scanner.curToken != rightParToken) {     
+      if (firstExpr == null) {
+        firstExpr = new Expression();
+        firstExpr.parse();
+        lastExpr = firstExpr;
+      } else {
+        System.out.println("GOT HERE!");
+        firstExpr.nextExpr = new Expression();
+        lastExpr = firstExpr.nextExpr;
+        lastExpr.parse();
+        while (Scanner.curToken == commaToken) {
           firstExpr.nextExpr = new Expression();
           lastExpr = firstExpr.nextExpr;
           lastExpr.parse();
-          while (Scanner.curToken == commaToken) {
-            firstExpr.nextExpr = new Expression();
-            lastExpr = firstExpr.nextExpr;
-            lastExpr.parse();
-          }
         }
-      } else {
-        Scanner.readNext();
+      } 
       }
       System.out.println(Scanner.curToken);
       System.out.println(Scanner.nextNextToken);
@@ -1188,6 +1186,7 @@ class Term extends SyntaxUnit {
         lastFactor = lastFactor.nextFactor;
         lastFactor.parse();
       }
+      System.out.println("PARSER LEAVING TERM");
       Log.leaveParser("</term>");
     }
 
@@ -1346,7 +1345,7 @@ class TermOperator extends Operator {
   @Override
     void parse() {
       System.out.println("PARSER IN TERM OPERATOR");
-      Log.enterParser("<term>");
+      Log.enterParser("<term operator>");
       if (Token.isTermOperator(Scanner.curToken)) {
         Scanner.skip(Scanner.curToken);
       } else {
@@ -1474,7 +1473,6 @@ class FunctionCall extends Operand {
       System.out.println("FUNCTIONCALL CURRENT TOKEN: " + Scanner.curToken);
       el.parse();
       System.out.println("FUNCTIONCALL 2 CURRENT TOKEN: " + Scanner.curToken);
-      System.out.println("OMGOMGOMGLEAVING FUNCTIONCALL");
       Scanner.skip(rightParToken);
       System.out.println("NOT GETTING HERE");
       Log.leaveParser("</function call>");
@@ -1554,8 +1552,6 @@ class Variable extends Operand {
   @Override
     void parse() {
       Log.enterParser("<variable>");
-      System.out.println("PARSER IN VARIABLE");
-      System.exit(1);
       // -- Must be changed in part 1:
       varName = Scanner.curName;
       System.out.println("PARSER IN VARIABLE");
