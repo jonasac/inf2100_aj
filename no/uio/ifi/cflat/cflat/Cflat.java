@@ -80,8 +80,7 @@ public class Cflat {
 	    while (Scanner.nextNextToken != eofToken) 
 		Scanner.readNext();
 	} else {
-	  // TODO: Change println back to just print before delivery of part 1
-	    System.out.println("Parsing...");  Syntax.parseProgram();
+	    System.out.print("Parsing...");  Syntax.parseProgram();
 	    if (Log.doLogTree) {
 		System.out.print(" printing...");  Syntax.printProgram();
 	    }

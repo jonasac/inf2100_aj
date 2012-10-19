@@ -1,3 +1,4 @@
+// vim: sw=2 ts=2
 
 package no.uio.ifi.cflat.syntax;
 
@@ -165,7 +166,7 @@ abstract class DeclList extends SyntaxUnit {
   @Override
     void printTree() {
       // -- Must be changed in part 1:
-      System.out.println("DECLLIST: PRINTTREE");
+			Log.wTreeLn("DECL LIST");
     }
 
   void addDecl(Declaration d) {
@@ -1468,6 +1469,8 @@ class FunctionCall extends Operand {
   @Override
     void printTree() {
       // -- Must be changed in part 1:
+			System.out.println("OST OST OST");
+			Log.wTreeLn("function call");
     }
   // -- Must be changed in part 1+2:
 }
