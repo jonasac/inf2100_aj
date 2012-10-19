@@ -6,23 +6,6 @@ package no.uio.ifi.cflat.syntax;
  * module Syntax
  */
 
-/* import static no.uio.ifi.cflat.scanner.Token.eofToken; */
-/* import static no.uio.ifi.cflat.scanner.Token.forToken; */
-/* import static no.uio.ifi.cflat.scanner.Token.ifToken; */
-/* import static no.uio.ifi.cflat.scanner.Token.leftBracketToken; */
-/* import static no.uio.ifi.cflat.scanner.Token.leftCurlToken; */
-/* import static no.uio.ifi.cflat.scanner.Token.leftParToken; */
-/* import static no.uio.ifi.cflat.scanner.Token.nameToken; */
-/* import static no.uio.ifi.cflat.scanner.Token.returnToken; */
-/* import static no.uio.ifi.cflat.scanner.Token.rightCurlToken; */
-/* import static no.uio.ifi.cflat.scanner.Token.rightParToken; */
-/* import static no.uio.ifi.cflat.scanner.Token.semicolonToken; */
-/* import static no.uio.ifi.cflat.scanner.Token.whileToken; */
-/* import static no.uio.ifi.cflat.scanner.Token.intToken; */
-/* import static no.uio.ifi.cflat.scanner.Token.commaToken; */
-/* import static no.uio.ifi.cflat.scanner.Token.numberToken; */
-/* import static no.uio.ifi.cflat.scanner.Token.addToken; */
-/* import static no.uio.ifi.cflat.scanner.Token.subtractToken; */
 import static no.uio.ifi.cflat.scanner.Token.*;
 import no.uio.ifi.cflat.cflat.Cflat;
 import no.uio.ifi.cflat.code.Code;
@@ -260,9 +243,18 @@ class LocalDeclList extends DeclList {
   @Override
     void parse() {
       // -- Must be changed in part 1:
-      System.out.println("LOCALDECLLIST: PARSE");
-      System.out.println("EXITED FROM LOCALDECLLIST");
-      System.exit(1);
+      VarDecl d = null;
+      while (Token.isTypeName(Scanner.curToken) && Scanner.nextToken == nameToken) {
+        if (Scanner.nextNextToken == leftBracketToken) {
+          d = new LocalArrayDecl(Scanner.nextName);
+          addDecl(d);
+          d.parse();
+        } else {
+          d = new LocalSimpleVarDecl(Scanner.nextName);
+          addDecl(d);
+          d.parse();
+        }
+      }
     }
 }
 
@@ -557,10 +549,10 @@ class LocalSimpleVarDecl extends VarDecl {
   @Override
     void parse() {
       Log.enterParser("<var decl>");
-
-      // -- Must be changed in part 1:
-      System.out.println("EXITED FROM LOCALSIMPLECARDECL");
-      System.exit(1);
+      type = Types.getType(Scanner.curToken);
+      Scanner.skip(Scanner.curToken);
+      Scanner.skip(nameToken);
+      Scanner.skip(semicolonToken);
       Log.leaveParser("</var decl>");
     }
 }
@@ -760,17 +752,22 @@ abstract class Statement extends SyntaxUnit {
   static Statement makeNewStatement() {
     if (Scanner.curToken == nameToken && Scanner.nextToken == leftParToken) {
       // -- Must be changed in part 1:
+      System.out.println("STATEMENT CALLSTATM");
       return new CallStatm();
     } else if (Scanner.curToken == nameToken) {
       // -- Must be changed in part 1:
+      System.out.println("ASSIGNSTATM");
       return new AssignStatm();
     } else if (Scanner.curToken == forToken) {
       // -- Must be changed in part 1:
+      System.out.println("FORSTATM");
       return new ForStatm();
     } else if (Scanner.curToken == ifToken) {
+      System.out.println("IFSTATM");
       return new IfStatm();
     } else if (Scanner.curToken == returnToken) {
       // -- Must be changed in part 1:
+      return new ReturnStatm();
     } else if (Scanner.curToken == whileToken) {
       return new WhileStatm();
     } else if (Scanner.curToken == semicolonToken) {
@@ -802,9 +799,9 @@ class EmptyStatm extends Statement {
   @Override
     void parse() {
       // -- Must be changed in part 1:
-      System.out.println("EMPTY STATM: PARSE");
-      System.out.println("EXITED FROM EMPTY STATM");
-      System.exit(1);
+      Log.enterParser("<empty statm>");
+      Scanner.skip(semicolonToken);
+      Log.leaveParser("</empty statm>");
     }
 
   @Override
@@ -880,7 +877,7 @@ class AssignStatm extends Statement {
       ass = new Assignment();
       ass.parse();
       Scanner.skip(semicolonToken);
-      Log.leaveParser("</assign-statm>"); 
+      Log.leaveParser("</assign statm>"); 
     }
 
   @Override
@@ -934,6 +931,7 @@ class IfStatm extends Statement {
     void parse() {
       // -- Must be changed in part 1:
       System.out.println("PARSER IN IFSTATM");
+      Log.enterParser("<if-statm>");
       Scanner.skip(ifToken);
       Scanner.skip(leftParToken);
       ifTest = new Expression();
@@ -946,12 +944,13 @@ class IfStatm extends Statement {
       if (Scanner.curToken == elseToken) {
         Log.enterParser("<else-part>");
         Scanner.readNext();
-        Scanner.skip(rightCurlToken);
+        Scanner.skip(leftCurlToken);
         elsePart = new StatmList();
         elsePart.parse();
         Scanner.skip(rightCurlToken);
         Log.leaveParser("</else-part>");
       }
+      Log.leaveParser("</if-statm>");
     }
 
   @Override
@@ -977,8 +976,12 @@ class ReturnStatm extends Statement {
 
   @Override
     void parse() {
-      System.out.println("EXITED FROM RETURN STATM");
-      System.exit(1);
+      Log.enterParser("<return-statm>");
+      Scanner.skip(returnToken);
+      Expression e = new Expression();
+      e.parse();
+      Scanner.skip(semicolonToken);
+      Log.leaveParser("</return-statm>");
     }
 
   @Override
@@ -1068,21 +1071,21 @@ class ExprList extends SyntaxUnit {
 
       // -- Must be changed in part 1:
       if (Scanner.curToken != rightParToken) {     
-      if (firstExpr == null) {
-        firstExpr = new Expression();
-        firstExpr.parse();
-        lastExpr = firstExpr;
-      } else {
-        System.out.println("GOT HERE!");
-        firstExpr.nextExpr = new Expression();
-        lastExpr = firstExpr.nextExpr;
-        lastExpr.parse();
+        if (firstExpr == null) {
+          firstExpr = new Expression();
+          firstExpr.parse();
+          lastExpr = firstExpr;
+        } else {
+          firstExpr.nextExpr = new Expression();
+          lastExpr = firstExpr.nextExpr;
+          lastExpr.parse();
+        } 
         while (Scanner.curToken == commaToken) {
+          Scanner.skip(commaToken);
           firstExpr.nextExpr = new Expression();
           lastExpr = firstExpr.nextExpr;
           lastExpr.parse();
         }
-      } 
       }
       System.out.println(Scanner.curToken);
       System.out.println(Scanner.nextNextToken);
