@@ -154,7 +154,6 @@ abstract class DeclList extends SyntaxUnit {
     }
 
   void addDecl(Declaration d) {
-    System.out.println("DECLARATION NAME " + d.name + "Current token " + Scanner.curToken);
     if (firstDecl == null) {
       firstDecl = d;
       return;
