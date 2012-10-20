@@ -411,14 +411,18 @@ class GlobalArrayDecl extends VarDecl {
 
   @Override
     void parse() {
-      Log.enterParser("<var decl>");
-
       // -- Must be changed in part 1:
-
-      System.out.println("EXITED FROM GLOBALARRAYDECL");
-      System.exit(1);
-
+      Log.enterParser("<var decl>");
+      type = Types.getType(Scanner.curToken);
+      Scanner.skip(Scanner.curToken);
+      Scanner.skip(nameToken);
+      Scanner.skip(leftBracketToken);
+      System.out.println("CURRENT TOKEN IN LOCALARRAY DECL" + Scanner.curToken);
+      if (Scanner.curToken == numberToken) Scanner.skip(Scanner.curToken);
+      Scanner.skip(rightBracketToken);
+      Scanner.skip(semicolonToken);
       Log.leaveParser("</var decl>");
+
     }
 
   @Override
@@ -463,7 +467,8 @@ class GlobalSimpleVarDecl extends VarDecl {
       System.out.println("PARSER IN GLOBAL SIMPLE VARDECL");
       Log.enterParser("<var decl>");
       // -- Must be changed in part 1:
-      Scanner.skip(intToken);
+      type = Types.getType(Scanner.curToken);
+      Scanner.skip(Scanner.curToken);
       Scanner.skip(nameToken);
       Scanner.skip(semicolonToken);
       Log.leaveParser("</var decl>");
@@ -670,17 +675,18 @@ class FuncDecl extends Declaration {
       // -- Must be changed in part 1:
       System.out.println("PARSER IN FUNCDECL");
       Log.enterParser("<func decl>");
-      Scanner.skip(intToken);
+      type = Types.getType(Scanner.curToken);
+      Scanner.skip(Scanner.curToken);
       Scanner.skip(nameToken);
       Scanner.skip(leftParToken);
-      if (Scanner.curToken == intToken) {
+      if (Scanner.curToken == intToken || Scanner.curToken == doubleToken) {
         pdl = new ParamDeclList();
         pdl.parse();
       }
       Scanner.skip(rightParToken);
       Log.enterParser("<func body>");
       Scanner.skip(leftCurlToken);
-      if (Scanner.curToken == intToken) {
+      if (Scanner.curToken == intToken || Scanner.curToken == doubleToken) {
         ldl = new LocalDeclList();
         ldl.parse();
       }
@@ -837,9 +843,23 @@ class ForStatm extends Statement {
 
   @Override
     void parse() {
-      System.out.println("HELLO FORM FOR STATEMENT");
-      System.out.println("EXITED FROM FORSTATM");
-      System.exit(1);
+      Log.enterParser("<for-statm>");
+      Scanner.skip(forToken);
+      Scanner.skip(leftParToken);
+      Assignment ass1 = new Assignment();
+      ass1.parse();
+      Scanner.skip(semicolonToken);
+      Expression forTest = new Expression();
+      forTest.parse();
+      Scanner.skip(semicolonToken);
+      Assignment ass2 = new Assignment();
+      ass2.parse();
+      Scanner.skip(rightParToken);
+      Scanner.skip(leftCurlToken);
+      StatmList forStatements = new StatmList();
+      forStatements.parse();
+      Scanner.skip(rightCurlToken);
+      Log.leaveParser("</for-statm>");
     }
 
   @Override
@@ -1197,6 +1217,7 @@ class Term extends SyntaxUnit {
         lastOp.parse();
         lastFactor.nextFactor = new Factor();
         lastFactor = lastFactor.nextFactor;
+        System.out.println("FAILING HERE");
         lastFactor.parse();
       }
       System.out.println("CURRENT TOKEN " + Scanner.curToken);
@@ -1277,13 +1298,8 @@ class Factor extends SyntaxUnit {
             lastOperand = lastOperand.nextOperand;
           }
           lastOperand.parse();
-          System.out.println(Scanner.curName);
-          System.out.println(Scanner.nextName);
-          System.out.println(Scanner.nextNextName);
           Scanner.skip(rightParToken);
-          lastOperand.parse();
         } else {
-          System.out.println("WE ARE HERE LOLOLOLOL");
           Error.expected("An operand" + Scanner.curToken);
         }
         Log.leaveParser("</operand>");
