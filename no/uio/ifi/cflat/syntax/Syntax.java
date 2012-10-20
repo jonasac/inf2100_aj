@@ -258,8 +258,6 @@ class ParamDeclList extends DeclList {
 
   @Override
     void parse() {
-      System.out.println("PARSER IN PARAMDECLLIST");
-      // -- Must be changed in part 1:
       while (Scanner.curToken == intToken || Scanner.curToken == doubleToken && Scanner.nextToken == nameToken) {
         ParamDecl pd = new ParamDecl(Scanner.nextName);
         addDecl(pd);
@@ -1308,7 +1306,6 @@ class Factor extends SyntaxUnit {
         operand.printTree();
         operator = operator.nextOp;
       }
- 
     }
 }
 // -- Must be changed in part 1+2:
@@ -1504,7 +1501,7 @@ class FunctionCall extends Operand {
   @Override
     void printTree() {
       // -- Must be changed in part 1:
-      Log.wTree(functionName + " (");
+      Log.wTree(functionName + "(");
       arguments.printTree();
       Log.wTree(")");
     }
