@@ -1366,6 +1366,7 @@ class TermOperator extends Operator {
     void parse() {
       Log.enterParser("<term operator>");
       if (Token.isTermOperator(Scanner.curToken)) {
+        opToken = Scanner.curToken;
         Scanner.skip(Scanner.curToken);
       } else {
         Error.expected("An term operator");
@@ -1375,8 +1376,11 @@ class TermOperator extends Operator {
 
   @Override
     void printTree() {
-      Log.wTreeLn("TERMOPERATOR");
-      // TODO
+      if (opToken == addToken) {
+        Log.wTree(" + ");
+      } else {
+        Log.wTree(" - ");
+      }
     }
 }
 // -- Must be changed in part 1+2:
