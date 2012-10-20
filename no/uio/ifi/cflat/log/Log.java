@@ -108,7 +108,7 @@ public class Log {
     }
 
     public static void wTreeLn() {
-        writeLogLine("Tree:     " + curTreeLine);
+        writeLogLine("Tree:     " + indent + curTreeLine);
         curTreeLine = "";
     }
 
@@ -118,12 +118,12 @@ public class Log {
 
     public static void indentTree() {
       parseLevel++;
-        indent += "  ";
+      indent += "  ";
     }
 
     public static void outdentTree() {
       parseLevel--;
-        indent = indent.substring(0, indent.length() - 2);
+      indent = indent.substring(0, indent.length() - 2);
     }
 }
 
