@@ -123,10 +123,11 @@ class Program extends SyntaxUnit {
  */
 
 abstract class DeclList extends SyntaxUnit {
-  Declaration firstDecl = null;
+  Declaration firstDecl;
   DeclList outerScope;
 
   DeclList() {
+    firstDecl = null;
     // -- Must be changed in part 1:
 		//outerScope = ?
   }
@@ -148,19 +149,21 @@ abstract class DeclList extends SyntaxUnit {
       while (dx != null) {
         dx.printTree();
         dx = dx.nextDecl;
+        if (dx != null) Log.wTreeLn();
       }
     }
 
   void addDecl(Declaration d) {
+    System.out.println("DECLARATION NAME " + d.name + "Current token " + Scanner.curToken);
     if (firstDecl == null) {
       firstDecl = d;
-    } else {
-      Declaration tmp = firstDecl;
-      while (tmp.nextDecl != null) {
-        tmp = tmp.nextDecl;
-      }
-      tmp.nextDecl = d;
+      return;
     }
+    Declaration tmp = firstDecl;
+    while (tmp.nextDecl != null) {
+      tmp = tmp.nextDecl;
+    }
+    tmp.nextDecl = d;
   }
 
   int dataSize() {
@@ -234,13 +237,11 @@ class LocalDeclList extends DeclList {
       while (Token.isTypeName(Scanner.curToken) && Scanner.nextToken == nameToken) {
         if (Scanner.nextNextToken == leftBracketToken) {
           d = new LocalArrayDecl(Scanner.nextName);
-          addDecl(d);
-          d.parse();
         } else {
           d = new LocalSimpleVarDecl(Scanner.nextName);
-          addDecl(d);
-          d.parse();
         }
+        addDecl(d);
+        d.parse();
       }
     }
 }
@@ -600,8 +601,9 @@ class ParamDecl extends VarDecl {
 class FuncDecl extends Declaration {
   // -- Must be changed in part 1+2:
   ParamDeclList functionParameters;
-  LocalDeclList functionBodyVars;
-  StatmList functionBodyStatements;
+  /* LocalDeclList functionBodyVars; */
+  /* StatmList functionBodyStatements; */
+  FuncBody functionBody;
 
   FuncDecl(String n) {
     // Used for user functions:
@@ -613,8 +615,7 @@ class FuncDecl extends Declaration {
     type = Types.getType(Scanner.curToken);
 		//System.out.println("TYPE WHEN SETTING TYPE: " + type.typeName());
     functionParameters = new ParamDeclList();
-    functionBodyVars = new LocalDeclList();
-    functionBodyStatements = new StatmList();
+    functionBody = new FuncBody();
 
   }
 
@@ -660,12 +661,9 @@ class FuncDecl extends Declaration {
       Scanner.skip(leftParToken);
       functionParameters.parse();
       Scanner.skip(rightParToken);
-      Log.enterParser("<func body>");
       Scanner.skip(leftCurlToken);
-      functionBodyVars.parse();
-      functionBodyStatements.parse();
+      functionBody.parse();
       Scanner.skip(rightCurlToken);
-      Log.leaveParser("</func body>");
       Log.leaveParser("</func decl>");
     }
 
@@ -676,19 +674,50 @@ class FuncDecl extends Declaration {
       while (parameter != null) {
         Log.wTree(parameter.type.typeName() + " " + parameter.name);
         parameter = parameter.nextDecl;
-        if (parameter != null) Log.wTree(",");
+        if (parameter != null) Log.wTree(", ");
       }
       Log.wTreeLn(")");
       Log.wTreeLn("{");
       Log.indentTree();
-      functionBodyVars.printTree();
-      functionBodyStatements.printTree();
+      functionBody.printTree();
       Log.outdentTree();
       Log.wTreeLn("}");
     }
 }
 
+class FuncBody extends SyntaxUnit {
+  LocalDeclList funcBodyDecls;
+  StatmList funcBodyStatms;
+  FuncBody() {
+    funcBodyDecls = new LocalDeclList();
+    funcBodyStatms = new StatmList();
+  }
+  void check(DeclList curDecls) {
+    //TODO
+  }
+  void genCode(FuncDecl curFunc) {
+    //TODO
+  }
+  void printTree() {
+    /* funcBodyDecls.printTree(); */
+    if (funcBodyDecls.firstDecl != null) {
+      Declaration curDecl = funcBodyDecls.firstDecl;
+      while (curDecl != null) {
+        curDecl.printTree();
+        curDecl = curDecl.nextDecl;
+      }
+      Log.wTreeLn();
+    }
+    funcBodyStatms.printTree();
+  }
+  void parse() {
+    Log.enterParser("<func body>");
+    funcBodyDecls.parse();
+    funcBodyStatms.parse();
+    Log.leaveParser("</func body>");
+  }
 
+}
 /*
  * A <statm list>.
  */
@@ -795,8 +824,7 @@ class EmptyStatm extends Statement {
 
   @Override
     void printTree() {
-      // -- Must be changed in part 1:
-      System.out.println("EMPTY STATM: PRINT TREE");
+      Log.wTreeLn(";");
     }
 }
 
@@ -886,7 +914,8 @@ class AssignStatm extends Statement {
 
   @Override
     void printTree() {
-      Log.wTreeLn("ASSIGNSTATM");
+      ass.printTree();
+      Log.wTreeLn(";");
     }
 }
 
@@ -909,7 +938,9 @@ class Assignment extends SyntaxUnit {
     Log.leaveParser("</assignment>");
   }
   void printTree() {
-    Log.wTreeLn("ASSIGNMENT");
+    var.printTree();
+    Log.wTree(" = ");
+    expr.printTree();
   }
 }
 
@@ -958,8 +989,20 @@ class IfStatm extends Statement {
 
   @Override
     void printTree() {
-      // -- Must be changed in part 1:
-      Log.wTreeLn("SYSATEM OUT PRINTLN IFSTATMS");
+      Log.wTree("if (");
+      ifTest.printTree();
+      Log.wTreeLn(") {");
+      Log.indentTree();
+      ifPart.printTree();
+      if (elsePart != null) {
+        Log.outdentTree();
+        Log.wTreeLn("} else {");
+        Log.indentTree();
+        elsePart.printTree();
+      }
+      Log.outdentTree();
+      Log.wTreeLn("}");
+
     }
 }
 
@@ -969,6 +1012,7 @@ class IfStatm extends Statement {
  */
 // -- Must be changed in part 1+2:
 class ReturnStatm extends Statement {
+  Expression returnExpression;
   @Override
     void check(DeclList curDecls) {
     }
@@ -981,15 +1025,17 @@ class ReturnStatm extends Statement {
     void parse() {
       Log.enterParser("<return-statm>");
       Scanner.skip(returnToken);
-      Expression e = new Expression();
-      e.parse();
+      returnExpression = new Expression();
+      returnExpression.parse();
       Scanner.skip(semicolonToken);
       Log.leaveParser("</return-statm>");
     }
 
   @Override
     void printTree() {
-      Log.wTreeLn("RETURN STATM");
+      Log.wTree("return ");
+      if (returnExpression != null) returnExpression.printTree();
+      Log.wTreeLn(";");
     }
 }
 
@@ -1094,6 +1140,7 @@ class ExprList extends SyntaxUnit {
       while (current != null) {
         current.printTree();
         current = current.nextExpr;
+        if (current != null) Log.wTree(",");
       }
     }
   // -- Must be changed in part 1:
@@ -1589,7 +1636,6 @@ class Variable extends Operand {
 
   @Override
     void printTree() {
-      Log.wTree("CVARIABLE");
-      // -- Must be changed in part 1:
+      Log.wTree(varName);
     }
 }
