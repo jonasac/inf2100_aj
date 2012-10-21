@@ -395,24 +395,25 @@ class GlobalArrayDecl extends VarDecl {
 
   @Override
     void parse() {
-      // -- Must be changed in part 1:
       Log.enterParser("<var decl>");
-      type = Types.getType(Scanner.curToken);
+      Type arrType = Types.getType(Scanner.curToken);
       Scanner.skip(Scanner.curToken);
       Scanner.skip(nameToken);
       Scanner.skip(leftBracketToken);
-      System.out.println("CURRENT TOKEN IN LOCALARRAY DECL" + Scanner.curToken);
-      if (Scanner.curToken == numberToken) Scanner.skip(Scanner.curToken);
+      if (Scanner.curToken == numberToken) {
+        type = new ArrayType(Scanner.curNum, arrType);
+        Scanner.skip(Scanner.curToken);
+      }
       Scanner.skip(rightBracketToken);
       Scanner.skip(semicolonToken);
       Log.leaveParser("</var decl>");
-
     }
 
   @Override
     void printTree() {
       // -- Must be changed in part 1:
-      Log.wTreeLn("GLOBALARRAYDECL");
+      ArrayType arrType = (ArrayType)type;
+      Log.wTreeLn(arrType.elemType.typeName() + " " + name + "[" + arrType.nElems +  "];");
     }
 }
 
