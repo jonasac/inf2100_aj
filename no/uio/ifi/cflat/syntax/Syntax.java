@@ -507,7 +507,7 @@ class LocalArrayDecl extends VarDecl {
       // -- Must be changed in part 1:
       //TODO find a better way to use the arraytype i think its required in part 2
       ArrayType arrType = (ArrayType)type;
-      Log.wTreeLn(arrType.elemType.typeName() + " " + name + "[" + arrType.size() +  "];");
+      Log.wTreeLn(arrType.elemType.typeName() + " " + name + "[" + arrType.nElems +  "];");
     }
 
 }
