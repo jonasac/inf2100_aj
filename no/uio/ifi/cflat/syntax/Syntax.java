@@ -206,7 +206,6 @@ class GlobalDeclList extends DeclList {
             addDecl(gad);
             gad.parse();
           } else {
-            // -- Must be changed in part 1:
             GlobalSimpleVarDecl gsv = new GlobalSimpleVarDecl(Scanner.nextName);
             addDecl(gsv);
             gsv.parse();
@@ -507,6 +506,7 @@ class LocalArrayDecl extends VarDecl {
     void printTree() {
       // -- Must be changed in part 1:
       //TODO find a better way to use the arraytype i think its required in part 2
+      //TODO probably using the array type wrong according to part2
       ArrayType arrType = (ArrayType)type;
       Log.wTreeLn(arrType.elemType.typeName() + " " + name + "[" + arrType.nElems +  "];");
     }
