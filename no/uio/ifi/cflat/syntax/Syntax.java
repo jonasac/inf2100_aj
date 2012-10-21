@@ -412,7 +412,7 @@ class GlobalArrayDecl extends VarDecl {
   @Override
     void printTree() {
       // -- Must be changed in part 1:
-      System.out.println("GLOBALARRAYDECL: PRINTTREE");
+      Log.wTreeLn("GLOBALARRAYDECL");
     }
 }
 
@@ -489,11 +489,14 @@ class LocalArrayDecl extends VarDecl {
   @Override
     void parse() {
       Log.enterParser("<var decl>");
-      type = Types.getType(Scanner.curToken);
+      Type arrType = Types.getType(Scanner.curToken);
       Scanner.skip(Scanner.curToken);
       Scanner.skip(nameToken);
       Scanner.skip(leftBracketToken);
-      if (Scanner.curToken == numberToken) Scanner.skip(Scanner.curToken);
+      if (Scanner.curToken == numberToken) {
+        type = new ArrayType(Scanner.curNum, arrType);
+        Scanner.skip(Scanner.curToken);
+      }
       Scanner.skip(rightBracketToken);
       Scanner.skip(semicolonToken);
       Log.leaveParser("</var decl>");
@@ -502,7 +505,9 @@ class LocalArrayDecl extends VarDecl {
   @Override
     void printTree() {
       // -- Must be changed in part 1:
-      System.out.println("LOCAL ARRAY DECL: PRINT TREE");
+      //TODO find a better way to use the arraytype i think its required in part 2
+      ArrayType arrType = (ArrayType)type;
+      Log.wTreeLn(arrType.elemType.typeName() + " " + name + "[" + arrType.size() +  "];");
     }
 
 }
@@ -600,19 +605,13 @@ class ParamDecl extends VarDecl {
 class FuncDecl extends Declaration {
   // -- Must be changed in part 1+2:
   ParamDeclList functionParameters;
-  /* LocalDeclList functionBodyVars; */
-  /* StatmList functionBodyStatements; */
   FuncBody functionBody;
 
   FuncDecl(String n) {
     // Used for user functions:
-
     super(n);
     assemblerName = (Cflat.underscoredGlobals() ? "_" : "") + n;
-    // -- Must be changed in part 1:
-		//System.out.println("CUR TOKEN WHEN SETTING TYPE: " + Scanner.curToken);
     type = Types.getType(Scanner.curToken);
-		//System.out.println("TYPE WHEN SETTING TYPE: " + type.typeName());
     functionParameters = new ParamDeclList();
     functionBody = new FuncBody();
 
@@ -698,7 +697,6 @@ class FuncBody extends SyntaxUnit {
     //TODO
   }
   void printTree() {
-    /* funcBodyDecls.printTree(); */
     if (funcBodyDecls.firstDecl != null) {
       Declaration curDecl = funcBodyDecls.firstDecl;
       while (curDecl != null) {
@@ -740,23 +738,27 @@ class StatmList extends SyntaxUnit {
     void parse() {
       Log.enterParser("<statm list>");
 
-      Statement lastStatement = null;
       while (Scanner.curToken != rightCurlToken) {
         Log.enterParser("<statement>");
-        Statement tmpStatement = Statement.makeNewStatement();
-        if (firstStatement == null) {
-          firstStatement = tmpStatement;
-          lastStatement = firstStatement;
-        } else {
-          lastStatement.nextStatm = tmpStatement;
-          lastStatement = lastStatement.nextStatm;
-        }
-        lastStatement.parse();
+        Statement st = Statement.makeNewStatement();
+        st.parse();
+        add(st);
         Log.leaveParser("</statement>");
-
       }
       Log.leaveParser("</statm list>");
     }
+
+  void add(Statement s) {
+    if (firstStatement == null) {
+      firstStatement = s;
+    } else {
+      Statement tmp = firstStatement;
+     while (tmp.nextStatm != null) {
+        tmp = tmp.nextStatm;
+      }
+      tmp.nextStatm = s;
+    }
+  }
 
   @Override
     void printTree() {
@@ -833,6 +835,17 @@ class EmptyStatm extends Statement {
  */
 // -- Must be changed in part 1+2:
 class ForStatm extends Statement {
+  Assignment forCounter;
+  Expression forTest;
+  Assignment forIncrement;
+  StatmList forBody;
+  ForStatm() {
+    forCounter = new Assignment();
+    forTest = new Expression();
+    forIncrement = new Assignment();
+    forBody = new StatmList();
+  }
+
   @Override
     void check(DeclList curDecls) {
     }
@@ -846,25 +859,31 @@ class ForStatm extends Statement {
       Log.enterParser("<for-statm>");
       Scanner.skip(forToken);
       Scanner.skip(leftParToken);
-      Assignment ass1 = new Assignment();
-      ass1.parse();
+      forCounter.parse();
       Scanner.skip(semicolonToken);
-      Expression forTest = new Expression();
       forTest.parse();
       Scanner.skip(semicolonToken);
-      Assignment ass2 = new Assignment();
-      ass2.parse();
+      forIncrement.parse();
       Scanner.skip(rightParToken);
       Scanner.skip(leftCurlToken);
-      StatmList forStatements = new StatmList();
-      forStatements.parse();
+      forBody.parse();
       Scanner.skip(rightCurlToken);
       Log.leaveParser("</for-statm>");
     }
 
   @Override
     void printTree() {
-      Log.wTreeLn("FOR STATM PRINT TREE");
+      Log.wTree("for (");
+      forCounter.printTree();
+      Log.wTree(";  ");
+      forTest.printTree();
+      Log.wTree(";  ");
+      forIncrement.printTree();
+      Log.wTreeLn(") {");
+      Log.indentTree();
+      forBody.printTree();
+      Log.outdentTree();
+      Log.wTreeLn("}");
     }
 }
 
@@ -1111,28 +1130,27 @@ class ExprList extends SyntaxUnit {
 
   @Override
     void parse() {
-      Expression lastExpr = null;
       Log.enterParser("<expr list>");
-      if (Scanner.curToken != rightParToken) {     
-        if (firstExpr == null) {
-          firstExpr = new Expression();
-          firstExpr.parse();
-          lastExpr = firstExpr;
-        } else {
-          firstExpr.nextExpr = new Expression();
-          lastExpr = firstExpr.nextExpr;
-          lastExpr.parse();
-        } 
-        while (Scanner.curToken == commaToken) {
-          Scanner.skip(commaToken);
-          firstExpr.nextExpr = new Expression();
-          lastExpr = firstExpr.nextExpr;
-          lastExpr.parse();
-        }
+      while (Scanner.curToken != rightParToken) {     
+        Expression e = new Expression();
+        add(e);
+        e.parse();
+        if (Scanner.curToken == commaToken) Scanner.skip(commaToken);
       }
       Log.leaveParser("</expr list>");
     }
 
+  void add(Expression e) {
+    if (firstExpr == null) {
+      firstExpr = e;
+    } else {
+      Expression tmp = firstExpr;
+      while (tmp.nextExpr != null) {
+        tmp = tmp.nextExpr;
+      }
+      tmp.nextExpr = e;
+    }
+  }
   @Override
     void printTree() {
       Expression current = firstExpr;
@@ -1394,8 +1412,11 @@ class FactOperator extends Operator {
 
   @Override
     void printTree() {
-      Log.wTreeLn("FACTOPERATOR");
-      // TODO
+      if (opToken == multiplyToken) {
+        Log.wTree(" * ");
+      } else {
+        Log.wTree(" / ");
+      }
     }
 }
 class TermOperator extends Operator {
@@ -1636,5 +1657,10 @@ class Variable extends Operand {
   @Override
     void printTree() {
       Log.wTree(varName);
+      if (index != null) {
+        Log.wTree("[");
+        index.printTree();
+        Log.wTree("]");
+      }
     }
 }

@@ -14,53 +14,53 @@ import static no.uio.ifi.cflat.scanner.Token.*;
  */
 
 public class Types {
-    public static BasicType doubleType, intType;
+  public static BasicType doubleType, intType;
 
-    public static void init() {
-	doubleType = new BasicType() {
-		@Override public int size() {
-		    return 8;
-		}
+  public static void init() {
+    doubleType = new BasicType() {
+      @Override public int size() {
+        return 8;
+      }
 
-		@Override public String typeName() {
-		    return "double";
-		}
+      @Override public String typeName() {
+        return "double";
+      }
 
-		@Override public void genJumpIfZero(String jumpLabel) {
-		    Code.genInstr("", "fstps", Code.tmpLabel, "");
-		    Code.genInstr("", "cmpl", "$0,"+Code.tmpLabel, "");
-		    Code.genInstr("", "je", jumpLabel, "");
-		}
-	    };
-	intType = new BasicType() {
-		@Override public int size() {
-		    return 2;
-		}
+      @Override public void genJumpIfZero(String jumpLabel) {
+        Code.genInstr("", "fstps", Code.tmpLabel, "");
+        Code.genInstr("", "cmpl", "$0,"+Code.tmpLabel, "");
+        Code.genInstr("", "je", jumpLabel, "");
+      }
+    };
+    intType = new BasicType() {
+      @Override public int size() {
+        return 2;
+      }
 
-		@Override public String typeName() {
-		    return "int";
-		}
+      @Override public String typeName() {
+        return "int";
+      }
 
-		@Override public void genJumpIfZero(String jumpLabel) {
-		    //-- Must be changed in part 2:
-		    //Code.genInstr("", "fstps", Code.tmpLabel, "");
-		    //Code.genInstr("", "cmpl", "$0,"+Code.tmpLabel, "");
-		    Code.genInstr("", "je", jumpLabel, "");
-		}
-	};
-	//-- Must be changed in part 2:
+      @Override public void genJumpIfZero(String jumpLabel) {
+        //-- Must be changed in part 2:
+        //Code.genInstr("", "fstps", Code.tmpLabel, "");
+        //Code.genInstr("", "cmpl", "$0,"+Code.tmpLabel, "");
+        Code.genInstr("", "je", jumpLabel, "");
+      }
+    };
+    //-- Must be changed in part 2:
+  }
+
+  public static void finish() {
+    //-- Must be changed in part 2:
+  }
+
+  public static Type getType(Token t) {
+    switch (t) {
+      case doubleToken: return doubleType;
+      case intToken:    return intType;
+      default:          Error.panic(t+" is no type name!");
     }
-
-    public static void finish() {
-	//-- Must be changed in part 2:
-    }
-
-    public static Type getType(Token t) {
-	switch (t) {
-	case doubleToken: return doubleType;
-	case intToken:    return intType;
-        default:          Error.panic(t+" is no type name!");
-	}
-	return null;  // Just to keep the Java compiler happy. :-)
-    }
+    return null;  // Just to keep the Java compiler happy. :-)
+  }
 }
