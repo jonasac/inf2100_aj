@@ -1275,71 +1275,70 @@ class Factor extends SyntaxUnit {
       // TODO
     }
 
+  void addOperand(Operand op) {
+    if (firstOperand == null) {
+      firstOperand = op;
+    } else {
+      Operand tmp = firstOperand;
+      while (tmp.nextOperand != null) {
+        tmp = tmp.nextOperand;
+      }
+      tmp.nextOperand = op;
+    }
+  }
+  
+  void addOperator(Operator op) {
+    if (firstFo == null) {
+      firstFo= op;
+    } else {
+      Operator tmp = firstFo;
+      while (tmp.nextOp != null) {
+        tmp = tmp.nextOp;
+      }
+      tmp.nextOp = op;
+    }
+  }
+  void makeOperand() {
+    if (Scanner.curToken == numberToken) {
+      Number op = new Number();
+      addOperand(op);
+      op.parse();
+    } else if (Scanner.curToken == nameToken && Scanner.nextToken == leftParToken) {
+      FunctionCall op = new FunctionCall();
+      addOperand(op);
+      op.parse();
+    } else if (Scanner.curToken == nameToken) {
+      Variable op = new Variable();
+      addOperand(op);
+      op.parse();
+    } else if (Scanner.curToken == leftParToken) {
+      Scanner.skip(leftParToken);
+      Expression op = new Expression();
+      op.innerExpr = true;
+      addOperand(op);
+      op.parse();
+      Scanner.skip(rightParToken);
+    } else {
+      Error.expected("An operand" + Scanner.curToken);
+    }
+  }
+
   @Override
     void parse() {
-      Operator lastFo = null;
-      Operand lastOperand = null;
       Log.enterParser("<factor>");
-      do {
+      while (true) {
         Log.enterParser("<operand>");
-        if (Scanner.curToken == numberToken) {
-          if (firstOperand == null) {
-            firstOperand = new Number();
-            lastOperand = firstOperand;
-          } else {
-            lastOperand.nextOperand = new Number();
-            lastOperand = lastOperand.nextOperand;
-          }
-          lastOperand.parse();
-        } else if (Scanner.curToken == nameToken && Scanner.nextToken == leftParToken) {
-          if (firstOperand == null) {
-            firstOperand = new FunctionCall();
-            lastOperand = firstOperand;
-          } else {
-            lastOperand.nextOperand = new FunctionCall();
-            lastOperand = lastOperand.nextOperand;
-          }
-          lastOperand.parse();
-        } else if (Scanner.curToken == nameToken) {
-          if (firstOperand == null) {
-            firstOperand = new Variable();
-            lastOperand = firstOperand;
-          } else {
-            lastOperand.nextOperand = new Variable();
-            lastOperand = lastOperand.nextOperand;
-          }
-          lastOperand.parse();
-        } else if (Scanner.curToken == leftParToken) {
-          Scanner.skip(leftParToken);
-          Expression e = new Expression();
-          e.innerExpr = true;
-          if (firstOperand == null) {
-            firstOperand = e;
-            lastOperand = firstOperand;
-          } else {
-            lastOperand.nextOperand = e;
-            lastOperand = lastOperand.nextOperand;
-          }
-          lastOperand.parse();
-          Scanner.skip(rightParToken);
-        } else {
-          Error.expected("An operand" + Scanner.curToken);
-        }
+        makeOperand();
         Log.leaveParser("</operand>");
         if (Token.isFactorOperator(Scanner.curToken)) {
-          if (firstFo == null) {
-            firstFo = new FactOperator();
-            lastFo = firstFo;
-          } else {
-            lastFo.nextOp = new FactOperator();
-            lastFo = lastFo.nextOp;
-          }
-          lastFo.parse();
+          Operator tmp = new FactOperator();
+          addOperator(tmp);
+          tmp.parse();
         } else {
-          Log.leaveParser("</factor>");
-          return;
+          break;
         }
-      } while (true);
+      }
+      Log.leaveParser("</factor>");
     }
 
 
