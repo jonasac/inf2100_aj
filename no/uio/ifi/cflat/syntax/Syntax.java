@@ -129,6 +129,7 @@ abstract class DeclList extends SyntaxUnit {
   DeclList() {
     firstDecl = null;
     // -- Must be changed in part 1:
+    //TODO what is outerscope and what does it do
 		//outerScope = ?
   }
 
@@ -506,7 +507,7 @@ class LocalArrayDecl extends VarDecl {
     void printTree() {
       // -- Must be changed in part 1:
       //TODO find a better way to use the arraytype i think its required in part 2
-      //TODO probably using the array type wrong according to part2
+      //TODO probably using the array type wrong according to part2, kind of brute forcing the fields
       ArrayType arrType = (ArrayType)type;
       Log.wTreeLn(arrType.elemType.typeName() + " " + name + "[" + arrType.nElems +  "];");
     }
@@ -872,7 +873,11 @@ class ForStatm extends Statement {
 }
 
 class CallStatm extends Statement {
-  FunctionCall fc = new FunctionCall();
+  FunctionCall functionCall;
+
+  CallStatm() {
+    functionCall = new FunctionCall();
+  }
   @Override
     void check(DeclList curDecls) {
     }
@@ -884,19 +889,23 @@ class CallStatm extends Statement {
   @Override
     void parse() {
       Log.enterParser("<call-statm>");
-      fc.parse();
+      functionCall.parse();
       Scanner.skip(semicolonToken);
       Log.leaveParser("</call-statm>");
     }
 
   @Override
     void printTree() {
-      fc.printTree();
+      functionCall.printTree();
       Log.wTreeLn(";");
     }
 }
 class AssignStatm extends Statement {
-  Assignment ass = null;
+  Assignment assignment;
+
+  AssignStatm() {
+    assignment = new Assignment();
+  }
   @Override
     void check(DeclList curDecls) {
     }
@@ -908,23 +917,26 @@ class AssignStatm extends Statement {
   @Override
     void parse() {
       Log.enterParser("<assign-statm>");
-      ass = new Assignment();
-      ass.parse();
+      assignment.parse();
       Scanner.skip(semicolonToken);
       Log.leaveParser("</assign statm>"); 
     }
 
   @Override
     void printTree() {
-      ass.printTree();
+      assignment.printTree();
       Log.wTreeLn(";");
     }
 }
 
 class Assignment extends SyntaxUnit {
-  Variable var = null;
-  Expression expr = null;
+  Variable variable;
+  Expression expression;
 
+  Assignment() {
+    variable = new Variable();
+    expression = new Expression();
+  }
   void check(DeclList curDecls) {
   }
 
@@ -932,17 +944,15 @@ class Assignment extends SyntaxUnit {
   }
   void parse() {
     Log.enterParser("<assignment>");
-    var = new Variable();
-    var.parse();
+    variable.parse();
     Scanner.skip(assignToken);
-    expr = new Expression();
-    expr.parse();
+    expression.parse();
     Log.leaveParser("</assignment>");
   }
   void printTree() {
-    var.printTree();
+    variable.printTree();
     Log.wTree(" = ");
-    expr.printTree();
+    expression.printTree();
   }
 }
 
@@ -951,10 +961,15 @@ class Assignment extends SyntaxUnit {
  */
 class IfStatm extends Statement {
   // -- Must be changed in part 1+2:
-  Expression ifTest = null;
-  StatmList ifPart = null;
-  StatmList elsePart = null;
+  Expression ifTest;
+  StatmList ifPart;
+  StatmList elsePart;
 
+  IfStatm() {
+    ifTest = new Expression();
+    ifPart = new StatmList();
+    elsePart = null;
+  }
   @Override
     void check(DeclList curDecls) {
       // -- Must be changed in part 2:
@@ -970,11 +985,9 @@ class IfStatm extends Statement {
       Log.enterParser("<if-statm>");
       Scanner.skip(ifToken);
       Scanner.skip(leftParToken);
-      ifTest = new Expression();
       ifTest.parse();
       Scanner.skip(rightParToken);
       Scanner.skip(leftCurlToken);
-      ifPart = new StatmList();
       ifPart.parse();
       Scanner.skip(rightCurlToken);
       if (Scanner.curToken == elseToken) {
@@ -1015,6 +1028,9 @@ class IfStatm extends Statement {
 // -- Must be changed in part 1+2:
 class ReturnStatm extends Statement {
   Expression returnExpression;
+  ReturnStatm() {
+    returnExpression = new Expression();
+  }
   @Override
     void check(DeclList curDecls) {
     }
@@ -1027,7 +1043,6 @@ class ReturnStatm extends Statement {
     void parse() {
       Log.enterParser("<return-statm>");
       Scanner.skip(returnToken);
-      returnExpression = new Expression();
       returnExpression.parse();
       Scanner.skip(semicolonToken);
       Log.leaveParser("</return-statm>");
@@ -1045,8 +1060,13 @@ class ReturnStatm extends Statement {
  * A <while-statm>.
  */
 class WhileStatm extends Statement {
-  Expression test = new Expression();
-  StatmList body = new StatmList();
+  Expression test;
+  StatmList body;
+
+  WhileStatm() {
+    test = new Expression();
+    body = new StatmList();
+  }
 
   @Override
     void check(DeclList curDecls) {
@@ -1100,7 +1120,11 @@ class WhileStatm extends Statement {
  */
 
 class ExprList extends SyntaxUnit {
-  Expression firstExpr = null;
+  Expression firstExpr;
+
+  ExprList() {
+    firstExpr = null;
+  }
 
   @Override
     void check(DeclList curDecls) {
