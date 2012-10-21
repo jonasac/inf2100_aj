@@ -606,7 +606,8 @@ class ParamDecl extends VarDecl {
 class FuncDecl extends Declaration {
   // -- Must be changed in part 1+2:
   ParamDeclList functionParameters;
-  FuncBody functionBody;
+  LocalDeclList functionBodyDecls;
+  StatmList functionBodyStatms;
 
   FuncDecl(String n) {
     // Used for user functions:
@@ -614,7 +615,8 @@ class FuncDecl extends Declaration {
     assemblerName = (Cflat.underscoredGlobals() ? "_" : "") + n;
     type = Types.getType(Scanner.curToken);
     functionParameters = new ParamDeclList();
-    functionBody = new FuncBody();
+    functionBodyDecls = new LocalDeclList();
+    functionBodyStatms = new StatmList();
 
   }
 
@@ -661,7 +663,10 @@ class FuncDecl extends Declaration {
       functionParameters.parse();
       Scanner.skip(rightParToken);
       Scanner.skip(leftCurlToken);
-      functionBody.parse();
+      Log.enterParser("<func body>");
+      functionBodyDecls.parse();
+      functionBodyStatms.parse();
+      Log.leaveParser("</func body>");
       Scanner.skip(rightCurlToken);
       Log.leaveParser("</func decl>");
     }
@@ -678,44 +683,22 @@ class FuncDecl extends Declaration {
       Log.wTreeLn(")");
       Log.wTreeLn("{");
       Log.indentTree();
-      functionBody.printTree();
+      // The following is a ugly hack to get the output similar to that of the reference compiler
+      // there is probably a way in witch we can use the declList printtree but i really cant get it to work.
+      Declaration tmp = functionBodyDecls.firstDecl;
+      while (tmp != null) {
+        tmp.printTree();
+        tmp = tmp.nextDecl;
+      }
+      Log.outdentTree();
+      if (functionBodyDecls.firstDecl != null) Log.wTreeLn();
+      Log.indentTree();
+      functionBodyStatms.printTree();
       Log.outdentTree();
       Log.wTreeLn("}");
     }
 }
 
-class FuncBody extends SyntaxUnit {
-  LocalDeclList funcBodyDecls;
-  StatmList funcBodyStatms;
-  FuncBody() {
-    funcBodyDecls = new LocalDeclList();
-    funcBodyStatms = new StatmList();
-  }
-  void check(DeclList curDecls) {
-    //TODO
-  }
-  void genCode(FuncDecl curFunc) {
-    //TODO
-  }
-  void printTree() {
-    if (funcBodyDecls.firstDecl != null) {
-      Declaration curDecl = funcBodyDecls.firstDecl;
-      while (curDecl != null) {
-        curDecl.printTree();
-        curDecl = curDecl.nextDecl;
-      }
-      Log.wTreeLn();
-    }
-    funcBodyStatms.printTree();
-  }
-  void parse() {
-    Log.enterParser("<func body>");
-    funcBodyDecls.parse();
-    funcBodyStatms.parse();
-    Log.leaveParser("</func body>");
-  }
-
-}
 /*
  * A <statm list>.
  */
