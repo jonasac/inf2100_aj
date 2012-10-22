@@ -686,11 +686,7 @@ class FuncDecl extends Declaration {
       Log.indentTree();
       // The following is a ugly hack to get the output similar to that of the reference compiler
       // there is probably a way in witch we can use the declList printtree but i really cant get it to work.
-      Declaration tmp = functionBodyDecls.firstDecl;
-      while (tmp != null) {
-        tmp.printTree();
-        tmp = tmp.nextDecl;
-      }
+      functionBodyDecls.printTree();
       Log.outdentTree();
       if (functionBodyDecls.firstDecl != null) Log.wTreeLn();
       Log.indentTree();

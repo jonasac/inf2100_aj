@@ -57,9 +57,11 @@ if __FILE__ == $0
               outputdir: "testresults/",
               samepledir: "samples"}
 
+  puts "Part 0"
   part0 = TestRunner.new('-testscanner', settings, true)
   part0.run_tests
 
+  puts "Part 1"
   part1 = TestRunner.new('-testparser', settings, true)
   part1.run_tests
 end
