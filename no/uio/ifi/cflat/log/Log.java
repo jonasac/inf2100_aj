@@ -106,7 +106,7 @@ public class Log {
 
     // !!! FOR DEBUGGING PART 2 !!!
     public static void w(String msg) {
-	noteBinding(msg, 0, 0);
+	writeLogLine("Binding: " + msg);
     }
 
     public static void wTree(String s) {

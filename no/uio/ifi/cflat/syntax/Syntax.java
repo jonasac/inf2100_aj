@@ -1,4 +1,5 @@
 // vim: sw=2 ts=2
+// tango2
 
 package no.uio.ifi.cflat.syntax;
 
@@ -56,6 +57,8 @@ public class Syntax {
 	static void error(SyntaxUnit use, String message) {
 		Error.error(use.lineNum, message);
 	}
+
+
 }
 
 
@@ -140,6 +143,7 @@ abstract class DeclList extends SyntaxUnit {
 
 		Declaration dx = firstDecl;
 		while (dx != null) {
+			Log.w("Calling the check function for: " + dx.name);
 			dx.check(this);
 			dx = dx.nextDecl;
 		}
@@ -165,6 +169,8 @@ abstract class DeclList extends SyntaxUnit {
 			tmp = tmp.nextDecl;
 		}
 		tmp.nextDecl = d;
+		// Just to be sure the list doesn't loop
+		d.nextDecl = null;
 	}
 
 	int dataSize() {
@@ -342,6 +348,18 @@ abstract class Declaration extends SyntaxUnit {
 	 * @see checkWhetherArray
 	 */
 	abstract void checkWhetherSimpleVar(SyntaxUnit use);
+
+	/* Helper methods */
+	// TODO: Make this work?
+	//private void checkAll(DeclList dl, SyntaxUnit use) {
+	//	Declaration current = dl.firstDecl;
+	//	while (current != null) {
+	//		Log.w("Calling the check function for: " + current.name);
+	//		current.check(use);
+	//		current = current.nextDecl;
+	//	}
+	//}
+
 }
 
 
@@ -657,6 +675,8 @@ class FuncDecl extends Declaration {
 	void check(DeclList curDecls) {
 		// -- Must be changed in part 2:
 		Log.w("FuncDecl.check");
+
+		// TODO: Hva skal egentlig gjøres her?
 	}
 
 	@Override
