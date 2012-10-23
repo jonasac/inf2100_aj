@@ -104,6 +104,11 @@ public class Log {
 	writeLogLine("BIND!" + name + " " + lineNum + " " + useLineNum);
     }
 
+    // !!! FOR DEBUGGING PART 2 !!!
+    public static void w(String msg) {
+	writeLogLine(msg);
+    }
+
     public static void wTree(String s) {
 	if (curTreeLine.length() == 0) {
 	    for (int i = 1;  i <= treeLevel;  ++i) curTreeLine += "  ";

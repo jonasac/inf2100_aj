@@ -93,6 +93,7 @@ class Program extends SyntaxUnit {
 		if (!Cflat.noLink) {
 			// Check that 'main' has been declared properly:
 			// -- Must be changed in part 2:
+			Log.w("Program.check");
 		}
 	}
 
@@ -133,6 +134,8 @@ abstract class DeclList extends SyntaxUnit {
 
 	@Override
 	void check(DeclList curDecls) {
+		Log.w("DeclList.check");
+
 		outerScope = curDecls;
 
 		Declaration dx = firstDecl;
@@ -180,12 +183,12 @@ abstract class DeclList extends SyntaxUnit {
 		Declaration dx = firstDecl;
 		while (dx != null) {
 			if (name.equals(dx.name)) {
-				System.out.println("FOUND! " + dx.name);
+				Log.w("DeclList.findDecl: found: " + dx.name);
 				return dx;
 			}
 			dx = dx.nextDecl;
 		}
-		System.out.println("NOT FOUND! " + name);
+		Log.w("DeclList.findDecl: not found: " + name);
 		return null;
 	}
 }
@@ -199,6 +202,7 @@ class GlobalDeclList extends DeclList {
 	@Override
 	void genCode(FuncDecl curFunc) {
 		// -- Must be changed in part 2:
+		Log.w("GlobalDeclList.genCode");
 	}
 
 	@Override
@@ -398,6 +402,7 @@ class GlobalArrayDecl extends VarDecl {
 	@Override
 	void genCode(FuncDecl curFunc) {
 		// -- Must be changed in part 2:
+		Log.w("GlobalArrayDecl.genCode");
 	}
 
 	@Override
@@ -437,11 +442,13 @@ class GlobalSimpleVarDecl extends VarDecl {
 	@Override
 	void check(DeclList curDecls) {
 		// -- Must be changed in part 2:
+		Log.w("GlobalSimpleVarDecl.check");
 	}
 
 	@Override
 	void checkWhetherArray(SyntaxUnit use) {
 		// -- Must be changed in part 2:
+		Log.w("GlobalSimpleVarDecl.checkWhetherArray");
 	}
 
 	@Override
@@ -452,6 +459,7 @@ class GlobalSimpleVarDecl extends VarDecl {
 	@Override
 	void genCode(FuncDecl curFunc) {
 		// -- Must be changed in part 2:
+		Log.w("GlobalSimpleVarDecl.genCode");
 	}
 
 	@Override
@@ -477,21 +485,25 @@ class LocalArrayDecl extends VarDecl {
 	@Override
 	void check(DeclList curDecls) {
 		// -- Must be changed in part 2:
+		Log.w("LocalArrayDecl.check");
 	}
 
 	@Override
 	void checkWhetherArray(SyntaxUnit use) {
 		// -- Must be changed in part 2:
+		Log.w("LocalArrayDecl.checkWhetherArray");
 	}
 
 	@Override
 	void checkWhetherSimpleVar(SyntaxUnit use) {
 		// -- Must be changed in part 2:
+		Log.w("LocalArrayDecl.checkWhetherSimpleVar");
 	}
 
 	@Override
 	void genCode(FuncDecl curFunc) {
 		// -- Must be changed in part 2:
+		Log.w("LocalArrayDecl.genCode");
 	}
 
 	@Override
@@ -533,21 +545,25 @@ class LocalSimpleVarDecl extends VarDecl {
 	@Override
 	void check(DeclList curDecls) {
 		// -- Must be changed in part 2:
+		Log.w("LocalSimpleVarDecl.check");
 	}
 
 	@Override
 	void checkWhetherArray(SyntaxUnit use) {
 		// -- Must be changed in part 2:
+		Log.w("LocalSimpleVarDecl.checkWhetherArray");
 	}
 
 	@Override
 	void checkWhetherSimpleVar(SyntaxUnit use) {
 		// -- Must be changed in part 2:
+		Log.w("LocalSimpleVarDecl.checkWhetherSimpleVar");
 	}
 
 	@Override
 	void genCode(FuncDecl curFunc) {
 		// -- Must be changed in part 2:
+		Log.w("LocalSimpleVarDecl.genCode");
 	}
 
 	@Override
@@ -575,21 +591,25 @@ class ParamDecl extends VarDecl {
 	@Override
 	void check(DeclList curDecls) {
 		// -- Must be changed in part 2:
+		Log.w("ParamDecl.check");
 	}
 
 	@Override
 	void checkWhetherArray(SyntaxUnit use) {
 		// -- Must be changed in part 2:
+		Log.w("ParamDecl.checkWhetherArray");
 	}
 
 	@Override
 	void checkWhetherSimpleVar(SyntaxUnit use) {
 		// -- Must be changed in part 2:
+		Log.w("ParamDecl.checkWhetherSimpleVar");
 	}
 
 	@Override
 	void genCode(FuncDecl curFunc) {
 		// -- Must be changed in part 2:
+		Log.w("ParamDecl.genCode");
 	}
 
 	@Override
@@ -636,21 +656,25 @@ class FuncDecl extends Declaration {
 	@Override
 	void check(DeclList curDecls) {
 		// -- Must be changed in part 2:
+		Log.w("FuncDecl.check");
 	}
 
 	@Override
 	void checkWhetherArray(SyntaxUnit use) {
 		// -- Must be changed in part 2:
+		Log.w("FuncDecl.checkWhetherArray");
 	}
 
 	@Override
 	void checkWhetherFunction(int nParamsUsed, SyntaxUnit use) {
 		// -- Must be changed in part 2:
+		Log.w("FuncDecl.checkWhetherFunction");
 	}
 
 	@Override
 	void checkWhetherSimpleVar(SyntaxUnit use) {
 		// -- Must be changed in part 2:
+		Log.w("FuncDecl.checkWhetherSimpleVar");
 	}
 
 	@Override
@@ -659,6 +683,7 @@ class FuncDecl extends Declaration {
 		Code.genInstr(assemblerName, "pushl", "%ebp", "Start function " + name);
 		Code.genInstr("", "movl", "%esp,%ebp", "");
 		// -- Must be changed in part 2:
+		Log.w("FuncDecl.genCode");
 	}
 
 	@Override
@@ -715,11 +740,13 @@ class StatmList extends SyntaxUnit {
 	@Override
 	void check(DeclList curDecls) {
 		// -- Must be changed in part 2:
+		Log.w("StatmList.check");
 	}
 
 	@Override
 	void genCode(FuncDecl curFunc) {
 		// -- Must be changed in part 2:
+		Log.w("StatmList.genCode");
 	}
 
 	@Override
@@ -797,11 +824,13 @@ class EmptyStatm extends Statement {
 	@Override
 	void check(DeclList curDecls) {
 		// -- Must be changed in part 2:
+		Log.w("EmptyStatm.check");
 	}
 
 	@Override
 	void genCode(FuncDecl curFunc) {
 		// -- Must be changed in part 2:
+		Log.w("EmptyStatm.genCode");
 	}
 
 	@Override
@@ -977,11 +1006,13 @@ class IfStatm extends Statement {
 	@Override
 	void check(DeclList curDecls) {
 		// -- Must be changed in part 2:
+		Log.w("IfStatm.check");
 	}
 
 	@Override
 	void genCode(FuncDecl curFunc) {
 		// -- Must be changed in part 2:
+		Log.w("IfStatm.genCode");
 	}
 
 	@Override
@@ -1133,11 +1164,13 @@ class ExprList extends SyntaxUnit {
 	@Override
 	void check(DeclList curDecls) {
 		// -- Must be changed in part 2:
+		Log.w("ExprList.check");
 	}
 
 	@Override
 	void genCode(FuncDecl curFunc) {
 		// -- Must be changed in part 2:
+		Log.w("ExprList.genCode");
 	}
 
 	@Override
@@ -1195,11 +1228,13 @@ class Expression extends Operand {
 	@Override
 	void check(DeclList curDecls) {
 		// -- Must be changed in part 2:
+		Log.w("Expression.check");
 	}
 
 	@Override
 	void genCode(FuncDecl curFunc) {
 		// -- Must be changed in part 2:
+		Log.w("Expression.genCode");
 	}
 
 	@Override
@@ -1245,11 +1280,13 @@ class Term extends SyntaxUnit {
 	@Override
 	void check(DeclList curDecls) {
 		// -- Must be changed in part 2:
+		Log.w("Term.check");
 	}
 
 	@Override
 	void genCode(FuncDecl curFunc) {
 		// -- Must be changed in part 2:
+		Log.w("Term.genCode");
 	}
 
 	@Override
@@ -1561,11 +1598,13 @@ class FunctionCall extends Operand {
 	@Override
 	void check(DeclList curDecls) {
 		// -- Must be changed in part 2:
+		Log.w("Operand.check");
 	}
 
 	@Override
 	void genCode(FuncDecl curFunc) {
 		// -- Must be changed in part 2:
+		Log.w("Operand.genCode");
 	}
 
 	@Override
@@ -1599,6 +1638,7 @@ class Number extends Operand {
 	@Override
 	void check(DeclList curDecls) {
 		// -- Must be changed in part 2:
+		Log.w("Number.check");
 	}
 
 	@Override
@@ -1633,7 +1673,9 @@ class Variable extends Operand {
 
 	@Override
 	void check(DeclList curDecls) {
-		System.out.println("CHECK CHECK CHECK CHECK");
+		// part 2 ?
+		Log.w("Variable.check");
+
 		Declaration d = curDecls.findDecl(varName, this);
 		if (index == null) {
 			d.checkWhetherSimpleVar(this);
@@ -1650,6 +1692,7 @@ class Variable extends Operand {
 	@Override
 	void genCode(FuncDecl curFunc) {
 		// -- Must be changed in part 2:
+		Log.w("Variable.genCode");
 	}
 
 	@Override
