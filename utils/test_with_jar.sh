@@ -24,7 +24,7 @@ l=$E.log
 s=$E.s
 
 echo "Testing with: $f"
-echo "Test parameters: $PARAMS"
+echo "Testing parameters: $PARAMS"
 
 if [ ! -e "$f" ]; then
   echo "Could not find $f, aborting"
