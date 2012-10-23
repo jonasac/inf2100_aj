@@ -1,3 +1,1 @@
-#!/bin/sh
-make clean --quiet
-exec ./utils/test_run.sh
+utils/compile_and_test.sh
