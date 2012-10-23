@@ -101,12 +101,12 @@ public class Log {
     public static void noteBinding(String name, int lineNum, int useLineNum) {
 	if (! doLogBinding) return;
 	// part 2
-	writeLogLine("BIND!" + name + " " + lineNum + " " + useLineNum);
+	writeLogLine("Binding: " + name + " " + lineNum + " " + useLineNum);
     }
 
     // !!! FOR DEBUGGING PART 2 !!!
     public static void w(String msg) {
-	writeLogLine(msg);
+	noteBinding(msg, 0, 0);
     }
 
     public static void wTree(String s) {
