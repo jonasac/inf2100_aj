@@ -23,8 +23,13 @@ f=$E.cflat
 l=$E.log
 s=$E.s
 
-echo "Testing with: $f"
-echo "Testing parameters: $PARAMS"
+echo
+echo '===[ Testing ]========================================================'
+echo
+echo -e "  Sample:\t$f"
+echo -e "  Parameters:\t$PARAMS"
+echo -e "  Commandline:\tjava -jar $1 $PARAMS $f"
+echo
 
 if [ ! -e "$f" ]; then
   echo "Could not find $f, aborting"
@@ -40,7 +45,7 @@ if [ ! -e "$1" ]; then
     exit 2
   fi
 fi
-echo java -jar $1 "$PARAMS" "$f"
+
 java -jar $1 "$PARAMS" "$f"
 if [ -e "$l" ]; then
     cat "$l"
