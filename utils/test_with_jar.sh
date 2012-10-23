@@ -1,7 +1,7 @@
 #!/bin/sh
 
-if [ "$1" == "" ]; then
-  echo "First argument must be a .jar file"
+if [ "$1" == '' ]; then
+  echo 'First argument must be a .jar file'
   exit 1
 fi
 
@@ -9,12 +9,22 @@ fi
 # This should result in $SAMPLE being set
 source ./sample.conf
 
+if [ "$2" == '' ]; then
+  # Read params.conf to figure out which paramers to use
+  # This should result in $PARAMS being set
+  source ./params.conf
+else
+  # Use the second to fifth argument as PARAMS instead
+  PARAMS="$2 $3 $4 $5"
+fi
+
 E="samples/$SAMPLE/$SAMPLE"
 f=$E.cflat
 l=$E.log
 s=$E.s
 
 echo "Testing with: $f"
+echo "Test parameters: $PARAMS"
 
 if [ ! -e "$f" ]; then
   echo "Could not find $f, aborting"
@@ -30,8 +40,8 @@ if [ ! -e "$1" ]; then
     exit 2
   fi
 fi
-echo java -jar $1 -testparser "$f"
-java -jar $1 -testparser "$f"
+echo java -jar $1 "$PARAMS" "$f"
+java -jar $1 "$PARAMS" "$f"
 if [ -e "$l" ]; then
     cat "$l"
 fi

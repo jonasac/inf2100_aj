@@ -1,3 +1,3 @@
 #!/bin/sh
 make clean --quiet
-exec ./utils/test_run.sh
+exec ./utils/test_run.sh $*
