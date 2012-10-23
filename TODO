@@ -1,23 +1,9 @@
 TODO
 
-	innlevering [x]
-	fikse bug med feil linje ved ugjenkjennelig symbol [_]
+    part 2
 
-    fikse alle tre-utskrift-metodene
-
-
-    part1
-
-        * Log.java
-            * enterParser()
-            * leaveParser()
-            * indentTree()
-            * outdentTree()
-        * Syntax.java
-            * init()
-            * finish()
-            * DeclList()
-            * printTree()
-            * addDecl()
-            * class GlobalDeclList()
-            * class LocalDeclList() => parse()
+	log-metodene [_]
+	check-metodene [_]
+	kodegenerering [_]
+	teste med alle samples [_]
+	levere [_]
