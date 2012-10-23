@@ -1337,7 +1337,7 @@ class Factor extends SyntaxUnit {
 
 	@Override
 	void genCode(FuncDecl curFunc) {
-		// TODO
+		Log.w("Factor.genCode");
 	}
 
 	void addOperand(Operand op) {
@@ -1406,17 +1406,16 @@ class Factor extends SyntaxUnit {
 		Log.leaveParser("</factor>");
 	}
 
-
 	@Override
 	void printTree() {
 		Operand operand = firstOperand;
-		Operator operator = firstFo;
+		Operator op = firstFo;
 		operand.printTree();
-		while (operator != null) {
+		while (op != null) {
 			operand = operand.nextOperand;
-			operator.printTree();
+			op.printTree();
 			operand.printTree();
-			operator = operator.nextOp;
+			op = op.nextOp;
 		}
 	}
 }
@@ -1443,7 +1442,7 @@ class FactOperator extends Operator {
 
 	@Override
 	void genCode(FuncDecl curFunc) {
-		// TODO
+		Log.w("FactOperator.genCode");
 	}
 
 	@Override
@@ -1474,7 +1473,7 @@ class TermOperator extends Operator {
 
 	@Override
 	void genCode(FuncDecl curFunc) {
-		// TODO
+		Log.w("TermOperator.genCode");
 	}
 
 	@Override
@@ -1549,6 +1548,8 @@ class RelOperator extends Operator {
 
 	@Override
 	void printTree() {
+		// This should work too:
+		//String op = Scanner.token2string(opToken);
 		String op = "?";
 		switch (opToken) {
 			case equalToken:

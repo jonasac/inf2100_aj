@@ -50,12 +50,28 @@ public class Scanner {
    *          string that may represent a token (like "int")
    * @return token if match, or null
    */
-  private static Token string2token(String tokenstring) {
+  public static Token string2token(String tokenstring) {
     if (0 != tokenstring.length()) {
       for (int i = 0; i < TOKEN_NAMES.length; i++) {
         if (TOKEN_NAMES[i].equals(tokenstring)) {
           return Token.values()[i];
         }
+      }
+    }
+    return null;
+  }
+
+  /**
+   * Tries to find the string that corresponds to a given token
+   * 
+   * @param token
+   *          a token, like intToken, for example
+   * @return string if match, or null if not
+   */
+  public static String token2string(Token token) {
+    for (int i = 0; i < TOKEN_NAMES.length; i++) {
+      if (Token.values()[i] == token) {
+	return TOKEN_NAMES[i];
       }
     }
     return null;
