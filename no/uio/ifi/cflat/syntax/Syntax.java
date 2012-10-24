@@ -1348,9 +1348,6 @@ class Term extends Operand {
 	void parse() {
 		Log.enterParser("<term>");
 		firstFactor.parse();
-		Factor lastFactor = null;
-		Operator lastOp = null;
-		lastFactor = firstFactor;
 		while (Token.isTermOperator(Scanner.curToken)) {
       TermOperator tmpTop = new TermOperator();
       addTop(tmpTop);
