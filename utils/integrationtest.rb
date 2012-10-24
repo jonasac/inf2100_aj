@@ -39,7 +39,7 @@ class TestRunner
       %x(java -jar #{@our_compiler} #{@flag} #{filename})
       %x(sort #{logfile} > "#{@test_output}#{our_log}" && rm #{logfile}) if @sort
       %x(mv #{logfile} "#{@test_output}#{our_log}") unless @sort
-      a = %x(diff  #{@test_output}#{our_log} #{@test_output}#{reference_log})
+      a = %x(diff -w  #{@test_output}#{our_log} #{@test_output}#{reference_log})
       if a.empty?
         puts "PASSED TEST: #{filename}"
         FileUtils.rm("#{@test_output}#{our_log}")
@@ -65,7 +65,7 @@ if __FILE__ == $0
   part1 = TestRunner.new('-testparser', settings, true)
   part1.run_tests
 
-  puts "Part 2"
-  part1 = TestRunner.new('-logB', settings, true)
-  part1.run_tests
+  # puts "Part 2"
+  # part1 = TestRunner.new('-logB', settings, true)
+  # part1.run_tests
 end

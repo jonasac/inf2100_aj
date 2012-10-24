@@ -160,18 +160,16 @@ abstract class DeclList extends SyntaxUnit {
 	}
 
 	void addDecl(Declaration d) {
-		if (firstDecl == null) {
-			firstDecl = d;
-			return;
-		}
-		Declaration tmp = firstDecl;
-		while (tmp.nextDecl != null) {
-			tmp = tmp.nextDecl;
-		}
-		tmp.nextDecl = d;
-		// Just to be sure the list doesn't loop
-		d.nextDecl = null;
-	}
+    if (firstDecl == null) {
+      firstDecl = d;
+    } else {
+      Declaration tmp = firstDecl;
+      while (tmp.nextDecl != null) {
+        tmp = tmp.nextDecl;
+      }
+      tmp.nextDecl = d;
+    }
+  }
 
 	int dataSize() {
 		Declaration dx = firstDecl;
@@ -260,6 +258,18 @@ class LocalDeclList extends DeclList {
 			d.parse();
 		}
 	}
+  /*
+   * This overrides printtree cause the printout of local decllist differs from globaldecllist
+   */
+  @Override
+  void printTree() {
+		Declaration dx = firstDecl;
+		while (dx != null) {
+			dx.printTree();
+			dx = dx.nextDecl;
+      if (dx == null) Log.wTreeLn();
+		}
+  }
 }
 
 
@@ -275,7 +285,7 @@ class ParamDeclList extends DeclList {
 
 	@Override
 	void parse() {
-		while (Scanner.curToken == intToken || Scanner.curToken == doubleToken && Scanner.nextToken == nameToken) {
+		while (Token.isTypeName(Scanner.curToken) && Scanner.nextToken == nameToken) {
 			ParamDecl pd = new ParamDecl(Scanner.nextName);
 			addDecl(pd);
 			pd.parse(); 
@@ -441,7 +451,6 @@ class GlobalArrayDecl extends VarDecl {
 
 	@Override
 	void printTree() {
-		// -- Must be changed in part 1:
 		ArrayType arrType = (ArrayType)type;
 		Log.wTreeLn(arrType.elemType.typeName() + " " + name + "[" + arrType.nElems +  "];");
 	}
@@ -542,9 +551,6 @@ class LocalArrayDecl extends VarDecl {
 
 	@Override
 	void printTree() {
-		// -- Must be changed in part 1:
-		//TODO find a better way to use the arraytype i think its required in part 2
-		//TODO probably using the array type wrong according to part2, kind of brute forcing the fields
 		ArrayType arrType = (ArrayType)type;
 		Log.wTreeLn(arrType.elemType.typeName() + " " + name + "[" + arrType.nElems +  "];");
 	}
@@ -736,12 +742,7 @@ class FuncDecl extends Declaration {
 		Log.wTreeLn(")");
 		Log.wTreeLn("{");
 		Log.indentTree();
-		// The following is a ugly hack to get the output similar to that of the reference compiler
-		// there is probably a way in witch we can use the declList printtree but i really cant get it to work.
 		functionBodyDecls.printTree();
-		Log.outdentTree();
-		if (functionBodyDecls.firstDecl != null) Log.wTreeLn();
-		Log.indentTree();
 		functionBodyStatms.printTree();
 		Log.outdentTree();
 		Log.wTreeLn("}");
@@ -783,6 +784,9 @@ class StatmList extends SyntaxUnit {
 		Log.leaveParser("</statm list>");
 	}
 
+  /*
+   * Helper method to remove ugly list logic from parse
+   */
 	void add(Statement s) {
 		if (firstStatement == null) {
 			firstStatement = s;
@@ -981,7 +985,7 @@ class AssignStatm extends Statement {
 	}
 }
 
-class Assignment extends SyntaxUnit {
+class Assignment extends Statement {
 	Variable variable;
 	Expression expression;
 
@@ -1064,7 +1068,7 @@ class IfStatm extends Statement {
 		Log.wTreeLn(") {");
 		Log.indentTree();
 		ifPart.printTree();
-		if (elsePart != null) {
+		if (elsePart != null) { // else part is optional
 			Log.outdentTree();
 			Log.wTreeLn("} else {");
 			Log.indentTree();
@@ -1106,7 +1110,7 @@ class ReturnStatm extends Statement {
 	@Override
 	void printTree() {
 		Log.wTree("return ");
-		if (returnExpression != null) returnExpression.printTree();
+		returnExpression.printTree();
 		Log.wTreeLn(";");
 	}
 }
@@ -1205,6 +1209,9 @@ class ExprList extends SyntaxUnit {
 		Log.leaveParser("</expr list>");
 	}
 
+  /*
+   * Helper method to remove ugly list logic from parse
+   */
 	void add(Expression e) {
 		if (firstExpr == null) {
 			firstExpr = e;
@@ -1278,7 +1285,7 @@ class Expression extends Operand {
 			relOp.printTree();
 			secondTerm.printTree();
 		}
-		if (innerExpr) Log.wTree(")");
+		if (innerExpr) Log.wTree(")"); // Inner expr depends upon wheter or not the expression is used as a operand, this is set in factor
 	}
 }
 
@@ -1286,17 +1293,15 @@ class Expression extends Operand {
 /*
  * A <term>
  */
-class Term extends SyntaxUnit {
-	// -- Must be changed in part 1+2:
+class Term extends Operand {
 	Factor firstFactor;
 	TermOperator firstTop;
-	Type valType;
 
 	Term() {
 		firstFactor = new Factor();
 		firstTop = null;
-		valType = null;
 	}
+
 	@Override
 	void check(DeclList curDecls) {
 		// -- Must be changed in part 2:
@@ -1309,6 +1314,36 @@ class Term extends SyntaxUnit {
 		Log.w("Term.genCode");
 	}
 
+  /*
+   * Helpermethod that removes ugly list operations from the parse method
+   */
+  void addTop(TermOperator top) {
+    if (firstTop == null) {
+      firstTop = top;
+    } else {
+      Operator tmp = firstTop;
+      while (tmp.nextOp != null) {
+        tmp = tmp.nextOp;
+      }
+      tmp.nextOp = top;
+    }
+  }
+
+  /*
+   * Helpermethod that removes ugly list operations from the parse method
+   */
+  void addFactor(Factor factor) {
+    if (firstFactor == null) {
+      firstFactor = factor;
+    } else {
+      Factor tmp = firstFactor;
+      while (tmp.nextFactor != null) {
+        tmp = tmp.nextFactor;
+      }
+      tmp.nextFactor = factor;
+    }
+  }
+
 	@Override
 	void parse() {
 		Log.enterParser("<term>");
@@ -1317,17 +1352,12 @@ class Term extends SyntaxUnit {
 		Operator lastOp = null;
 		lastFactor = firstFactor;
 		while (Token.isTermOperator(Scanner.curToken)) {
-			if (lastOp == null) {
-				firstTop = new TermOperator(); 
-				lastOp = firstTop;
-			} else {
-				lastOp.nextOp = new TermOperator();
-				lastOp = lastOp.nextOp;
-			}
-			lastOp.parse();
-			lastFactor.nextFactor = new Factor();
-			lastFactor = lastFactor.nextFactor;
-			lastFactor.parse();
+      TermOperator tmpTop = new TermOperator();
+      addTop(tmpTop);
+      tmpTop.parse();
+      Factor tmpFactor = new Factor();
+      addFactor(tmpFactor);
+      tmpFactor.parse();
 		}
 		Log.leaveParser("</term>");
 	}
@@ -1347,7 +1377,7 @@ class Term extends SyntaxUnit {
 	}
 }
 
-class Factor extends SyntaxUnit {
+class Factor extends Operand {
 	Factor nextFactor;
 	Operator firstFo;
 	Operand firstOperand;
@@ -1360,6 +1390,9 @@ class Factor extends SyntaxUnit {
 		Log.w("Factor.genCode");
 	}
 
+  /*
+   * Helpermethod that removes ugly list operations from the parse method
+   */
 	void addOperand(Operand op) {
 		if (firstOperand == null) {
 			firstOperand = op;
@@ -1372,6 +1405,9 @@ class Factor extends SyntaxUnit {
 		}
 	}
 
+  /*
+   * Helpermethod that removes ugly list operations from the parse method
+   */
 	void addOperator(Operator op) {
 		if (firstFo == null) {
 			firstFo= op;
@@ -1383,6 +1419,13 @@ class Factor extends SyntaxUnit {
 			tmp.nextOp = op;
 		}
 	}
+
+  /*
+   * A method that decides what kind of operand this factor consists of, 
+   * it will make the operand and add it to the list via the addOperand method
+   * it also parses the operand in question, so a call to this method assumes the scanner is 
+   * at a position where it can legally read a operand, otherwise it will report a error.
+   */
 	void makeOperand() {
 		if (Scanner.curToken == numberToken) {
 			Number op = new Number();
@@ -1608,7 +1651,6 @@ abstract class Operand extends SyntaxUnit {
  * A <function call>.
  */
 class FunctionCall extends Operand {
-	// -- Must be changed in part 1+2:
 	String functionName;
 	ExprList arguments;
 	FunctionCall() {
@@ -1721,7 +1763,7 @@ class Variable extends Operand {
 		Log.enterParser("<variable>");
 		varName = Scanner.curName;
 		Scanner.skip(nameToken);
-		if (Scanner.curToken == leftBracketToken) {
+		if (Scanner.curToken == leftBracketToken) { // Bracket is optional
 			Scanner.skip(leftBracketToken);
 			index = new Expression();
 			index.parse();
