@@ -294,6 +294,16 @@ class ParamDeclList extends DeclList {
 			}
 		}
 	}
+
+  @Override
+  void printTree() {
+    Declaration tmp = firstDecl;
+    while (tmp != null) {
+      Log.wTree(tmp.type.typeName() + " " + tmp.name);
+      tmp = tmp.nextDecl;
+      if (tmp != null) Log.wTree(",");
+    }
+  }
 }
 
 
@@ -440,10 +450,8 @@ class GlobalArrayDecl extends VarDecl {
 		Scanner.skip(Scanner.curToken);
 		Scanner.skip(nameToken);
 		Scanner.skip(leftBracketToken);
-		if (Scanner.curToken == numberToken) {
-			type = new ArrayType(Scanner.curNum, arrType);
-			Scanner.skip(Scanner.curToken);
-		}
+    type = new ArrayType(Scanner.curNum, arrType);
+    Scanner.skip(Scanner.curToken);
 		Scanner.skip(rightBracketToken);
 		Scanner.skip(semicolonToken);
 		Log.leaveParser("</var decl>");
@@ -539,11 +547,9 @@ class LocalArrayDecl extends VarDecl {
 		Type arrType = Types.getType(Scanner.curToken);
 		Scanner.skip(Scanner.curToken);
 		Scanner.skip(nameToken);
-		Scanner.skip(leftBracketToken);
-		if (Scanner.curToken == numberToken) {
-			type = new ArrayType(Scanner.curNum, arrType);
-			Scanner.skip(Scanner.curToken);
-		}
+    Scanner.skip(leftBracketToken);
+    type = new ArrayType(Scanner.curNum, arrType);
+    Scanner.skip(Scanner.curToken);
 		Scanner.skip(rightBracketToken);
 		Scanner.skip(semicolonToken);
 		Log.leaveParser("</var decl>");
@@ -645,7 +651,7 @@ class ParamDecl extends VarDecl {
 			name = Scanner.curName;
 			Scanner.skip(nameToken);
 		} else {
-			Error.expected(" A param declaration");
+			Error.expected("A param declaration");
 		}
 		Log.leaveParser("</param decl>");
 	}
@@ -665,7 +671,6 @@ class FuncDecl extends Declaration {
 		// Used for user functions:
 		super(n);
 		assemblerName = (Cflat.underscoredGlobals() ? "_" : "") + n;
-		type = Types.getType(Scanner.curToken);
 		functionParameters = new ParamDeclList();
 		functionBodyDecls = new LocalDeclList();
 		functionBodyStatms = new StatmList();
@@ -733,12 +738,7 @@ class FuncDecl extends Declaration {
 	@Override
 	void printTree() {
 		Log.wTree(type.typeName() + " " + name + " (");
-		Declaration parameter = functionParameters.firstDecl;
-		while (parameter != null) {
-			Log.wTree(parameter.type.typeName() + " " + parameter.name);
-			parameter = parameter.nextDecl;
-			if (parameter != null) Log.wTree(", ");
-		}
+    functionParameters.printTree();
 		Log.wTreeLn(")");
 		Log.wTreeLn("{");
 		Log.indentTree();
@@ -1200,7 +1200,7 @@ class ExprList extends SyntaxUnit {
 	@Override
 	void parse() {
 		Log.enterParser("<expr list>");
-		while (Scanner.curToken != rightParToken) {     
+		while (Scanner.curToken != rightParToken) {
 			Expression e = new Expression();
 			add(e);
 			e.parse();
@@ -1447,7 +1447,7 @@ class Factor extends Operand {
 			op.parse();
 			Scanner.skip(rightParToken);
 		} else {
-			Error.expected("An operand" + Scanner.curToken);
+			Error.expected("An operand");
 		}
 	}
 
@@ -1529,6 +1529,7 @@ class FactOperator extends Operator {
 		}
 	}
 }
+
 class TermOperator extends Operator {
 	@Override
 	void check(DeclList curDecls) {
