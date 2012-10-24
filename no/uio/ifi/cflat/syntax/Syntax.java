@@ -644,16 +644,12 @@ class ParamDecl extends VarDecl {
 
 	@Override
 	void parse() {
-		Log.enterParser("<param decl>");
-		if (Token.isTypeName(Scanner.curToken)){
-			type = Types.getType(Scanner.curToken);
-			Scanner.skip(Scanner.curToken);
-			name = Scanner.curName;
-			Scanner.skip(nameToken);
-		} else {
-			Error.expected("A param declaration");
-		}
-		Log.leaveParser("</param decl>");
+    Log.enterParser("<param decl>");
+    type = Types.getType(Scanner.curToken);
+    Scanner.skip(Scanner.curToken);
+    name = Scanner.curName;
+    Scanner.skip(nameToken);
+    Log.leaveParser("</param decl>");
 	}
 }
 
@@ -1539,13 +1535,9 @@ class TermOperator extends Operator {
 
 	@Override
 	void parse() {
-		Log.enterParser("<term operator>");
-		if (Token.isTermOperator(Scanner.curToken)) {
-			opToken = Scanner.curToken;
-			Scanner.skip(Scanner.curToken);
-		} else {
-			Error.expected("An term operator");
-		}
+    Log.enterParser("<term operator>");
+    opToken = Scanner.curToken;
+    Scanner.skip(Scanner.curToken);
 		Log.leaveParser("</term operator>");
 	}
 
