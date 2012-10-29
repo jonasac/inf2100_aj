@@ -1601,8 +1601,6 @@ class RelOperator extends Operator {
 
 	@Override
 	void printTree() {
-		// This should work too:
-		//String op = Scanner.token2string(opToken);
 		String op = "?";
 		switch (opToken) {
 			case equalToken:
