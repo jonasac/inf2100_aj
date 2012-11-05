@@ -683,7 +683,7 @@ class FuncDecl extends Declaration {
 		// -- Must be changed in part 2:
 		Log.w("FuncDecl.check");
 
-		// TODO: Hva skal egentlig gjøres her?
+		// TODO: Hva skal egentlig gjoeres her?
 	}
 
 	@Override
