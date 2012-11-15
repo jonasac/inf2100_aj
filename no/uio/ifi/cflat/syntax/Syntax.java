@@ -568,6 +568,7 @@ class LocalArrayDecl extends VarDecl {
  * A local simple variable declaration
  */
 class LocalSimpleVarDecl extends VarDecl {
+
 	LocalSimpleVarDecl(String n) {
 		super(n);
 	}
@@ -576,6 +577,13 @@ class LocalSimpleVarDecl extends VarDecl {
 	void check(DeclList curDecls) {
 		// -- Must be changed in part 2:
 		Log.w("LocalSimpleVarDecl.check");
+		Declaration d = curDecls.findDecl(name, this);
+		if (d == null) {
+			Log.w("This name has not been defined already: " + name);
+		} else {
+			Log.w("This name has been defined already! " + name);
+		}
+
 	}
 
 	@Override
@@ -601,6 +609,7 @@ class LocalSimpleVarDecl extends VarDecl {
 		Log.enterParser("<var decl>");
 		type = Types.getType(Scanner.curToken);
 		Scanner.skip(Scanner.curToken);
+		name = Scanner.curName;
 		Scanner.skip(nameToken);
 		Scanner.skip(semicolonToken);
 		Log.leaveParser("</var decl>");
@@ -683,7 +692,15 @@ class FuncDecl extends Declaration {
 		// -- Must be changed in part 2:
 		Log.w("FuncDecl.check");
 
-		// TODO: Hva skal egentlig gjoeres her?
+		Declaration d = curDecls.findDecl(name, this);
+		if (d == null) {
+			// Function name is already defined
+			Log.noteError("Function " + name + " is already declared!");
+		}
+
+		functionParameters.check(curDecls);
+		functionBodyDecls.check(curDecls);
+		functionBodyStatms.check(curDecls);
 	}
 
 	@Override
@@ -718,6 +735,7 @@ class FuncDecl extends Declaration {
 		Log.enterParser("<func decl>");
 		type = Types.getType(Scanner.curToken);
 		Scanner.skip(Scanner.curToken);
+		name = Scanner.curName;
 		Scanner.skip(nameToken);
 		Scanner.skip(leftParToken);
 		functionParameters.parse();
@@ -1728,6 +1746,7 @@ class Variable extends Operand {
 		Log.w("Variable.check");
 
 		Declaration d = curDecls.findDecl(varName, this);
+		Log.w("OSTOSTOST!");
 		if (index == null) {
 			d.checkWhetherSimpleVar(this);
 			valType = d.type;
