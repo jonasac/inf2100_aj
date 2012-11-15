@@ -776,6 +776,12 @@ class StatmList extends SyntaxUnit {
 	void check(DeclList curDecls) {
 		// -- Must be changed in part 2:
 		Log.w("StatmList.check");
+    Statement st = firstStatement;
+    while (st != null) {
+      st.check(curDecls);
+      st = st.nextStatm;
+    }
+      
 	}
 
 	@Override
@@ -978,6 +984,8 @@ class AssignStatm extends Statement {
 	}
 	@Override
 	void check(DeclList curDecls) {
+    Log.w("AssignStatm.check");
+    assignment.check(curDecls);
 	}
 
 	@Override
@@ -1009,6 +1017,9 @@ class Assignment extends Statement {
 	}
 
 	void check(DeclList curDecls) {
+    Log.w("Assignment.check");
+    variable.check(curDecls);
+    expression.check(curDecls);
 	}
 
 	void genCode(FuncDecl curFunc){
@@ -1747,6 +1758,7 @@ class Variable extends Operand {
 
 		Declaration d = curDecls.findDecl(varName, this);
 		Log.w("OSTOSTOST!");
+    System.out.println("OSTLOLOST!");
 		if (index == null) {
 			d.checkWhetherSimpleVar(this);
 			valType = d.type;
