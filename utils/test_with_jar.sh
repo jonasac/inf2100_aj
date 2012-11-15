@@ -50,9 +50,9 @@ java -jar $1 "$PARAMS" "$f"
 if [ -e "$l" ]; then
     cat "$l"
 fi
-if [ -e "$s" ]; then
-  rm -f "$s"
-fi
+#if [ -e "$s" ]; then
+#  rm -f "$s"
+#fi
 if [ -e "$E" ]; then
   rm -f "$E"
 fi

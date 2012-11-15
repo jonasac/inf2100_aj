@@ -102,6 +102,7 @@ class Program extends SyntaxUnit {
 
 	@Override
 	void genCode(FuncDecl curFunc) {
+		Code.genInstr("", ".text", "", "");
 		progDecls.genCode(null);
 	}
 
@@ -195,6 +196,7 @@ abstract class DeclList extends SyntaxUnit {
 		Log.w("DeclList.findDecl: not found: " + name);
 		return null;
 	}
+
 	int countDecl(String name, SyntaxUnit usedIn) {
 		// part 2
 		Declaration dx = firstDecl;
@@ -290,9 +292,15 @@ class LocalDeclList extends DeclList {
  * diagrams.)
  */
 class ParamDeclList extends DeclList {
+
 	@Override
 	void genCode(FuncDecl curFunc) {
 		// -- Must be changed in part 2:
+
+		String param1 = "$120";
+		// $120 is an example parameter #1
+		Code.genInstr("", "movl", param1 + ",%eax", "");
+		Code.genInstr("", "pushl", "%eax", "");
 	}
 
 	@Override
@@ -380,17 +388,6 @@ abstract class Declaration extends SyntaxUnit {
 	 * @see checkWhetherArray
 	 */
 	abstract void checkWhetherSimpleVar(SyntaxUnit use);
-
-	/* Helper methods */
-	// TODO: Make this work?
-	//private void checkAll(DeclList dl, SyntaxUnit use) {
-	//	Declaration current = dl.firstDecl;
-	//	while (current != null) {
-	//		Log.w("Calling the check function for: " + current.name);
-	//		current.check(use);
-	//		current = current.nextDecl;
-	//	}
-	//}
 
 }
 
@@ -979,6 +976,9 @@ class CallStatm extends Statement {
 
 	@Override
 	void genCode(FuncDecl curFunc) {
+
+		// Call the function
+		Code.genInstr("", "call", curFunc.name, "");
 	}
 
 	@Override
