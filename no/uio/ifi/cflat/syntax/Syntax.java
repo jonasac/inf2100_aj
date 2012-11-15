@@ -195,6 +195,18 @@ abstract class DeclList extends SyntaxUnit {
 		Log.w("DeclList.findDecl: not found: " + name);
 		return null;
 	}
+	int countDecl(String name, SyntaxUnit usedIn) {
+		// part 2
+		Declaration dx = firstDecl;
+    int counter = 0;
+		while (dx != null) {
+			if (name.equals(dx.name)) {
+				counter++;
+			}
+			dx = dx.nextDecl;
+		}
+		return counter;
+	}
 }
 
 
@@ -521,6 +533,8 @@ class LocalArrayDecl extends VarDecl {
 	void check(DeclList curDecls) {
 		// -- Must be changed in part 2:
 		Log.w("LocalArrayDecl.check");
+		if (((ArrayType)type).nElems < 0)
+			Syntax.error(this, "Arrays cannot have negative size!");
 	}
 
 	@Override
@@ -577,12 +591,15 @@ class LocalSimpleVarDecl extends VarDecl {
 	void check(DeclList curDecls) {
 		// -- Must be changed in part 2:
 		Log.w("LocalSimpleVarDecl.check");
-		Declaration d = curDecls.findDecl(name, this);
-		if (d == null) {
-			Log.w("This name has not been defined already: " + name);
-		} else {
-			Log.w("This name has been defined already! " + name);
+    int counter = curDecls.countDecl(name, this);
+		if (counter > 1) {
+			Log.w("Name defined too many times: " + name);
+		} else if (counter < 1) {
+      Log.w("Name not defined: ");
+    } else {
+			Log.w("This localSimpleVarDecl is OK: " + name);
 		}
+		Log.w("LocalSimpleVarDecl.check");
 
 	}
 
@@ -700,7 +717,7 @@ class FuncDecl extends Declaration {
 
 		functionParameters.check(curDecls);
 		functionBodyDecls.check(curDecls);
-		functionBodyStatms.check(curDecls);
+		functionBodyStatms.check(functionBodyDecls);
 	}
 
 	@Override
@@ -956,6 +973,8 @@ class CallStatm extends Statement {
 	}
 	@Override
 	void check(DeclList curDecls) {
+    Log.w("CallStatm.check");
+    functionCall.check(curDecls);
 	}
 
 	@Override
@@ -1679,6 +1698,13 @@ class FunctionCall extends Operand {
 	void check(DeclList curDecls) {
 		// -- Must be changed in part 2:
 		Log.w("Operand.check");
+    Declaration d = curDecls.findDecl(functionName, this);
+    if (d != null) {
+      Log.w("Function found" + functionName);
+      arguments.check(curDecls);
+    } else {
+      Log.w("Function not found" + functionName);
+    }
 	}
 
 	@Override
@@ -1757,8 +1783,9 @@ class Variable extends Operand {
 		Log.w("Variable.check");
 
 		Declaration d = curDecls.findDecl(varName, this);
-		Log.w("OSTOSTOST!");
-    System.out.println("OSTLOLOST!");
+    if (d == null) {
+      return;
+    }
 		if (index == null) {
 			d.checkWhetherSimpleVar(this);
 			valType = d.type;
