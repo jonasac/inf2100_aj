@@ -161,8 +161,6 @@ abstract class DeclList extends SyntaxUnit {
     }
 
     void addDecl(Declaration d) {
-	Declaration lookupDecl = findDecl(d.name, this);
-	if (lookupDecl != null) Syntax.error(this, new String(d.name + " has already been declared."));
 	if (firstDecl == null) {
 	    firstDecl = d;
 	} else {
@@ -186,30 +184,14 @@ abstract class DeclList extends SyntaxUnit {
     }
 
     Declaration findDecl(String name, SyntaxUnit usedIn) {
-	// part 2
-	Declaration dx = firstDecl;
-	while (dx != null) {
+	for (Declaration dx = firstDecl; dx != null; dx = dx.nextDecl) {
 	    if (name.equals(dx.name) && dx.visible == true) {
-		Log.w("DeclList.findDecl: found: " + dx.name);
+		Log.noteBinding(name, dx.lineNum, usedIn.lineNum);
 		return dx;
 	    }
-	    dx = dx.nextDecl;
 	}
-	Log.w("DeclList.findDecl: not found: " + name);
+	if (outerScope != null) return outerScope.findDecl(name, usedIn);
 	return null;
-    }
-
-    int countDecl(String name, SyntaxUnit usedIn) {
-	// part 2
-	Declaration dx = firstDecl;
-	int counter = 0;
-	while (dx != null) {
-	    if (name.equals(dx.name)) {
-		counter++;
-	    }
-	    dx = dx.nextDecl;
-	}
-	return counter;
     }
 }
 
@@ -489,6 +471,7 @@ class GlobalSimpleVarDecl extends VarDecl {
     void check(DeclList curDecls) {
 	// -- Must be changed in part 2:
 	Log.w("GlobalSimpleVarDecl.check");
+	visible = true;
     }
 
     @Override
@@ -589,15 +572,7 @@ class LocalSimpleVarDecl extends VarDecl {
     @Override
     void check(DeclList curDecls) {
 	// -- Must be changed in part 2:
-	Log.w("LocalSimpleVarDecl.check");
-	int counter = curDecls.countDecl(name, this);
-	if (counter > 1) {
-	    Log.w("Name defined too many times: " + name);
-	} else if (counter < 1) {
-	    Log.w("Name not defined: ");
-	} else {
-	    Log.w("This localSimpleVarDecl is OK: " + name);
-	}
+	visible = true;
 	Log.w("LocalSimpleVarDecl.check");
 
     }
@@ -708,14 +683,8 @@ class FuncDecl extends Declaration {
 	// -- Must be changed in part 2:
 	Log.w("FuncDecl.check");
 	visible = true;
-	Declaration d = curDecls.findDecl(name, this);
-	if (d == null) {
-	    // Function name is already defined
-	    Log.noteError("Function " + name + " is already declared!");
-	}
-
 	functionParameters.check(curDecls);
-	functionBodyDecls.check(curDecls);
+	functionBodyDecls.check(functionParameters);
 	functionBodyStatms.check(functionBodyDecls);
     }
 
@@ -925,6 +894,11 @@ class ForStatm extends Statement {
 
     @Override
     void check(DeclList curDecls) {
+	forCounter.check(curDecls);
+	forTest.check(curDecls);
+	forIncrement.check(curDecls);
+	forBody.check(curDecls);
+	Log.w("ForStatm.check");
     }
 
     @Override
@@ -997,6 +971,7 @@ class CallStatm extends Statement {
 	Log.wTreeLn(";");
     }
 }
+
 class AssignStatm extends Statement {
     Assignment assignment;
 
@@ -1036,7 +1011,6 @@ class Assignment extends Statement {
 	variable = new Variable();
 	expression = new Expression();
     }
-
     void check(DeclList curDecls) {
 	Log.w("Assignment.check");
 	variable.check(curDecls);
@@ -1691,6 +1665,7 @@ abstract class Operand extends SyntaxUnit {
 class FunctionCall extends Operand {
     String functionName;
     ExprList arguments;
+    Declaration declRef;
     FunctionCall() {
 	functionName = null;
 	arguments = new ExprList();
@@ -1699,13 +1674,13 @@ class FunctionCall extends Operand {
     @Override
     void check(DeclList curDecls) {
 	// -- Must be changed in part 2:
-	Log.w("Operand.check");
+	Log.w("FunctionCall.check");
 	Declaration d = curDecls.findDecl(functionName, this);
+	if (d == null) Syntax.error(this, functionName + " is not defined.");
 	if (d != null) {
 	    Log.w("Function found" + functionName);
+	    declRef = d;
 	    arguments.check(curDecls);
-	} else {
-	    Log.w("Function not found" + functionName);
 	}
     }
 
