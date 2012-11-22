@@ -189,7 +189,7 @@ abstract class DeclList extends SyntaxUnit {
 	// part 2
 	Declaration dx = firstDecl;
 	while (dx != null) {
-	    if (name.equals(dx.name)) {
+	    if (name.equals(dx.name) && dx.visible == true) {
 		Log.w("DeclList.findDecl: found: " + dx.name);
 		return dx;
 	    }
@@ -707,7 +707,7 @@ class FuncDecl extends Declaration {
     void check(DeclList curDecls) {
 	// -- Must be changed in part 2:
 	Log.w("FuncDecl.check");
-
+	visible = true;
 	Declaration d = curDecls.findDecl(name, this);
 	if (d == null) {
 	    // Function name is already defined
