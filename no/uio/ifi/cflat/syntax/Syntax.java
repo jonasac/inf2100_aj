@@ -622,6 +622,7 @@ class ParamDecl extends VarDecl {
     void check(DeclList curDecls) {
 	// -- Must be changed in part 2:
 	Log.w("ParamDecl.check");
+	visible = true;
     }
 
     @Override
@@ -853,6 +854,7 @@ class EmptyStatm extends Statement {
     @Override
     void check(DeclList curDecls) {
 	// -- Must be changed in part 2:
+	// Its empty, just like the EmptyStatm
 	Log.w("EmptyStatm.check");
     }
 
@@ -1051,6 +1053,9 @@ class IfStatm extends Statement {
     void check(DeclList curDecls) {
 	// -- Must be changed in part 2:
 	Log.w("IfStatm.check");
+	ifTest.check(curDecls);
+	ifPart.check(curDecls);
+	if (elsePart != null) elsePart.check(curDecls);
     }
 
     @Override
@@ -1112,6 +1117,9 @@ class ReturnStatm extends Statement {
     }
     @Override
     void check(DeclList curDecls) {
+	Log.w("ReturnStatm.check");
+	returnExpression.check(curDecls);
+	// TODO make sure expresion is the type as functiontype
     }
 
     @Override
@@ -1149,6 +1157,7 @@ class WhileStatm extends Statement {
 
     @Override
     void check(DeclList curDecls) {
+	Log.w("WhileStatm.check");
 	test.check(curDecls);
 	body.check(curDecls);
     }
@@ -1209,6 +1218,9 @@ class ExprList extends SyntaxUnit {
     void check(DeclList curDecls) {
 	// -- Must be changed in part 2:
 	Log.w("ExprList.check");
+	for (Expression e = firstExpr; e != null; e = e.nextExpr) {
+	    e.check(curDecls);
+	}
     }
 
     @Override
@@ -1276,6 +1288,10 @@ class Expression extends Operand {
     void check(DeclList curDecls) {
 	// -- Must be changed in part 2:
 	Log.w("Expression.check");
+	// TODO TYPE ASSERTIONS
+	firstTerm.check(curDecls);
+	if (relOp != null) relOp.check(curDecls);
+	if (secondTerm != null) secondTerm.check(curDecls);
     }
 
     @Override
@@ -1326,6 +1342,18 @@ class Term extends Operand {
     void check(DeclList curDecls) {
 	// -- Must be changed in part 2:
 	Log.w("Term.check");
+	for (Factor f = firstFactor; f != null; f = f.nextFactor) {
+	    f.check(curDecls);
+	    if (valType == null) {
+		valType = f.valType;
+	    } else {
+		valType.checkSameType(lineNum, f.valType, "Term");
+	    }
+	}
+	for (Operator o = firstTop; o != null; o = o.nextOp) {
+	    o.check(curDecls);
+	    o.opType = valType;
+	}
     }
 
     @Override
@@ -1395,11 +1423,25 @@ class Term extends Operand {
 }
 
 class Factor extends Operand {
-    Factor nextFactor;
+    Factor nextFactor; // Used in term, not referenced in this class itself
     Operator firstFo;
     Operand firstOperand;
     @Override
     void check(DeclList curDecls) {
+	Log.w("Factor.check");
+	for (Operand o = firstOperand; o != null; o = o.nextOperand) {
+	    o.check(curDecls);
+	    System.out.println("LOLOLOL " + o);
+	    if (valType == null) {
+		valType = o.valType;
+	    } else {
+		valType.checkSameType(lineNum, o.valType, "Factor");
+	    }
+	}
+	for (Operator o = firstFo; o != null; o = o.nextOp) {
+	    o.check(curDecls);
+	    o.opType = valType;
+	}
     }
 
     @Override
@@ -1511,6 +1553,7 @@ abstract class Operator extends SyntaxUnit {
 
     @Override
     void check(DeclList curDecls) {
+	
     }
 }
 
@@ -1518,6 +1561,7 @@ abstract class Operator extends SyntaxUnit {
 class FactOperator extends Operator {
     @Override
     void check(DeclList curDecls) {
+	Log.w("Factoperator.check");
     }
 
     @Override
@@ -1550,6 +1594,7 @@ class FactOperator extends Operator {
 class TermOperator extends Operator {
     @Override
     void check(DeclList curDecls) {
+	Log.w("TermOperator.check");
     }
 
     @Override
@@ -1619,6 +1664,7 @@ class RelOperator extends Operator {
     void parse() {
 	Log.enterParser("<rel operator>");
 	opToken = Scanner.curToken;
+	opType = Types.intType;
 	Scanner.readNext();
 	Log.leaveParser("</rel operator>");
     }
@@ -1681,6 +1727,7 @@ class FunctionCall extends Operand {
 	    Log.w("Function found" + functionName);
 	    declRef = d;
 	    arguments.check(curDecls);
+	    valType = declRef.type;
 	}
     }
 
@@ -1734,6 +1781,7 @@ class Number extends Operand {
 	// -- Must be changed in part 1:
 	Log.enterParser("<number>");
 	numVal = Scanner.curNum;
+	valType = Types.intType;
 	Scanner.skip(numberToken);
 	Log.leaveParser("</number>");
     }
@@ -1760,9 +1808,7 @@ class Variable extends Operand {
 	Log.w("Variable.check");
 
 	Declaration d = curDecls.findDecl(varName, this);
-	if (d == null) {
-	    return;
-	}
+	if (d == null) Syntax.error(this, varName + " is not declared.");
 	if (index == null) {
 	    d.checkWhetherSimpleVar(this);
 	    valType = d.type;
