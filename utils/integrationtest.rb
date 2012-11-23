@@ -65,7 +65,7 @@ if __FILE__ == $0
   part1 = TestRunner.new('-testparser', settings, true)
   part1.run_tests
 
-  # puts "Part 2"
-  # part1 = TestRunner.new('-logB', settings, true)
-  # part1.run_tests
+  puts "Part 2"
+  part2 = TestRunner.new('-logB', settings, true)
+  part2.run_tests
 end

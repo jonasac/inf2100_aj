@@ -101,7 +101,9 @@ public class Log {
     public static void noteBinding(String name, int lineNum, int useLineNum) {
 	if (! doLogBinding) return;
 	if (lineNum == -1) {
-	    writeLogLine("Binding: Line " + useLineNum  + ": " + name + " refers to declaration in library");     
+	    writeLogLine("Binding: Line " + useLineNum  + ": " + name + " refers to declaration in the library");     
+	} else if (name.equals("main")) {
+	    writeLogLine("Binding: " + name + " refers to declaration in line " + lineNum);
 	} else {
 	    writeLogLine("Binding: Line " + useLineNum  + ": " + name + " refers to declaration in line " + lineNum);
 	}

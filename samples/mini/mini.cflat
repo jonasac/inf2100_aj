@@ -4,12 +4,5 @@
 
 int main () 
 {
-  int a;
-  double b;
-  int x;
-  a = 1;
-  b = 2;
-  x = a + b / (10 * 12);
   putchar('x');
-  return b;
 }

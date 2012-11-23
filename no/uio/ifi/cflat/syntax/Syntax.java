@@ -120,7 +120,7 @@ class Program extends SyntaxUnit {
 	if (!Cflat.noLink) {
 	    // Check that 'main' has been declared properly:
 	    // -- Must be changed in part 2:
-	    Log.w("Program.check");
+	    Declaration d = progDecls.findDecl("main", this);
 	}
     }
 
@@ -227,7 +227,6 @@ class GlobalDeclList extends DeclList {
     @Override
     void genCode(FuncDecl curFunc) {
 	// -- Must be changed in part 2:
-	Log.w("GlobalDeclList.genCode");
     }
 
     @Override
