@@ -31,7 +31,31 @@ public class Syntax {
 
     public static void init() {
 	// part 1
+	library = new GlobalDeclList();
+	addFnToLib("getdouble", Types.doubleType, null, null);
+	addFnToLib("getint", Types.intType, null, null);
+	addFnToLib("putdouble", Types.doubleType, "x", Types.doubleType);
+	addFnToLib("putint", Types.intType, "x", Types.intType);
+	addFnToLib("exit", Types.intType, "status", Types.intType);
+	addFnToLib("putchar", Types.intType, "c", Types.intType);
+	addFnToLib("getchar", Types.intType, null, null);
+	library.check(null);
+   
     }
+
+    public static void addFnToLib(String name, Type retrType, String paramName, Type paramType) {
+	FuncDecl d = new FuncDecl(name);
+	d.type = retrType;
+	d.lineNum = -1;
+	if (paramName != null) {
+	    ParamDecl pd = new ParamDecl(paramName, 0);
+	    pd.type = paramType;
+	    d.functionParameters.nParams = 1;
+	    d.functionParameters.addDecl(pd);
+	}
+	library.addDecl(d);
+    }
+	    
 
     public static void finish() {
 	// part 1
@@ -140,13 +164,9 @@ abstract class DeclList extends SyntaxUnit {
 
     @Override
     void check(DeclList curDecls) {
-	Log.w("DeclList.check");
-
 	outerScope = curDecls;
-
 	Declaration dx = firstDecl;
 	while (dx != null) {
-	    Log.w("Calling the check function for: " + dx.name);
 	    dx.check(this);
 	    dx = dx.nextDecl;
 	}
@@ -474,7 +494,6 @@ class GlobalSimpleVarDecl extends VarDecl {
     @Override
     void check(DeclList curDecls) {
 	// -- Must be changed in part 2:
-	Log.w("GlobalSimpleVarDecl.check");
 	visible = true;
     }
 
@@ -519,7 +538,6 @@ class LocalArrayDecl extends VarDecl {
     void check(DeclList curDecls) {
 	// -- Must be changed in part 2:
 	visible = true;
-	Log.w("LocalArrayDecl.check");
 	if (((ArrayType)type).nElems < 0)
 	    Syntax.error(this, "Arrays cannot have negative size!");
     }
@@ -527,7 +545,6 @@ class LocalArrayDecl extends VarDecl {
     @Override
     void checkWhetherArray(SyntaxUnit use) {
 	// -- Must be changed in part 2:
-	Log.w("LocalArrayDecl.checkWhetherArray");
     }
 
     @Override
@@ -578,8 +595,6 @@ class LocalSimpleVarDecl extends VarDecl {
     void check(DeclList curDecls) {
 	// -- Must be changed in part 2:
 	visible = true;
-	Log.w("LocalSimpleVarDecl.check");
-
     }
 
     @Override
@@ -591,7 +606,6 @@ class LocalSimpleVarDecl extends VarDecl {
     @Override
     void checkWhetherSimpleVar(SyntaxUnit use) {
 	// -- Must be changed in part 2:
-	Log.w("LocalSimpleVarDecl.checkWhetherSimpleVar");
     }
 
     @Override
@@ -627,20 +641,18 @@ class ParamDecl extends VarDecl {
     @Override
     void check(DeclList curDecls) {
 	// -- Must be changed in part 2:
-	Log.w("ParamDecl.check");
 	visible = true;
     }
 
     @Override
     void checkWhetherArray(SyntaxUnit use) {
 	// -- Must be changed in part 2:
-	Log.w("ParamDecl.checkWhetherArray");
+	Syntax.error(this, name + " arrays can not be used as parameter.");
     }
 
     @Override
     void checkWhetherSimpleVar(SyntaxUnit use) {
 	// -- Must be changed in part 2:
-	Log.w("ParamDecl.checkWhetherSimpleVar");
     }
 
     @Override
@@ -690,11 +702,15 @@ class FuncDecl extends Declaration {
     @Override
     void check(DeclList curDecls) {
 	// -- Must be changed in part 2:
-	Log.w("FuncDecl.check");
 	visible = true;
 	functionParameters.check(curDecls);
 	functionBodyDecls.check(functionParameters);
 	functionBodyStatms.check(functionBodyDecls);
+	for (Statement s = functionBodyStatms.firstStatement; s != null; s = s.nextStatm) {
+	    if (s instanceof ReturnStatm && type != ((ReturnStatm)s).returnExpression.valType) {
+		Syntax.error(s, "return statement must have same type as function declaration");
+	    }
+	}
     }
 
     @Override
@@ -769,7 +785,6 @@ class StatmList extends SyntaxUnit {
     @Override
     void check(DeclList curDecls) {
 	// -- Must be changed in part 2:
-	Log.w("StatmList.check");
 	Statement st = firstStatement;
 	while (st != null) {
 	    st.check(curDecls);
@@ -787,7 +802,6 @@ class StatmList extends SyntaxUnit {
     @Override
     void parse() {
 	Log.enterParser("<statm list>");
-
 	while (Scanner.curToken != rightCurlToken) {
 	    Log.enterParser("<statement>");
 	    Statement st = Statement.makeNewStatement();
@@ -863,7 +877,6 @@ class EmptyStatm extends Statement {
     void check(DeclList curDecls) {
 	// -- Must be changed in part 2:
 	// Its empty, just like the EmptyStatm
-	Log.w("EmptyStatm.check");
     }
 
     @Override
@@ -908,7 +921,6 @@ class ForStatm extends Statement {
 	forTest.check(curDecls);
 	forIncrement.check(curDecls);
 	forBody.check(curDecls);
-	Log.w("ForStatm.check");
     }
 
     @Override
@@ -956,7 +968,6 @@ class CallStatm extends Statement {
     }
     @Override
     void check(DeclList curDecls) {
-	Log.w("CallStatm.check");
 	functionCall.check(curDecls);
     }
 
@@ -990,7 +1001,6 @@ class AssignStatm extends Statement {
     }
     @Override
     void check(DeclList curDecls) {
-	Log.w("AssignStatm.check");
 	assignment.check(curDecls);
     }
 
@@ -1022,7 +1032,6 @@ class Assignment extends Statement {
 	expression = new Expression();
     }
     void check(DeclList curDecls) {
-	Log.w("Assignment.check");
 	variable.check(curDecls);
 	expression.check(curDecls);
     }
@@ -1060,7 +1069,6 @@ class IfStatm extends Statement {
     @Override
     void check(DeclList curDecls) {
 	// -- Must be changed in part 2:
-	Log.w("IfStatm.check");
 	ifTest.check(curDecls);
 	ifPart.check(curDecls);
 	if (elsePart != null) elsePart.check(curDecls);
@@ -1125,9 +1133,7 @@ class ReturnStatm extends Statement {
     }
     @Override
     void check(DeclList curDecls) {
-	Log.w("ReturnStatm.check");
 	returnExpression.check(curDecls);
-	// TODO make sure expresion is the type as functiontype
     }
 
     @Override
@@ -1165,7 +1171,6 @@ class WhileStatm extends Statement {
 
     @Override
     void check(DeclList curDecls) {
-	Log.w("WhileStatm.check");
 	test.check(curDecls);
 	body.check(curDecls);
     }
@@ -1226,7 +1231,6 @@ class ExprList extends SyntaxUnit {
     @Override
     void check(DeclList curDecls) {
 	// -- Must be changed in part 2:
-	Log.w("ExprList.check");
 	for (Expression e = firstExpr; e != null; e = e.nextExpr) {
 	    e.check(curDecls);
 	}
@@ -1297,8 +1301,6 @@ class Expression extends Operand {
     @Override
     void check(DeclList curDecls) {
 	// -- Must be changed in part 2:
-	Log.w("Expression.check");
-	// TODO TYPE ASSERTIONS
 	if (relOp != null) {
 	    relOp.check(curDecls);
 	    secondTerm.check(curDecls);
@@ -1357,7 +1359,6 @@ class Term extends Operand {
     @Override
     void check(DeclList curDecls) {
 	// -- Must be changed in part 2:
-	Log.w("Term.check");
 	for (Factor f = firstFactor; f != null; f = f.nextFactor) {
 	    f.check(curDecls);
 	    if (valType == null) {
@@ -1444,14 +1445,11 @@ class Factor extends Operand {
     Operand firstOperand;
     @Override
     void check(DeclList curDecls) {
-	Log.w("Factor.check");
 	for (Operand o = firstOperand; o != null; o = o.nextOperand) {
 	    o.check(curDecls);
-	    System.out.println("LOLOLOL " + o);
 	    if (valType == null) {
 		valType = o.valType;
 	    } else {
-		System.out.println("here we are " + o);
 		valType.checkSameType(lineNum, o.valType, "Factor");
 	    }
 	}
@@ -1577,11 +1575,6 @@ abstract class Operator extends SyntaxUnit {
 
 class FactOperator extends Operator {
     @Override
-    void check(DeclList curDecls) {
-	Log.w("Factoperator.check");
-    }
-
-    @Override
     void genCode(FuncDecl curFunc) {
 	Log.w("FactOperator.genCode");
     }
@@ -1609,11 +1602,6 @@ class FactOperator extends Operator {
 }
 
 class TermOperator extends Operator {
-    @Override
-    void check(DeclList curDecls) {
-	Log.w("TermOperator.check");
-    }
-
     @Override
     void genCode(FuncDecl curFunc) {
 	Log.w("TermOperator.genCode");
@@ -1736,12 +1724,9 @@ class FunctionCall extends Operand {
 
     @Override
     void check(DeclList curDecls) {
-	// -- Must be changed in part 2:
-	Log.w("FunctionCall.check");
 	Declaration d = curDecls.findDecl(functionName, this);
 	if (d == null) Syntax.error(this, functionName + " is not defined.");
 	if (d != null) {
-	    Log.w("Function found" + functionName);
 	    declRef = (FuncDecl)d;
 	    arguments.check(curDecls);
 	    valType = declRef.type;
@@ -1790,8 +1775,6 @@ class Number extends Operand {
 
     @Override
     void check(DeclList curDecls) {
-	// -- Must be changed in part 2:
-	Log.w("Number.check");
     }
 
     @Override
@@ -1827,11 +1810,7 @@ class Variable extends Operand {
 
     @Override
     void check(DeclList curDecls) {
-	// part 2 ?
-	Log.w("Variable.check");
-
 	Declaration d = curDecls.findDecl(varName, this);
-	System.out.println(curDecls);
 	if (index == null) {
 	    d.checkWhetherSimpleVar(this);
 	    valType = d.type;
