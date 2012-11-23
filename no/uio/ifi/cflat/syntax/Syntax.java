@@ -84,7 +84,7 @@ abstract class SyntaxUnit {
 
 
 /*
- * A <program>
+** A <program>
  */
 class Program extends SyntaxUnit {
     DeclList progDecls = new GlobalDeclList();
@@ -124,7 +124,9 @@ class Program extends SyntaxUnit {
 
 
 /*
- * A declaration list. (This class is not mentioned in the syntax diagrams.)
+ * A declarati
+
+on list. (This class is not mentioned in the syntax diagrams.)
  */
 
 abstract class DeclList extends SyntaxUnit {
@@ -191,6 +193,7 @@ abstract class DeclList extends SyntaxUnit {
 	    }
 	}
 	if (outerScope != null) return outerScope.findDecl(name, usedIn);
+	Syntax.error(usedIn, name + " is not declared.");
 	return null;
     }
 }
@@ -276,7 +279,7 @@ class LocalDeclList extends DeclList {
  * diagrams.)
  */
 class ParamDeclList extends DeclList {
-
+    int nParams = 0;
     @Override
     void genCode(FuncDecl curFunc) {
 	// -- Must be changed in part 2:
@@ -290,8 +293,9 @@ class ParamDeclList extends DeclList {
     @Override
     void parse() {
 	while (Token.isTypeName(Scanner.curToken) && Scanner.nextToken == nameToken) {
-	    ParamDecl pd = new ParamDecl(Scanner.nextName);
+	    ParamDecl pd = new ParamDecl(Scanner.nextName, nParams);
 	    addDecl(pd);
+	    nParams++;
 	    pd.parse(); 
 	    if (Scanner.curToken == commaToken) {
 		Scanner.skip(commaToken);
@@ -477,7 +481,7 @@ class GlobalSimpleVarDecl extends VarDecl {
     @Override
     void checkWhetherArray(SyntaxUnit use) {
 	// -- Must be changed in part 2:
-	Log.w("GlobalSimpleVarDecl.checkWhetherArray");
+	Syntax.error(this, name + " is a simple variable and no array.");
     }
 
     @Override
@@ -514,6 +518,7 @@ class LocalArrayDecl extends VarDecl {
     @Override
     void check(DeclList curDecls) {
 	// -- Must be changed in part 2:
+	visible = true;
 	Log.w("LocalArrayDecl.check");
 	if (((ArrayType)type).nElems < 0)
 	    Syntax.error(this, "Arrays cannot have negative size!");
@@ -528,7 +533,7 @@ class LocalArrayDecl extends VarDecl {
     @Override
     void checkWhetherSimpleVar(SyntaxUnit use) {
 	// -- Must be changed in part 2:
-	Log.w("LocalArrayDecl.checkWhetherSimpleVar");
+	Syntax.error(this, name + " is a array and no simple variable.");
     }
 
     @Override
@@ -580,7 +585,7 @@ class LocalSimpleVarDecl extends VarDecl {
     @Override
     void checkWhetherArray(SyntaxUnit use) {
 	// -- Must be changed in part 2:
-	Log.w("LocalSimpleVarDecl.checkWhetherArray");
+	Syntax.error(this, name + " is a simple variable and no array.");
     }
 
     @Override
@@ -614,8 +619,9 @@ class LocalSimpleVarDecl extends VarDecl {
 class ParamDecl extends VarDecl {
     int paramNum = 0;
 
-    ParamDecl(String n) {
+    ParamDecl(String n, int paramNum) {
 	super(n);
+	this.paramNum = paramNum;
     }
 
     @Override
@@ -656,6 +662,8 @@ class ParamDecl extends VarDecl {
 
 
 /*
+
+
  * A <func decl>
  */
 class FuncDecl extends Declaration {
@@ -692,19 +700,19 @@ class FuncDecl extends Declaration {
     @Override
     void checkWhetherArray(SyntaxUnit use) {
 	// -- Must be changed in part 2:
-	Log.w("FuncDecl.checkWhetherArray");
+	Syntax.error(this, name + " is a function and not a array.");
     }
 
     @Override
     void checkWhetherFunction(int nParamsUsed, SyntaxUnit use) {
 	// -- Must be changed in part 2:
-	Log.w("FuncDecl.checkWhetherFunction");
+	if (nParamsUsed != functionParameters.nParams) Syntax.error(use, name + " takes " +  functionParameters.nParams + " paramters, not " + nParamsUsed);
     }
 
     @Override
     void checkWhetherSimpleVar(SyntaxUnit use) {
 	// -- Must be changed in part 2:
-	Log.w("FuncDecl.checkWhetherSimpleVar");
+	Syntax.error(this, name + " is a function and not a SimpleVar.");
     }
 
     @Override
@@ -1209,6 +1217,7 @@ class WhileStatm extends Statement {
 
 class ExprList extends SyntaxUnit {
     Expression firstExpr;
+    int nExprs = 0;
 
     ExprList() {
 	firstExpr = null;
@@ -1235,6 +1244,7 @@ class ExprList extends SyntaxUnit {
 	while (Scanner.curToken != rightParToken) {
 	    Expression e = new Expression();
 	    add(e);
+	    nExprs++;
 	    e.parse();
 	    if (Scanner.curToken == commaToken) Scanner.skip(commaToken);
 	}
@@ -1289,9 +1299,15 @@ class Expression extends Operand {
 	// -- Must be changed in part 2:
 	Log.w("Expression.check");
 	// TODO TYPE ASSERTIONS
-	firstTerm.check(curDecls);
-	if (relOp != null) relOp.check(curDecls);
-	if (secondTerm != null) secondTerm.check(curDecls);
+	if (relOp != null) {
+	    relOp.check(curDecls);
+	    secondTerm.check(curDecls);
+	    valType = relOp.opType;
+	} else {
+	    firstTerm.check(curDecls);
+	    valType = firstTerm.valType;
+	}
+	    
     }
 
     @Override
@@ -1435,6 +1451,7 @@ class Factor extends Operand {
 	    if (valType == null) {
 		valType = o.valType;
 	    } else {
+		System.out.println("here we are " + o);
 		valType.checkSameType(lineNum, o.valType, "Factor");
 	    }
 	}
@@ -1711,7 +1728,7 @@ abstract class Operand extends SyntaxUnit {
 class FunctionCall extends Operand {
     String functionName;
     ExprList arguments;
-    Declaration declRef;
+    FuncDecl declRef;
     FunctionCall() {
 	functionName = null;
 	arguments = new ExprList();
@@ -1725,9 +1742,15 @@ class FunctionCall extends Operand {
 	if (d == null) Syntax.error(this, functionName + " is not defined.");
 	if (d != null) {
 	    Log.w("Function found" + functionName);
-	    declRef = d;
+	    declRef = (FuncDecl)d;
 	    arguments.check(curDecls);
 	    valType = declRef.type;
+	}
+	declRef.checkWhetherFunction(arguments.nExprs, this);
+	Expression argument = arguments.firstExpr;
+	for (Declaration param = declRef.functionParameters.firstDecl; param != null; param = param.nextDecl) {
+	    if (param.type != argument.valType) Syntax.error(this, param.name + " is " + param.type.typeName() + " not " + argument.valType.typeName());
+	    argument = argument.nextExpr;
 	}
     }
 
@@ -1808,7 +1831,7 @@ class Variable extends Operand {
 	Log.w("Variable.check");
 
 	Declaration d = curDecls.findDecl(varName, this);
-	if (d == null) Syntax.error(this, varName + " is not declared.");
+	System.out.println(curDecls);
 	if (index == null) {
 	    d.checkWhetherSimpleVar(this);
 	    valType = d.type;
