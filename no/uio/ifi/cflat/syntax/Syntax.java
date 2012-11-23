@@ -1302,6 +1302,7 @@ class Expression extends Operand {
     void check(DeclList curDecls) {
 	// -- Must be changed in part 2:
 	if (relOp != null) {
+	    firstTerm.check(curDecls);
 	    relOp.check(curDecls);
 	    secondTerm.check(curDecls);
 	    valType = relOp.opType;

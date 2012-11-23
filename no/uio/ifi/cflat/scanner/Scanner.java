@@ -204,8 +204,8 @@ public class Scanner {
     nextNextToken = null;
 
     while (nextNextToken == null) {
-      nextNextLine = CharGenerator.curLineNum();
       prepareScanner();
+      nextNextLine = CharGenerator.curLineNum();
       if (!CharGenerator.isMoreToRead()) {
         nextNextToken = eofToken;
       } else if (isLetterAZ(CharGenerator.curC)) {
