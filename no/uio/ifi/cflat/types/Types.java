@@ -34,7 +34,7 @@ public class Types {
     };
     intType = new BasicType() {
       @Override public int size() {
-        return 2;
+	  return 4;
       }
 
       @Override public String typeName() {

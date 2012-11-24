@@ -457,7 +457,7 @@ class GlobalArrayDecl extends VarDecl {
     @Override
     void genCode(FuncDecl curFunc) {
 	ArrayType arrT = (ArrayType)type;
-	Code.genVar(assemblerName, true, declSize() * arrT.nElems, type.typeName() + "[] " + name + ";");
+	Code.genVar(assemblerName, true, declSize(), arrT.elemType.typeName() + " " + name + "[" + arrT.nElems + "];");
     }
 
     @Override
@@ -508,8 +508,7 @@ class GlobalSimpleVarDecl extends VarDecl {
 
     @Override
     void genCode(FuncDecl curFunc) {
-	// -- Must be changed in part 2:
-	Log.w("GlobalSimpleVarDecl.genCode");
+	Code.genVar(name, true, type.size(), type.typeName() + " " + name + ";");
     }
 
     @Override
@@ -604,8 +603,7 @@ class LocalSimpleVarDecl extends VarDecl {
 
     @Override
     void genCode(FuncDecl curFunc) {
-	// -- Must be changed in part 2:
-	Log.w("LocalSimpleVarDecl.genCode");
+	Code.genInstr("", "subl", "$" + type.size() + ",%esp", "Get " + type.size() + " bytes local data space");
     }
 
     @Override
@@ -727,6 +725,10 @@ class FuncDecl extends Declaration {
 	functionParameters.genCode(this);
 	functionBodyDecls.genCode(this);
 	functionBodyStatms.genCode(this);
+	Code.genInstr(".exit$" + name, "","","");
+	Code.genInstr("", "movl", "%ebp,%esp", "");
+	Code.genInstr("", "popl", "%ebp", "");
+	Code.genInstr("", "ret", "", "End function " + name);
 	
     }
 
@@ -994,6 +996,7 @@ class AssignStatm extends Statement {
 
     @Override
     void genCode(FuncDecl curFunc) {
+	assignment.genCode(curFunc);
     }
 
     @Override
@@ -1025,6 +1028,20 @@ class Assignment extends Statement {
     }
 
     void genCode(FuncDecl curFunc){
+	expression.genCode(curFunc);
+	if (variable.declRef.type == Types.doubleType && variable.declRef instanceof GlobalSimpleVarDecl || variable.declRef instanceof GlobalArrayDecl) {
+	    Code.genInstr("", "movl", "%eax,.tmp", "");
+	    Code.genInstr("", "fildl", ".tmp", "  (" + variable.declRef.type.typeName() + ")");
+	    Code.genInstr("", "fstpl", variable.varName, variable.varName + " =");
+	} else if (variable.declRef instanceof GlobalSimpleVarDecl || variable.declRef instanceof GlobalArrayDecl) {
+	    Code.genInstr("", "movl", "%eax," + variable.varName, variable.varName + " =");
+	} else if (variable.declRef.type == Types.doubleType) {
+	    Code.genInstr("", "movl", "%eax,.tmp", "");
+	    Code.genInstr("", "fildl", ".tmp", "  (" + variable.declRef.type.typeName() + ")");
+	    Code.genInstr("", "fstpl", "-" + variable.declRef.type.size() + "(%ebp)", variable.varName + " =");
+	} else {
+	    Code.genInstr("", "movl", "%eax," + "-" + expression.valType.size() + "(%ebp)", variable.varName + " =");
+	}
     }
     void parse() {
 	Log.enterParser("<assignment>");
@@ -1123,6 +1140,8 @@ class ReturnStatm extends Statement {
 
     @Override
     void genCode(FuncDecl curFunc) {
+	returnExpression.genCode(curFunc);
+	Code.genInstr("", "jmp", ".exit$" + curFunc.name, "Return-statement");
     }
 
     @Override
@@ -1220,8 +1239,16 @@ class ExprList extends SyntaxUnit {
 
     @Override
     void genCode(FuncDecl curFunc) {
+	Expression[] exprs = new Expression[nExprs];
+	int counter = 0;
 	for (Expression e = firstExpr; e != null; e = e.nextExpr) {
-	    e.genCode(curFunc);
+	    exprs[counter++] = e;
+	}
+	int paramN = 1;
+	for (int i = exprs.length - 1; i >= 0; i--) {
+	    exprs[i].genCode(curFunc);
+	    Code.genInstr("", "pushl", "%eax", "Push parameter #" + paramN);
+	    paramN++;
 	}
     }
 
@@ -1730,7 +1757,14 @@ class FunctionCall extends Operand {
     @Override
     void genCode(FuncDecl curFunc) {
 	// -- Must be changed in part 2:
+	arguments.genCode(curFunc);
 	Code.genInstr("", "call", declRef.assemblerName, "Call " + functionName);
+	int size = 0;
+	for (Expression e = arguments.firstExpr; e != null; e = e.nextExpr) {
+	    size += e.valType.size();
+	}
+	Code.genInstr("", "addl", "$" + size + ",%esp", "Remove parameters");
+	     
     }
 
     @Override
@@ -1810,8 +1844,7 @@ class Variable extends Operand {
 
     @Override
     void genCode(FuncDecl curFunc) {
-	// -- Must be changed in part 2:
-	Log.w("Variable.genCode");
+	Code.genInstr("", "movl", varName + ",%eax", varName);
     }
 
     @Override
