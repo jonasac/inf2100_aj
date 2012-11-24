@@ -119,14 +119,13 @@ class Program extends SyntaxUnit {
 
 	if (!Cflat.noLink) {
 	    // Check that 'main' has been declared properly:
-	    // -- Must be changed in part 2:
+	    // findDecl will throw a syntaxerror if main cannot be found
 	    Declaration d = progDecls.findDecl("main", this);
 	}
     }
 
     @Override
     void genCode(FuncDecl curFunc) {
-	Code.genInstr("", ".text", "", "");
 	progDecls.genCode(null);
     }
 
@@ -159,7 +158,6 @@ abstract class DeclList extends SyntaxUnit {
 
     DeclList() {
 	firstDecl = null;
-	// -- Must be changed in part 1:
     }
 
     @Override
@@ -224,9 +222,12 @@ abstract class DeclList extends SyntaxUnit {
  * diagrams.)
  */
 class GlobalDeclList extends DeclList {
+
     @Override
     void genCode(FuncDecl curFunc) {
-	// -- Must be changed in part 2:
+	for (Declaration d = firstDecl; d != null; d = d.nextDecl) {
+	    d.genCode(curFunc);
+	}
     }
 
     @Override
@@ -261,12 +262,13 @@ class GlobalDeclList extends DeclList {
 class LocalDeclList extends DeclList {
     @Override
     void genCode(FuncDecl curFunc) {
-	// -- Must be changed in part 2:
+	for (Declaration d = firstDecl; d != null; d = d.nextDecl) {
+	    d.genCode(curFunc);
+	}
     }
 
     @Override
     void parse() {
-	// -- Must be changed in part 1:
 	VarDecl d = null;
 	while (Token.isTypeName(Scanner.curToken) && Scanner.nextToken == nameToken) {
 	    if (Scanner.nextNextToken == leftBracketToken) {
@@ -301,20 +303,19 @@ class ParamDeclList extends DeclList {
     int nParams = 0;
     @Override
     void genCode(FuncDecl curFunc) {
-	// -- Must be changed in part 2:
-
-	String param1 = "$120";
-	// $120 is an example parameter #1
-	Code.genInstr("", "movl", param1 + ",%eax", "");
-	Code.genInstr("", "pushl", "%eax", "");
+	for (Declaration d = firstDecl; d != null; d = d.nextDecl) {
+	    d.genCode(curFunc);
+	}
     }
 
     @Override
     void parse() {
+	int curAssStep = 8;
 	while (Token.isTypeName(Scanner.curToken) && Scanner.nextToken == nameToken) {
-	    ParamDecl pd = new ParamDecl(Scanner.nextName, nParams);
+	    ParamDecl pd = new ParamDecl(Scanner.nextName, curAssStep);
 	    addDecl(pd);
 	    nParams++;
+	    curAssStep += 4;
 	    pd.parse(); 
 	    if (Scanner.curToken == commaToken) {
 		Scanner.skip(commaToken);
@@ -455,8 +456,8 @@ class GlobalArrayDecl extends VarDecl {
 
     @Override
     void genCode(FuncDecl curFunc) {
-	// -- Must be changed in part 2:
-	Log.w("GlobalArrayDecl.genCode");
+	ArrayType arrT = (ArrayType)type;
+	Code.genVar(assemblerName, true, declSize() * arrT.nElems, type.typeName() + "[] " + name + ";");
     }
 
     @Override
@@ -492,13 +493,11 @@ class GlobalSimpleVarDecl extends VarDecl {
 
     @Override
     void check(DeclList curDecls) {
-	// -- Must be changed in part 2:
 	visible = true;
     }
 
     @Override
     void checkWhetherArray(SyntaxUnit use) {
-	// -- Must be changed in part 2:
 	Syntax.error(this, name + " is a simple variable and no array.");
     }
 
@@ -535,7 +534,6 @@ class LocalArrayDecl extends VarDecl {
 
     @Override
     void check(DeclList curDecls) {
-	// -- Must be changed in part 2:
 	visible = true;
 	if (((ArrayType)type).nElems < 0)
 	    Syntax.error(this, "Arrays cannot have negative size!");
@@ -543,12 +541,11 @@ class LocalArrayDecl extends VarDecl {
 
     @Override
     void checkWhetherArray(SyntaxUnit use) {
-	// -- Must be changed in part 2:
+	// *OK*
     }
 
     @Override
     void checkWhetherSimpleVar(SyntaxUnit use) {
-	// -- Must be changed in part 2:
 	Syntax.error(this, name + " is a array and no simple variable.");
     }
 
@@ -592,19 +589,17 @@ class LocalSimpleVarDecl extends VarDecl {
 
     @Override
     void check(DeclList curDecls) {
-	// -- Must be changed in part 2:
 	visible = true;
     }
 
     @Override
     void checkWhetherArray(SyntaxUnit use) {
-	// -- Must be changed in part 2:
 	Syntax.error(this, name + " is a simple variable and no array.");
     }
 
     @Override
     void checkWhetherSimpleVar(SyntaxUnit use) {
-	// -- Must be changed in part 2:
+	// * OK *
     }
 
     @Override
@@ -639,25 +634,22 @@ class ParamDecl extends VarDecl {
 
     @Override
     void check(DeclList curDecls) {
-	// -- Must be changed in part 2:
 	visible = true;
     }
 
     @Override
     void checkWhetherArray(SyntaxUnit use) {
-	// -- Must be changed in part 2:
 	Syntax.error(this, name + " arrays can not be used as parameter.");
     }
 
     @Override
     void checkWhetherSimpleVar(SyntaxUnit use) {
-	// -- Must be changed in part 2:
+	// * OK * 
     }
 
     @Override
     void genCode(FuncDecl curFunc) {
-	// -- Must be changed in part 2:
-	Log.w("ParamDecl.genCode");
+	assemblerName = paramNum + "(%ebp)";
     }
 
     @Override
@@ -678,7 +670,6 @@ class ParamDecl extends VarDecl {
  * A <func decl>
  */
 class FuncDecl extends Declaration {
-    // -- Must be changed in part 1+2:
     ParamDeclList functionParameters;
     LocalDeclList functionBodyDecls;
     StatmList functionBodyStatms;
@@ -700,11 +691,11 @@ class FuncDecl extends Declaration {
 
     @Override
     void check(DeclList curDecls) {
-	// -- Must be changed in part 2:
 	visible = true;
 	functionParameters.check(curDecls);
 	functionBodyDecls.check(functionParameters);
 	functionBodyStatms.check(functionBodyDecls);
+	// Check that all return statements in this function is of same type as function
 	for (Statement s = functionBodyStatms.firstStatement; s != null; s = s.nextStatm) {
 	    if (s instanceof ReturnStatm && type != ((ReturnStatm)s).returnExpression.valType) {
 		Syntax.error(s, "return statement must have same type as function declaration");
@@ -714,19 +705,16 @@ class FuncDecl extends Declaration {
 
     @Override
     void checkWhetherArray(SyntaxUnit use) {
-	// -- Must be changed in part 2:
 	Syntax.error(this, name + " is a function and not a array.");
     }
 
     @Override
     void checkWhetherFunction(int nParamsUsed, SyntaxUnit use) {
-	// -- Must be changed in part 2:
 	if (nParamsUsed != functionParameters.nParams) Syntax.error(use, name + " takes " +  functionParameters.nParams + " paramters, not " + nParamsUsed);
     }
 
     @Override
     void checkWhetherSimpleVar(SyntaxUnit use) {
-	// -- Must be changed in part 2:
 	Syntax.error(this, name + " is a function and not a SimpleVar.");
     }
 
@@ -736,7 +724,10 @@ class FuncDecl extends Declaration {
 	Code.genInstr(assemblerName, "pushl", "%ebp", "Start function " + name);
 	Code.genInstr("", "movl", "%esp,%ebp", "");
 	// -- Must be changed in part 2:
-	Log.w("FuncDecl.genCode");
+	functionParameters.genCode(this);
+	functionBodyDecls.genCode(this);
+	functionBodyStatms.genCode(this);
+	
     }
 
     @Override
@@ -783,7 +774,6 @@ class StatmList extends SyntaxUnit {
     }
     @Override
     void check(DeclList curDecls) {
-	// -- Must be changed in part 2:
 	Statement st = firstStatement;
 	while (st != null) {
 	    st.check(curDecls);
@@ -794,8 +784,10 @@ class StatmList extends SyntaxUnit {
 
     @Override
     void genCode(FuncDecl curFunc) {
-	// -- Must be changed in part 2:
-	Log.w("StatmList.genCode");
+	for (Statement st = firstStatement; st != null; st = st.nextStatm) {
+	    st.genCode(curFunc);
+	}
+
     }
 
     @Override
@@ -874,7 +866,6 @@ class EmptyStatm extends Statement {
 
     @Override
     void check(DeclList curDecls) {
-	// -- Must be changed in part 2:
 	// Its empty, just like the EmptyStatm
     }
 
@@ -901,7 +892,6 @@ class EmptyStatm extends Statement {
 /*
  * A <for-statm>.
  */
-// -- Must be changed in part 1+2:
 class ForStatm extends Statement {
     Assignment forCounter;
     Expression forTest;
@@ -972,9 +962,8 @@ class CallStatm extends Statement {
 
     @Override
     void genCode(FuncDecl curFunc) {
-
 	// Call the function
-	Code.genInstr("", "call", curFunc.name, "");
+	functionCall.genCode(curFunc);
     }
 
     @Override
@@ -1055,7 +1044,6 @@ class Assignment extends Statement {
  * An <if-statm>.
  */
 class IfStatm extends Statement {
-    // -- Must be changed in part 1+2:
     Expression ifTest;
     StatmList ifPart;
     StatmList elsePart;
@@ -1067,7 +1055,6 @@ class IfStatm extends Statement {
     }
     @Override
     void check(DeclList curDecls) {
-	// -- Must be changed in part 2:
 	ifTest.check(curDecls);
 	ifPart.check(curDecls);
 	if (elsePart != null) elsePart.check(curDecls);
@@ -1124,7 +1111,6 @@ class IfStatm extends Statement {
 /*
  * A <return-statm>.
  */
-// -- Must be changed in part 1+2:
 class ReturnStatm extends Statement {
     Expression returnExpression;
     ReturnStatm() {
@@ -1213,8 +1199,6 @@ class WhileStatm extends Statement {
 }
 
 
-// -- Must be changed in part 1+2:
-
 /*
  * An <expression list>.
  */
@@ -1229,7 +1213,6 @@ class ExprList extends SyntaxUnit {
 
     @Override
     void check(DeclList curDecls) {
-	// -- Must be changed in part 2:
 	for (Expression e = firstExpr; e != null; e = e.nextExpr) {
 	    e.check(curDecls);
 	}
@@ -1237,8 +1220,9 @@ class ExprList extends SyntaxUnit {
 
     @Override
     void genCode(FuncDecl curFunc) {
-	// -- Must be changed in part 2:
-	Log.w("ExprList.genCode");
+	for (Expression e = firstExpr; e != null; e = e.nextExpr) {
+	    e.genCode(curFunc);
+	}
     }
 
     @Override
@@ -1277,7 +1261,6 @@ class ExprList extends SyntaxUnit {
 	    if (current != null) Log.wTree(",");
 	}
     }
-    // -- Must be changed in part 1:
 }
 
 
@@ -1299,7 +1282,6 @@ class Expression extends Operand {
     }
     @Override
     void check(DeclList curDecls) {
-	// -- Must be changed in part 2:
 	if (relOp != null) {
 	    firstTerm.check(curDecls);
 	    relOp.check(curDecls);
@@ -1315,7 +1297,9 @@ class Expression extends Operand {
     @Override
     void genCode(FuncDecl curFunc) {
 	// -- Must be changed in part 2:
-	Log.w("Expression.genCode");
+	firstTerm.genCode(curFunc);
+	if (relOp != null) relOp.genCode(curFunc);
+	if (secondTerm != null) secondTerm.genCode(curFunc);
     }
 
     @Override
@@ -1358,7 +1342,6 @@ class Term extends Operand {
 
     @Override
     void check(DeclList curDecls) {
-	// -- Must be changed in part 2:
 	for (Factor f = firstFactor; f != null; f = f.nextFactor) {
 	    f.check(curDecls);
 	    if (valType == null) {
@@ -1376,7 +1359,10 @@ class Term extends Operand {
     @Override
     void genCode(FuncDecl curFunc) {
 	// -- Must be changed in part 2:
-	Log.w("Term.genCode");
+	for (Factor f = firstFactor; f != null; f = f.nextFactor) {
+	    f.genCode(curFunc);
+	}
+	
     }
 
     /*
@@ -1443,6 +1429,7 @@ class Factor extends Operand {
     Factor nextFactor; // Used in term, not referenced in this class itself
     Operator firstFo;
     Operand firstOperand;
+
     @Override
     void check(DeclList curDecls) {
 	for (Operand o = firstOperand; o != null; o = o.nextOperand) {
@@ -1462,6 +1449,7 @@ class Factor extends Operand {
     @Override
     void genCode(FuncDecl curFunc) {
 	Log.w("Factor.genCode");
+	firstOperand.genCode(curFunc);
     }
 
     /*
@@ -1556,7 +1544,7 @@ class Factor extends Operand {
 	}
     }
 }
-// -- Must be changed in part 1+2:
+
 
 /*
  * An <operator>
@@ -1624,7 +1612,7 @@ class TermOperator extends Operator {
 	}
     }
 }
-// -- Must be changed in part 1+2:
+
 /*
  * A relational operator (==, !=, <, <=, > or >=).
  */
@@ -1742,12 +1730,11 @@ class FunctionCall extends Operand {
     @Override
     void genCode(FuncDecl curFunc) {
 	// -- Must be changed in part 2:
-	Log.w("Operand.genCode");
+	Code.genInstr("", "call", declRef.assemblerName, "Call " + functionName);
     }
 
     @Override
     void parse() {
-	// -- Must be changed in part 1:
 	Log.enterParser("<function call>");
 	functionName = Scanner.curName;
 	Scanner.skip(nameToken);
@@ -1759,13 +1746,12 @@ class FunctionCall extends Operand {
 
     @Override
     void printTree() {
-	// -- Must be changed in part 1:
 	Log.wTree(functionName + "(");
 	arguments.printTree();
 	Log.wTree(")");
     }
-    // -- Must be changed in part 1+2:
 }
+
 
 /*
  * A <number>.
@@ -1784,7 +1770,6 @@ class Number extends Operand {
 
     @Override
     void parse() {
-	// -- Must be changed in part 1:
 	Log.enterParser("<number>");
 	numVal = Scanner.curNum;
 	valType = Types.intType;

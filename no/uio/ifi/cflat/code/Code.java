@@ -63,6 +63,7 @@ public class Code {
 
 	printLabel(lab, (instr+arg+comment).equals(""));
 	codeFile.printf("%-7s %-23s ", instr, arg);
+	System.out.println("HERE " + comment);
 	if (comment.length() > 0) {
 	    codeFile.print("# " + comment);
 	}
