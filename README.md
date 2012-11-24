@@ -55,8 +55,8 @@ En slags minimap (aktiveres med ctrl-space)
 function! ToggleMinimapOn()
   " make font small
   set columns=100
-  set lines=120
-  set guifont=ProggyTinyTT\ 9
+  set lines=95
+  set guifont=ProggyTinyTT\ 11
   color tolerable
   nmap <c-space> :ToggleMinimapTiny<CR>
 endfunction
