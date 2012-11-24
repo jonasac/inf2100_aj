@@ -262,9 +262,13 @@ class GlobalDeclList extends DeclList {
 class LocalDeclList extends DeclList {
     @Override
     void genCode(FuncDecl curFunc) {
+	int dataSize = 0;
 	for (Declaration d = firstDecl; d != null; d = d.nextDecl) {
-	    d.genCode(curFunc);
+	    dataSize += d.declSize();
+	    d.assemblerName = "-" + dataSize + "(%ebp)";
 	}
+	    
+	Code.genInstr("", "subl", "$" + dataSize() + ",%esp", "Get " + dataSize() + " bytes local data space");
     }
 
     @Override
@@ -550,8 +554,7 @@ class LocalArrayDecl extends VarDecl {
 
     @Override
     void genCode(FuncDecl curFunc) {
-	// -- Must be changed in part 2:
-	Log.w("LocalArrayDecl.genCode");
+	//	Code.genInstr("", "subl", "$" + type.size() + ",%esp", "Get " + type.size() + " bytes local data space");
     }
 
     @Override
@@ -603,7 +606,7 @@ class LocalSimpleVarDecl extends VarDecl {
 
     @Override
     void genCode(FuncDecl curFunc) {
-	Code.genInstr("", "subl", "$" + type.size() + ",%esp", "Get " + type.size() + " bytes local data space");
+	//	Code.genInstr("", "subl", "$" + type.size() + ",%esp", "Get " + type.size() + " bytes local data space");
     }
 
     @Override
@@ -1028,19 +1031,34 @@ class Assignment extends Statement {
     }
 
     void genCode(FuncDecl curFunc){
-	expression.genCode(curFunc);
-	if (variable.declRef.type == Types.doubleType && variable.declRef instanceof GlobalSimpleVarDecl || variable.declRef instanceof GlobalArrayDecl) {
+	if (variable.declRef.type == Types.doubleType && variable.declRef instanceof GlobalSimpleVarDecl) {
+	    expression.genCode(curFunc);
 	    Code.genInstr("", "movl", "%eax,.tmp", "");
 	    Code.genInstr("", "fildl", ".tmp", "  (" + variable.declRef.type.typeName() + ")");
 	    Code.genInstr("", "fstpl", variable.varName, variable.varName + " =");
-	} else if (variable.declRef instanceof GlobalSimpleVarDecl || variable.declRef instanceof GlobalArrayDecl) {
+	} else if (variable.declRef instanceof GlobalSimpleVarDecl) {
+	    expression.genCode(curFunc);
 	    Code.genInstr("", "movl", "%eax," + variable.varName, variable.varName + " =");
+	} else if (variable.declRef instanceof LocalArrayDecl) {
+	    variable.genCode(curFunc);
+	    expression.genCode(curFunc);
+	    Code.genInstr("", "leal", variable.declRef.assemblerName + ",%edx", "");
+	    Code.genInstr("", "popl", "%ecx", "");
+	    if (((ArrayType)variable.declRef.type).elemType == Types.doubleType) {
+		Code.genInstr("", "movl", "%eax,.tmp", "");
+		Code.genInstr("", "fildl", ".tmp", "  (double)");
+		Code.genInstr("", "fstpl", "(%edx,%ecx,8)", variable.varName + "[...] =");
+	    } else {
+		Code.genInstr("", "movl", "%eax,(%edx,%ecx," + ((ArrayType)variable.declRef.type).elemType.size() + ")", variable.varName + "[...] =");
+	    }
 	} else if (variable.declRef.type == Types.doubleType) {
+	    expression.genCode(curFunc);
 	    Code.genInstr("", "movl", "%eax,.tmp", "");
 	    Code.genInstr("", "fildl", ".tmp", "  (" + variable.declRef.type.typeName() + ")");
-	    Code.genInstr("", "fstpl", "-" + variable.declRef.type.size() + "(%ebp)", variable.varName + " =");
+	    Code.genInstr("", "fstpl", variable.declRef.assemblerName, variable.varName + " =");
 	} else {
-	    Code.genInstr("", "movl", "%eax," + "-" + expression.valType.size() + "(%ebp)", variable.varName + " =");
+	    expression.genCode(curFunc);
+	    Code.genInstr("", "movl", "%eax," + variable.declRef.assemblerName, variable.varName + " =");
 	}
     }
     void parse() {
@@ -1844,7 +1862,12 @@ class Variable extends Operand {
 
     @Override
     void genCode(FuncDecl curFunc) {
-	Code.genInstr("", "movl", varName + ",%eax", varName);
+	if (index != null) {
+	    index.genCode(curFunc);
+	    Code.genInstr("", "pushl", "%eax", "");
+	} else {
+	    Code.genInstr("", "movl", varName + ",%eax", varName);
+	}
     }
 
     @Override
