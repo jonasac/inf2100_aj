@@ -1,6 +1,3 @@
-// vim: sw=2 ts=2
-// tango2
-
 package no.uio.ifi.cflat.syntax;
 
 /*
@@ -40,7 +37,6 @@ public class Syntax {
 	addFnToLib("putchar", Types.intType, "c", Types.intType);
 	addFnToLib("getchar", Types.intType, null, null);
 	library.check(null);
-   
     }
 
     public static void addFnToLib(String name, Type retrType, String paramName, Type paramType) {
