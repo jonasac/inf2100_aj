@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # If wanted, compare the assembly output
 if [ "$1" == "asm" ]; then

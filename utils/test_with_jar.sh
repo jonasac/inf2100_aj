@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if [ "$1" == '' ]; then
   echo 'First argument must be a .jar file'
