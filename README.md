@@ -45,3 +45,40 @@ Links to Jonas
 --------------
 
     http://futz.me/frugi http://some/url/to/send
+
+En slags minimap (aktiveres med ctrl-space)
+-------------------------------------------
+
+" --- Minimap toggle just by changing the font ---
+
+```
+function! ToggleMinimapOn()
+  " make font small
+  set columns=100
+  set lines=120
+  set guifont=ProggyTinyTT\ 9
+  color tolerable
+  nmap <c-space> :ToggleMinimapTiny<CR>
+endfunction
+function! ToggleMinimapTiny()
+  " make font small
+  set columns=100
+  set lines=120
+  set guifont=ProggyTinyTT\ 5
+  color oceandeep
+  nmap <c-space> :ToggleMinimapOff<CR>
+endfunction
+function! ToggleMinimapOff()
+  " make font normal
+  set columns=182
+  set lines=55
+  set guifont=Monospace\ 11
+  color wintersday
+  nmap <c-space> :ToggleMinimapOn<CR>
+endfunction
+command! ToggleMinimapOn call ToggleMinimapOn()
+command! ToggleMinimapTiny call ToggleMinimapTiny()
+command! ToggleMinimapOff call ToggleMinimapOff()
+nmap <c-space> :ToggleMinimapOn<CR>
+``
+
