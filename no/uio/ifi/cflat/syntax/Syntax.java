@@ -263,8 +263,9 @@ class LocalDeclList extends DeclList {
 	    dataSize += d.declSize();
 	    d.assemblerName = "-" + dataSize + "(%ebp)";
 	}
-	    
-	Code.genInstr("", "subl", "$" + dataSize() + ",%esp", "Get " + dataSize() + " bytes local data space");
+	if (dataSize() > 0) {
+	    Code.genInstr("", "subl", "$" + dataSize() + ",%esp", "Get " + dataSize() + " bytes local data space");
+	}
     }
 
     @Override
@@ -313,9 +314,11 @@ class ParamDeclList extends DeclList {
 	int curAssStep = 8;
 	while (Token.isTypeName(Scanner.curToken) && Scanner.nextToken == nameToken) {
 	    ParamDecl pd = new ParamDecl(Scanner.nextName, curAssStep);
+	    pd.type = Types.getType(Scanner.curToken);
 	    addDecl(pd);
 	    nParams++;
-	    curAssStep += 4;
+	    if (pd.type == Types.doubleType) curAssStep += 8;
+	    else curAssStep += 4;
 	    pd.parse(); 
 	    if (Scanner.curToken == commaToken) {
 		Scanner.skip(commaToken);
@@ -707,7 +710,8 @@ class FuncDecl extends Declaration {
 
     @Override
     void checkWhetherFunction(int nParamsUsed, SyntaxUnit use) {
-	if (nParamsUsed != functionParameters.nParams) Syntax.error(use, name + " takes " +  functionParameters.nParams + " paramters, not " + nParamsUsed);
+	if (nParamsUsed != functionParameters.nParams) 
+	    Syntax.error(use, name + " takes " +  functionParameters.nParams + " paramters, not " + nParamsUsed);
     }
 
     @Override
@@ -724,6 +728,7 @@ class FuncDecl extends Declaration {
 	functionParameters.genCode(this);
 	functionBodyDecls.genCode(this);
 	functionBodyStatms.genCode(this);
+	if (type == Types.doubleType) Code.genInstr("", "fldz", "", "");
 	Code.genInstr(".exit$" + name, "","","");
 	Code.genInstr("", "movl", "%ebp,%esp", "");
 	Code.genInstr("", "popl", "%ebp", "");
@@ -1047,7 +1052,12 @@ class Assignment extends Statement {
 	    expression.genCode(curFunc);
 	    Code.genInstr("", "movl", "%eax," + variable.varName, variable.varName + " =");
 	} else if (variable.declRef instanceof LocalArrayDecl) {
-	    variable.genCode(curFunc);
+	    variable.index.genCode(curFunc);
+	    if (variable.index.valType == Types.doubleType) {
+		Code.genInstr("", "fstpl", "(%esp)", "");
+	    } else {
+		Code.genInstr("", "pushl", "%eax", "");
+	    }
 	    expression.genCode(curFunc);
 	    Code.genInstr("", "leal", variable.declRef.assemblerName + ",%edx", "");
 	    Code.genInstr("", "popl", "%ecx", "");
@@ -1058,13 +1068,20 @@ class Assignment extends Statement {
 	    } else {
 		Code.genInstr("", "movl", "%eax,(%edx,%ecx," + ((ArrayType)variable.declRef.type).elemType.size() + ")", variable.varName + "[...] =");
 	    }
-	} else if (variable.declRef.type == Types.doubleType) {
+	} else if (variable.declRef.type == Types.doubleType && variable.declRef instanceof LocalSimpleVarDecl) {
 	    expression.genCode(curFunc);
-	    Code.genInstr("", "movl", "%eax,.tmp", "");
-	    Code.genInstr("", "fildl", ".tmp", "  (" + variable.declRef.type.typeName() + ")");
+	    if (expression.valType != Types.doubleType) {
+		Code.genInstr("", "movl", "%eax,.tmp", "");
+		Code.genInstr("", "fildl", ".tmp", "  (" + variable.declRef.type.typeName() + ")");
+	    }
 	    Code.genInstr("", "fstpl", variable.declRef.assemblerName, variable.varName + " =");
 	} else if (variable.declRef instanceof GlobalArrayDecl) {
-	    variable.genCode(curFunc);
+	    variable.index.genCode(curFunc);
+	    if (variable.index.valType == Types.doubleType) {
+		Code.genInstr("", "fstpl", "(%esp)", "");
+	    } else {
+		Code.genInstr("", "pushl", "%eax", "");
+	    }
 	    expression.genCode(curFunc);
 	    Code.genInstr("", "leal", variable.declRef.assemblerName + ",%edx", "");
 	    Code.genInstr("", "popl", "%ecx", "");
@@ -1117,11 +1134,12 @@ class IfStatm extends Statement {
     @Override
     void genCode(FuncDecl curFunc) {
 	String labelFirst = Code.getLocalLabel();
-	String labelSecond = Code.getLocalLabel();
+	String labelSecond = "";
 	Code.genInstr("", "" ,"", "Start if-statement");
 	ifTest.genCode(curFunc);
 	Code.genInstr("", "cmpl", "$0,%eax", "");
 	if (elsePart != null) {
+	    labelSecond = Code.getLocalLabel();
 	    Code.genInstr("", "je", labelSecond, "");
 	} else {
 	    Code.genInstr("", "je", labelFirst, "");
@@ -1300,11 +1318,14 @@ class ExprList extends SyntaxUnit {
 	for (Expression e = firstExpr; e != null; e = e.nextExpr) {
 	    exprs[counter++] = e;
 	}
-	int paramN = 1;
 	for (int i = exprs.length - 1; i >= 0; i--) {
 	    exprs[i].genCode(curFunc);
-	    Code.genInstr("", "pushl", "%eax", "Push parameter #" + paramN);
-	    paramN++;
+	    if (exprs[i].valType == Types.doubleType) {
+		Code.genInstr("", "subl", "$" + exprs[i].valType.size() + ",%esp", "");
+		Code.genInstr("", "fstpl", "(%esp)", "Push parameter #" + (i+1));
+	    } else {
+		Code.genInstr("", "pushl", "%eax", "Push parameter #" + (i+1));
+	    }
 	}
     }
 
@@ -1372,8 +1393,10 @@ class Expression extends Operand {
 	    secondTerm.check(curDecls);
 	    if (firstTerm.valType != secondTerm.valType) {
 		Syntax.error(this, " Comparison operand should have the same type, not " + firstTerm.valType.typeName() + " and " + secondTerm.valType.typeName());
-	    }	  
-	    valType = relOp.opType;
+	    } else {
+		relOp.opType = firstTerm.valType;
+		valType = Types.intType;
+	    }
 	    
 	} else {
 	    firstTerm.check(curDecls);
@@ -1386,7 +1409,11 @@ class Expression extends Operand {
     void genCode(FuncDecl curFunc) {
 	firstTerm.genCode(curFunc);
 	if (relOp != null) {
-	    Code.genInstr("", "pushl", "%eax", "");	    
+	    if (firstTerm.valType == Types.doubleType) {
+		Code.genInstr("", "fstpl", "(%esp)", "");
+	    } else {
+		Code.genInstr("", "pushl", "%eax", "");	    
+	    }
 	    secondTerm.genCode(curFunc);
 	    relOp.genCode(curFunc);
 	}
@@ -1454,7 +1481,12 @@ class Term extends Operand {
 	f.genCode(curFunc);
 	f = f.nextFactor;
 	while (top != null) {
-	    Code.genInstr("", "pushl", "%eax", "");
+	    if (valType == Types.doubleType) {
+		Code.genInstr("", "subl", "$" + f.valType.size() + ",%esp", "");
+		Code.genInstr("", "fstpl", "(%esp)", "");
+	    } else {
+		Code.genInstr("", "pushl", "%eax", "");
+	    }
 	    f.genCode(curFunc);
 	    top.genCode(curFunc);
 	    top = top.nextOp;
@@ -1552,7 +1584,12 @@ class Factor extends Operand {
 	o.genCode(curFunc);
 	o = o.nextOperand;
 	while (opr != null) {
-	    Code.genInstr("", "pushl", "%eax", "");
+	    if (valType == Types.doubleType) {
+		Code.genInstr("", "subl", "$" + o.valType.size() + ",%esp", "");
+		Code.genInstr("", "fstpl", "(%esp)", "");
+	    } else {
+		Code.genInstr("", "pushl", "%eax", "");
+	    }
 	    o.genCode(curFunc);
 	    opr.genCode(curFunc);
 	    o = o.nextOperand;
@@ -1672,13 +1709,26 @@ abstract class Operator extends SyntaxUnit {
 class FactOperator extends Operator {
     @Override
     void genCode(FuncDecl curFunc) {
-	Code.genInstr("", "movl", "%eax,%ecx", "");
-	Code.genInstr("", "popl", "%eax", "");
+	if (opType != Types.doubleType) {
+	    Code.genInstr("", "movl", "%eax,%ecx", "");
+	    Code.genInstr("", "popl", "%eax", "");
+	} else { 
+	    Code.genInstr("", "fldl", "(%esp)", "");
+	    Code.genInstr("", "addl", "$" + opType.size() + ",%esp", "");
+	}
 	if (opToken == multiplyToken) {
-	    Code.genInstr("", "imull", "%ecx,%eax", "Compute *");
+	    if (opType == Types.doubleType) {
+		Code.genInstr("", "fmulp", "", "Compute *");
+	    } else {
+		Code.genInstr("", "imull", "%ecx,%eax", "Compute *");
+	    }
 	} else {
-	    Code.genInstr("", "cdq", "", "");
-	    Code.genInstr("", "idivl", "%ecx", "Compute /");
+	    if (opType == Types.doubleType) {
+		Code.genInstr("", "fdivp", "", "Compute /");
+	    } else {
+		Code.genInstr("", "cdq", "", "");
+		Code.genInstr("", "idivl", "%ecx", "Compute /");
+	    }
 	}
 	    
     }
@@ -1708,12 +1758,26 @@ class FactOperator extends Operator {
 class TermOperator extends Operator {
     @Override
     void genCode(FuncDecl curFunc) {
-	Code.genInstr("", "movl", "%eax,%ecx", "");
-	Code.genInstr("", "popl", "%eax", "");
+	if (opType != Types.doubleType) {
+	    Code.genInstr("", "movl", "%eax,%ecx", "");
+	    Code.genInstr("", "popl", "%eax", "");
+	}
 	if (opToken == addToken) {
-	    Code.genInstr("", "addl", "%ecx,%eax", "Compute +");
+	    if (opType == Types.doubleType) {
+		Code.genInstr("", "fldl", "(%esp)", "");
+		Code.genInstr("", "addl", "$8,%esp", "");
+		Code.genInstr("", "faddp", "", "Compute +");
+	    } else {
+		Code.genInstr("", "addl", "%ecx,%eax", "Compute +");
+	    }
 	} else {
-	    Code.genInstr("", "subl", "%ecx,%eax", "Compute -");
+	    if (opType == Types.doubleType) {
+		Code.genInstr("", "fldl", "(%esp)", "");
+		Code.genInstr("", "addl", "$8,%esp", "");
+		Code.genInstr("", "fsubp", "", "Compute -");
+	    } else {
+		Code.genInstr("", "subl", "%ecx,%eax", "Compute -");
+	    }
 	}
     }
 
@@ -1853,6 +1917,7 @@ class FunctionCall extends Operand {
     void genCode(FuncDecl curFunc) {
 	arguments.genCode(curFunc);
 	Code.genInstr("", "call", declRef.assemblerName, "Call " + functionName);
+
 	int size = 0;
 	for (Expression e = arguments.firstExpr; e != null; e = e.nextExpr) {
 	    size += e.valType.size();
@@ -1860,7 +1925,7 @@ class FunctionCall extends Operand {
 	if (size > 0) {
 	    Code.genInstr("", "addl", "$" + size + ",%esp", "Remove parameters");
 	}
-	     
+	if (declRef.type == Types.doubleType) Code.genInstr("", "fstps", ".tmp", "Remove return value.");	     
     }
     
     @Override
@@ -1942,9 +2007,19 @@ class Variable extends Operand {
     void genCode(FuncDecl curFunc) {
 	if (index != null) {
 	    index.genCode(curFunc);
-	    Code.genInstr("", "pushl", "%eax", "");
+	    Code.genInstr("", "leal", declRef.assemblerName + ",%edx", declRef.name + "[...]");
+	    if (declRef.type == Types.doubleType) {
+		Code.genInstr("", "fldl", "(%edx,%eax," + ((ArrayType)declRef.type).elemType.size() + ")", "");
+		Code.genInstr("", "subl", "$" + declRef.type.size() + ",%esp", "");
+	    } else {
+		Code.genInstr("", "movl", "(%edx,%eax," + ((ArrayType)declRef.type).elemType.size() + "),%eax", "");
+	    }
 	} else {
-	    Code.genInstr("", "movl", declRef.assemblerName + ",%eax", varName);
+	    if (declRef.type == Types.doubleType) {
+		Code.genInstr("", "fldl", declRef.assemblerName, varName);
+	    } else {
+		Code.genInstr("", "movl", declRef.assemblerName + ",%eax", varName);
+	    }
 	}
     }
 

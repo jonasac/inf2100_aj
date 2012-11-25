@@ -5,13 +5,23 @@ double gay;
 int lord;
 int foker[10];
 double lol[20];
+double jonas() {
+  putchar('j');
+}
 int main () 
 { 
   int skruf[5];
   double general[30];
   double i;
+  double z;
   int fu;
   int major;
+  i = 10;
+  z = 20;
+  i = i + z;
+  z = i - z;
+  i = i / z;
+  z = i * z;
   major = 1;
   lord = 5;
   i = 10;
@@ -37,5 +47,8 @@ int main ()
     major = major + 1;
 }
   main();
+  jonas();
+  putchar(skruf[0]);
   return(lord);
 }
+  
