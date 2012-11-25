@@ -1,65 +1,8 @@
 # Program 'mini'
 # --------------
 # A minimal Cb program!
-double gay;
-int lord;
-int foker[10];
-double lol[20];
-double jonas() {
-  double l;
-  putchar('j');
- l = 10;
-  return l;
-}
-int prini(int z, int a, double b) {
-  putchar(a);
-  return 10;
-}
+
 int main () 
-{ 
-  int skruf[5];
-  double general[30];
-  double i;
-  double z;
-  int fu;
-  int major;
-  i = 10;
-  z = 20;
-  i = i + z;
-  z = i - z;
-  i = i / z;
-  z = i * z;
- general[0] = general[3] / i;
-   i = z * jonas();
-   major = 1;
- prini('-',z == i, i);
-   lord = 5;
-  i = 10;
-  gay = 2;
+{
   putchar('x');
-  skruf[0] = 1;
-  general[0] = 2;
-  foker[0] = 1;
-  lol[0] = 3;
-  i = 2 + 3 - 4 * 5 / 2;
-  major = 2 +3 - 4 * 5 / 2;
-  i = 'a';
-  i = fu;
-  if (major == 1) {
-    i = 2;
-} else {
-  i = 1;
 }
-  for(major = 0; major < 10; major = major + 1) {
-    putchar('x');
-}
-  while(major > 20) {
-    major = major + 1;
-}
-  main();
-  jonas();
-  putchar(skruf[0]);
-  putdouble(general[10]);
-  return(lord);
-}
-  
