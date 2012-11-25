@@ -51,28 +51,28 @@ En slags minimap (aktiveres med ctrl-space)
 
 " --- Minimap toggle just by changing the font ---
 
-```
+``
 function! ToggleMinimapOn()
   " make font small
+  set guifont=MiscFixed\ 10
   set columns=100
-  set lines=95
-  set guifont=ProggyTinyTT\ 11
+  set lines=90
   color tolerable
   nmap <c-space> :ToggleMinimapTiny<CR>
 endfunction
 function! ToggleMinimapTiny()
   " make font small
+  set guifont=MiscFixed\ 5
   set columns=100
   set lines=120
-  set guifont=ProggyTinyTT\ 5
   color oceandeep
   nmap <c-space> :ToggleMinimapOff<CR>
 endfunction
 function! ToggleMinimapOff()
   " make font normal
+  set guifont=Monospace\ 11
   set columns=182
   set lines=55
-  set guifont=Monospace\ 11
   color wintersday
   nmap <c-space> :ToggleMinimapOn<CR>
 endfunction
