@@ -77,6 +77,9 @@ public class Syntax {
     static void error(SyntaxUnit use, String message) {
 	Error.error(use.lineNum, message);
     }
+    static void error(String where, String message) {
+	Error.error(where, message);
+    }
 
 
 }
@@ -117,6 +120,12 @@ class Program extends SyntaxUnit {
 	    // Check that 'main' has been declared properly:
 	    // findDecl will throw a syntaxerror if main cannot be found
 	    Declaration d = progDecls.findDecl("main", this);
+	    if (d.type != Types.intType) {
+		Syntax.error(this, "'" + d.name + "' should be an int function!");
+	    }
+	    if (((FuncDecl)d).functionParameters.nParams > 0) {
+		Syntax.error(this, "Function '" + d.name + "' should have no parameters!");
+	    }
 	}
     }
 
@@ -177,13 +186,17 @@ abstract class DeclList extends SyntaxUnit {
     }
 
     void addDecl(Declaration d) {
+
 	if (firstDecl == null) {
 	    firstDecl = d;
 	} else {
 	    Declaration tmp = firstDecl;
 	    while (tmp.nextDecl != null) {
+		
+		if (tmp.name.equals(d.name)) Syntax.error(d, "Name " + d.name + " already declared!");
 		tmp = tmp.nextDecl;
 	    }
+	    if (tmp.name.equals(d.name)) Syntax.error(d, "Name " + d.name + " already declared!");
 	    tmp.nextDecl = d;
 	}
     }
@@ -207,7 +220,7 @@ abstract class DeclList extends SyntaxUnit {
 	    }
 	}
 	if (outerScope != null) return outerScope.findDecl(name, usedIn);
-	Syntax.error(usedIn, name + " is not declared.");
+	Syntax.error("", "Name "+ name + " is unknown!");
 	return null;
     }
 }
@@ -705,13 +718,13 @@ class FuncDecl extends Declaration {
 
     @Override
     void checkWhetherArray(SyntaxUnit use) {
-	Syntax.error(this, name + " is a function and not a array.");
+	Syntax.error(use, name + " is a function and no array!");
     }
 
     @Override
     void checkWhetherFunction(int nParamsUsed, SyntaxUnit use) {
 	if (nParamsUsed != functionParameters.nParams) 
-	    Syntax.error(use, name + " takes " +  functionParameters.nParams + " paramters, not " + nParamsUsed);
+	    Syntax.error(use, "Calls to " + name + " should have " +  functionParameters.nParams + " parameters, not " + nParamsUsed + "!");
     }
 
     @Override
@@ -1221,6 +1234,9 @@ class ReturnStatm extends Statement {
 
     @Override
     void genCode(FuncDecl curFunc) {
+	if (curFunc.type != returnExpression.valType) {
+	    Syntax.error(this, "Return value is " + returnExpression.valType.typeName() + ", not " + curFunc.type.typeName() + ".");
+	}
 	returnExpression.genCode(curFunc);
 	Code.genInstr("", "jmp", ".exit$" + curFunc.name, "Return-statement");
     }
@@ -1576,7 +1592,7 @@ class Factor extends Operand {
 	    if (valType == null) {
 		valType = o.valType;
 	    } else {
-		valType.checkSameType(lineNum, o.valType, "Factor");
+		valType.checkSameType(lineNum, o.valType, "Operands");
 	    }
 	}
 	for (Operator o = firstFo; o != null; o = o.nextOp) {
@@ -1662,7 +1678,7 @@ class Factor extends Operand {
 	    op.parse();
 	    Scanner.skip(rightParToken);
 	} else {
-	    Error.expected("An operand");
+	    Error.expected("An rightParToken");
 	}
     }
 
@@ -1915,8 +1931,9 @@ class FunctionCall extends Operand {
 	}
 	declRef.checkWhetherFunction(arguments.nExprs, this);
 	Expression argument = arguments.firstExpr;
+	int counter = 1;
 	for (Declaration param = declRef.functionParameters.firstDecl; param != null; param = param.nextDecl) {
-	    if (param.type != argument.valType) Syntax.error(this, param.name + " is " + param.type.typeName() + " not " + argument.valType.typeName());
+	    if (param.type != argument.valType) Syntax.error(this, "Paramter #" + counter + " is " + argument.valType.typeName() + ", not " + param.type.typeName() + ".");
 	    argument = argument.nextExpr;
 	}
     }

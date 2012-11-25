@@ -58,19 +58,19 @@ if __FILE__ == $0
               outputdir: "testresults/",
               samepledir: "samples"}
 
-  #puts "Part 0"
-  #part0 = TestRunner.new('-testscanner', settings, true, ".log")
-  #part0.run_tests
+  puts "Part 0"
+  part0 = TestRunner.new('-testscanner', settings, true, ".log")
+  part0.run_tests
 
-  #puts "Part 1"
-  #part1 = TestRunner.new('-testparser', settings, true, ".log")
-  #part1.run_tests
+  puts "Part 1"
+  part1 = TestRunner.new('-testparser', settings, true, ".log")
+  part1.run_tests
 
   #puts "Part 2 checking the the check() method operates properly"
   #part2 = TestRunner.new('-logB', settings, false, ".log")
   #part2.run_tests
   
-  puts "Part 2 checking that the generated assembly code is identical"
-  part2 = TestRunner.new('', settings, false, ".s")
-  part2.run_tests
+  #puts "Part 2 checking that the generated assembly code is identical"
+  #part2 = TestRunner.new('', settings, false, ".s")
+  #part2.run_tests
 end

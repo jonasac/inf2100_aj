@@ -24,7 +24,7 @@ public class Error {
     }
 
     public static void error(int lineNum, String message) {
-        error((lineNum>0 ? "in line "+lineNum : ""), message);
+        error((lineNum>0 ? " in line "+lineNum : ""), message);
     }
 
     public static void panic(String where) {
