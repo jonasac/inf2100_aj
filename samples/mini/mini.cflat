@@ -1,8 +1,37 @@
 # Program 'mini'
 # --------------
 # A minimal Cb program!
-
+double gay;
+int lord;
+int foker[10];
+double lol[20];
 int main () 
-{
+{ 
+  int skruf[5];
+  double general[30];
+  double i;
+  int fu;
+  int major;
+  major = 1;
+  lord = 5;
+  i = 10;
+  gay = 2;
   putchar('x');
+  skruf[0] = 1;
+  general[0] = 2;
+  foker[0] = 1;
+  lol[0] = 3;
+  i = 2 + 3 - 4 * 5 / 2;
+  major = 2 +3 - 4 * 5 / 2;
+  i = 'a';
+  i = fu;
+  if (major == 1) {
+    i = 2;
+} else {
+  i = 1;
+}
+  for(major = 0; major < 10; major = major + 1) {
+    putchar('x');
+}
+  return(lord);
 }
