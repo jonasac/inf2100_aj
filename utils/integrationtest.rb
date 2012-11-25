@@ -8,13 +8,14 @@
 require 'fileutils'
 
 class TestRunner
-  def initialize(flag, settings, sort)
+  def initialize(flag, settings, sort, suffix)
     @sample_paths = []
     @reference_compiler = settings[:reference_compiler]
     @our_compiler = settings[:our_compiler]
     @test_output = settings[:outputdir]
     @sort = sort
     @flag = flag
+    @suffix = suffix
 
     FileUtils.rm_rf(@test_output) if File.directory? @test_output
     Dir.mkdir(@test_output)
@@ -29,7 +30,7 @@ class TestRunner
     `make`
     puts "Fresh Cflat compiler ready!"
     @sample_paths.each do |filename|
-      logfile = filename.gsub(".cflat", ".log")
+      logfile = filename.gsub(".cflat", @suffix)
       our_log = "our_#{File.basename(logfile)}"
       reference_log = "reference_#{File.basename(logfile)}"
 
@@ -57,15 +58,19 @@ if __FILE__ == $0
               outputdir: "testresults/",
               samepledir: "samples"}
 
-  puts "Part 0"
-  part0 = TestRunner.new('-testscanner', settings, true)
-  part0.run_tests
+  #puts "Part 0"
+  #part0 = TestRunner.new('-testscanner', settings, true)
+  #part0.run_tests
 
-  puts "Part 1"
-  part1 = TestRunner.new('-testparser', settings, true)
-  part1.run_tests
+  #puts "Part 1"
+  #part1 = TestRunner.new('-testparser', settings, true)
+  #part1.run_tests
 
-  puts "Part 2"
-  part2 = TestRunner.new('-logB', settings, true)
+  #puts "Part 2 checking the the check() method operates properly"
+  #part2 = TestRunner.new('-logB', settings, false, ".log")
+  #part2.run_tests
+  
+  puts "Part 2 checking that the generated assembly code is identical"
+  part2 = TestRunner.new('', settings, false, ".s")
   part2.run_tests
 end

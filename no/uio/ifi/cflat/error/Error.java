@@ -13,7 +13,7 @@ import no.uio.ifi.cflat.scanner.Scanner;
 public class Error {
     public static void error(String where, String message) {
         //-- Must be changed in part 0:
-        String msg = "Cb error " + where + ": " + message;
+        String msg = "Cb error" + where + ": " + message;
         Log.noteError(msg);
         System.err.println("\n" + msg);
         System.exit(1);

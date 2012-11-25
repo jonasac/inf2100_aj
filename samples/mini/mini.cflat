@@ -33,5 +33,9 @@ int main ()
   for(major = 0; major < 10; major = major + 1) {
     putchar('x');
 }
+  while(major > 20) {
+    major = major + 1;
+}
+  main();
   return(lord);
 }

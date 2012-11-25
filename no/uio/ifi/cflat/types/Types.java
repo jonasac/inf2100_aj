@@ -42,9 +42,7 @@ public class Types {
       }
 
       @Override public void genJumpIfZero(String jumpLabel) {
-        //-- Must be changed in part 2:
-        //Code.genInstr("", "fstps", Code.tmpLabel, "");
-        //Code.genInstr("", "cmpl", "$0,"+Code.tmpLabel, "");
+        Code.genInstr("", "cmpl", "$0,%eax", "");
         Code.genInstr("", "je", jumpLabel, "");
       }
     };

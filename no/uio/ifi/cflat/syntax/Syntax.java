@@ -873,7 +873,7 @@ class EmptyStatm extends Statement {
     @Override
     void genCode(FuncDecl curFunc) {
 	// -- Must be changed in part 2:
-	Log.w("EmptyStatm.genCode");
+	// Its empty, just like the EmptyStatm
     }
 
     @Override
@@ -1851,17 +1851,18 @@ class FunctionCall extends Operand {
 
     @Override
     void genCode(FuncDecl curFunc) {
-	// -- Must be changed in part 2:
 	arguments.genCode(curFunc);
 	Code.genInstr("", "call", declRef.assemblerName, "Call " + functionName);
 	int size = 0;
 	for (Expression e = arguments.firstExpr; e != null; e = e.nextExpr) {
 	    size += e.valType.size();
 	}
-	Code.genInstr("", "addl", "$" + size + ",%esp", "Remove parameters");
+	if (size > 0) {
+	    Code.genInstr("", "addl", "$" + size + ",%esp", "Remove parameters");
+	}
 	     
     }
-
+    
     @Override
     void parse() {
 	Log.enterParser("<function call>");
