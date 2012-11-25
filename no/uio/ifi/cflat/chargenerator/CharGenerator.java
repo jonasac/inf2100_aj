@@ -25,7 +25,7 @@ public class CharGenerator {
   private static String sourceLine;
   private static int sourcePos;
 
-  private static final char EOFCHAR = 0x4;
+  public  static final char EOFCHAR = 0x4;
 
   public static void init() {
     try {

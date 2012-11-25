@@ -100,7 +100,7 @@ public class Scanner {
    * @return a string representing the number
    */
   private static String collectNumber() {
-    String temp = "";
+     String temp = "";
     if (CharGenerator.curC == '-') {
       temp += CharGenerator.curC;
       CharGenerator.readNext();
@@ -162,15 +162,19 @@ public class Scanner {
    * CharGenerator.curLineNum() must happen after this
    */
   private static void skipPastMultilineComment() {
-    if (!CharGenerator.isMoreToRead())
-      return;
-    if (CharGenerator.curC == '/' && CharGenerator.nextC == '*') {
-      while (!(CharGenerator.curC == '*' && CharGenerator.nextC == '/')) {
-        CharGenerator.readNext();
+      if (!CharGenerator.isMoreToRead()) return;
+      int ln = CharGenerator.curLineNum();
+      if (CharGenerator.curC == '/' && CharGenerator.nextC == '*') {
+	  while (!(CharGenerator.curC == '*' && CharGenerator.nextC == '/')) {
+	      if (CharGenerator.curC == CharGenerator.EOFCHAR) {
+		  Error.error("Comment starting on line " + ln + " never ends!");
+		  System.exit(0);
+	      }
+	      CharGenerator.readNext();
+	  }
+	  CharGenerator.readNext();
+	  CharGenerator.readNext();
       }
-      CharGenerator.readNext();
-      CharGenerator.readNext();
-    }
   }
 
   private static boolean isMultiLineComment() {
@@ -191,6 +195,16 @@ public class Scanner {
       if (!isMultiLineComment() && !isWhiteSpace()) flag = true;
     }
   }
+    private static int stringToInt(String s) {
+	int i = -1;
+	try {
+	    i = Integer.parseInt(s);
+	} catch (NumberFormatException e) {
+	    Error.error(nextNextLine, "Illegal character constant!");
+	}
+	return i;
+    }
+	    
 
   public static void readNext() {
     curToken = nextToken;
@@ -218,13 +232,13 @@ public class Scanner {
         if (tempnum.equals("'")) {
           nextNextToken = numberToken;
           nextNextName = charToIntstring(CharGenerator.curC);
-          nextNextNum = Integer.parseInt(nextNextName);
+	  nextNextNum = stringToInt(nextNextName);
           CharGenerator.readNext();
           CharGenerator.readNext(); // read past the closing quote
         } else {
           nextNextToken = numberToken;
           nextNextName = tempnum;
-          nextNextNum = Integer.parseInt(nextNextName);
+	  nextNextNum = stringToInt(nextNextName);
         }
       } else if (isCompoundSymbol(CharGenerator.curC)) {
         nextNextName = collectSymbols();
