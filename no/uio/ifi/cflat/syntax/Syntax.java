@@ -981,6 +981,7 @@ class CallStatm extends Statement {
     void genCode(FuncDecl curFunc) {
 	// Call the function
 	functionCall.genCode(curFunc);
+	if (functionCall.declRef.type == Types.doubleType) Code.genInstr("", "fstps", ".tmp", "Remove return value.");	     
     }
 
     @Override
@@ -1045,8 +1046,10 @@ class Assignment extends Statement {
     void genCode(FuncDecl curFunc){
 	if (variable.declRef.type == Types.doubleType && variable.declRef instanceof GlobalSimpleVarDecl) {
 	    expression.genCode(curFunc);
-	    Code.genInstr("", "movl", "%eax,.tmp", "");
-	    Code.genInstr("", "fildl", ".tmp", "  (" + variable.declRef.type.typeName() + ")");
+	    if (expression.valType != Types.doubleType) {
+		Code.genInstr("", "movl", "%eax,.tmp", "");
+		Code.genInstr("", "fildl", ".tmp", "  (" + variable.declRef.type.typeName() + ")");
+	    }
 	    Code.genInstr("", "fstpl", variable.varName, variable.varName + " =");
 	} else if (variable.declRef instanceof GlobalSimpleVarDecl) {
 	    expression.genCode(curFunc);
@@ -1062,8 +1065,10 @@ class Assignment extends Statement {
 	    Code.genInstr("", "leal", variable.declRef.assemblerName + ",%edx", "");
 	    Code.genInstr("", "popl", "%ecx", "");
 	    if (((ArrayType)variable.declRef.type).elemType == Types.doubleType) {
-		Code.genInstr("", "movl", "%eax,.tmp", "");
-		Code.genInstr("", "fildl", ".tmp", "  (double)");
+		if (expression.valType != Types.doubleType) {
+		    Code.genInstr("", "movl", "%eax,.tmp", "");
+		    Code.genInstr("", "fildl", ".tmp", "  (double)");
+		}
 		Code.genInstr("", "fstpl", "(%edx,%ecx,8)", variable.varName + "[...] =");
 	    } else {
 		Code.genInstr("", "movl", "%eax,(%edx,%ecx," + ((ArrayType)variable.declRef.type).elemType.size() + ")", variable.varName + "[...] =");
@@ -1086,8 +1091,10 @@ class Assignment extends Statement {
 	    Code.genInstr("", "leal", variable.declRef.assemblerName + ",%edx", "");
 	    Code.genInstr("", "popl", "%ecx", "");
 	    if (((ArrayType)variable.declRef.type).elemType == Types.doubleType) {
-		Code.genInstr("", "movl", "%eax,.tmp", "");
-		Code.genInstr("", "fildl", ".tmp", "  (double)");
+		if (expression.valType != Types.doubleType) {
+		    Code.genInstr("", "movl", "%eax,.tmp", "");
+		    Code.genInstr("", "fildl", ".tmp", "  (double)");
+		}
 		Code.genInstr("", "fstpl", "(%edx,%ecx,8)", variable.varName + "[...] =");
 	    } else {
 		Code.genInstr("", "movl", "%eax,(%edx,%ecx," + ((ArrayType)variable.declRef.type).elemType.size() + ")", variable.declRef.assemblerName + "[...] =");
@@ -1410,6 +1417,7 @@ class Expression extends Operand {
 	firstTerm.genCode(curFunc);
 	if (relOp != null) {
 	    if (firstTerm.valType == Types.doubleType) {
+		Code.genInstr("", "subl", "$8,%esp", "");
 		Code.genInstr("", "fstpl", "(%esp)", "");
 	    } else {
 		Code.genInstr("", "pushl", "%eax", "");	    
@@ -1925,7 +1933,7 @@ class FunctionCall extends Operand {
 	if (size > 0) {
 	    Code.genInstr("", "addl", "$" + size + ",%esp", "Remove parameters");
 	}
-	if (declRef.type == Types.doubleType) Code.genInstr("", "fstps", ".tmp", "Remove return value.");	     
+
     }
     
     @Override
@@ -2008,9 +2016,8 @@ class Variable extends Operand {
 	if (index != null) {
 	    index.genCode(curFunc);
 	    Code.genInstr("", "leal", declRef.assemblerName + ",%edx", declRef.name + "[...]");
-	    if (declRef.type == Types.doubleType) {
+	    if (((ArrayType)declRef.type).elemType == Types.doubleType) {
 		Code.genInstr("", "fldl", "(%edx,%eax," + ((ArrayType)declRef.type).elemType.size() + ")", "");
-		Code.genInstr("", "subl", "$" + declRef.type.size() + ",%esp", "");
 	    } else {
 		Code.genInstr("", "movl", "(%edx,%eax," + ((ArrayType)declRef.type).elemType.size() + "),%eax", "");
 	    }

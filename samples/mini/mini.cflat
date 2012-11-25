@@ -6,7 +6,14 @@ int lord;
 int foker[10];
 double lol[20];
 double jonas() {
+  double l;
   putchar('j');
+ l = 10;
+  return l;
+}
+int prini(int z, int a, double b) {
+  putchar(a);
+  return 10;
 }
 int main () 
 { 
@@ -22,8 +29,11 @@ int main ()
   z = i - z;
   i = i / z;
   z = i * z;
-  major = 1;
-  lord = 5;
+ general[0] = general[3] / i;
+   i = z * jonas();
+   major = 1;
+ prini('-',z == i, i);
+   lord = 5;
   i = 10;
   gay = 2;
   putchar('x');
@@ -49,6 +59,7 @@ int main ()
   main();
   jonas();
   putchar(skruf[0]);
+  putdouble(general[10]);
   return(lord);
 }
   
