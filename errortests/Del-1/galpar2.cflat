@@ -1,0 +1,6 @@
+int main () 
+{
+   int x;  x = 'x';
+   putint(((x));  /* En ) for lite! */
+   putchar(10);
+}

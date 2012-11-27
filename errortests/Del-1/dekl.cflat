@@ -1,0 +1,10 @@
+int main ()
+{
+   double x;;  /* NB! En tom setning! */
+   double y;   /* Ulovlig, siden deklarasjoner må komme først! */
+
+   x = getdouble();  y = getdouble();
+   if (x) { putdouble(x); }  /* Dette er faktisk lovlig. */
+   if (y) { putdouble(y); }
+   putchar(10);
+}

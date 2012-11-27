@@ -152,7 +152,7 @@ class Program extends SyntaxUnit {
 
 
 /*
- * A declarati
+ * A declaration
 
 on list. (This class is not mentioned in the syntax diagrams.)
  */
@@ -220,7 +220,13 @@ abstract class DeclList extends SyntaxUnit {
 	    }
 	}
 	if (outerScope != null) return outerScope.findDecl(name, usedIn);
-	Syntax.error("", "Name "+ name + " is unknown!");
+	
+	if (name.equals("main")) {
+	    Syntax.error("", "Name " + name + " is unknown!");
+	} else {
+	    Syntax.error(usedIn, "Name "+ name + " is unknown!");
+	}
+	
 	return null;
     }
 }
@@ -1678,7 +1684,7 @@ class Factor extends Operand {
 	    op.parse();
 	    Scanner.skip(rightParToken);
 	} else {
-	    Error.expected("An rightParToken");
+	    Error.expected("A rightParToken");
 	}
     }
 

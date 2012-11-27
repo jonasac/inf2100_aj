@@ -1,0 +1,14 @@
+double pi;
+
+int main ()
+{
+   double c;  double r;  double omkrets;
+
+   c = 100;
+   pi = 314;  pi = pi/c;
+
+   r = 5;
+   omkrets = 2 * pi * r;
+
+   putchar('o');  putchar('=');  putdouble(omkrets);  putchar(10);
+}

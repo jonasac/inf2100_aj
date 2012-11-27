@@ -1,0 +1,11 @@
+int f () {
+   return a;  /* Navnet 'a' er ukjent ennå! */
+}
+
+int a;
+
+int main () {
+   int x;  x = f();
+   a = 4;
+   putint(x);   putchar(10);
+}

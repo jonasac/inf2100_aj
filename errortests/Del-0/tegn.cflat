@@ -1,0 +1,7 @@
+int main ()
+{
+   /* Dette er lovlig: */  putchar(''');
+   /* Men ikke dette:  */  putchar('
+');
+   putchar(10);
+}

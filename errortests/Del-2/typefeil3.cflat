@@ -1,0 +1,12 @@
+double power (double x, int n)
+{
+   double one;
+
+   if (n == 0) { one = 1;  return one; }
+   return x*power(x,n-(1));
+}
+
+int main ()
+{
+   putdouble(power(2,3));  putchar(10);
+}

@@ -1,0 +1,4 @@
+double main ()  /* main skal være en 'int'-funksjon! */
+{
+   putchar('!');   putchar(10);
+}

@@ -1,0 +1,8 @@
+int f (int a) {
+   return a;
+}
+
+int main () {
+   putint(f(1,2));  /* En parameter for mye til f! */
+   putchar(10);
+}

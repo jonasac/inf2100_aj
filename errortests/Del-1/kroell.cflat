@@ -1,0 +1,10 @@
+int main ()
+{
+   int v;   v = getint();
+
+   if (i < -0)  /* -0 er lov! */
+      putchar('N');  /* Men her mangler en {! */
+   else
+      putchar('P');
+   putchar(10);
+}

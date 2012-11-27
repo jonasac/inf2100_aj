@@ -1,0 +1,8 @@
+/*
+# Dette programmet er ikke riktig.0
+# Det vil gi en feilmelding. */
+
+int main ()
+{
+   putchar('!');  putchar(10);
+}

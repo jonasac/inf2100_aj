@@ -1,0 +1,4 @@
+int Main ()  /* Navnet til main er skrevet feil! */
+{
+   putchar('!');   putchar(10);
+}

@@ -1,0 +1,8 @@
+/* Dette programmet sjekker kommentarer.
+   For eksempel er /* indre kommentarer */ ikke lov.
+*/
+
+int main ()
+{
+   putchar('!');  putchar(10);
+}

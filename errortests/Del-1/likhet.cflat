@@ -1,0 +1,14 @@
+int main ()
+{
+   int a;  int b;  int c;
+
+   a = getint();  b = getint();  c = getint();
+
+   if (a == b == c) {  /* En slik er ulovlig! */
+      putchar('N');
+   } else {
+      putchar('J');
+   }
+   putchar(10);
+}
+
