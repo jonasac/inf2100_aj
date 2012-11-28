@@ -34,7 +34,6 @@ public class Scanner {
      * Initialize the scanner
      */
     public static void init() {
-        // -- Must be changed in part 0:
         curName = "";
         nextName = "";
         nextNextName = "";
@@ -47,7 +46,6 @@ public class Scanner {
      * Cleanup
      */
     public static void finish() {
-        // -- Must be changed in part 0:
     }
 
     /**

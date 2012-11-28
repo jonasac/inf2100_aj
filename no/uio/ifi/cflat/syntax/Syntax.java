@@ -737,7 +737,7 @@ class LocalSimpleVarDecl extends VarDecl {
 
 
 /**
- * A paramter declaration
+ * A parameter declaration
  */
 class ParamDecl extends VarDecl {
     int paramNum = 0;
@@ -839,7 +839,6 @@ class FuncDecl extends Declaration {
         Code.genInstr("", ".globl", assemblerName, "");
         Code.genInstr(assemblerName, "pushl", "%ebp", "Start function " + name);
         Code.genInstr("", "movl", "%esp,%ebp", "");
-        // -- Must be changed in part 2:
         functionParameters.genCode(this);
         functionBodyDecls.genCode(this);
         functionBodyStatms.genCode(this);
@@ -1624,7 +1623,6 @@ class Term extends Operand {
 
     @Override
     void genCode(FuncDecl curFunc) {
-        // -- Must be changed in part 2:
         Operator top = firstTop;
         Factor f = firstFactor;
         f.genCode(curFunc);
@@ -2075,7 +2073,7 @@ class FunctionCall extends Operand {
         for (Declaration param = declRef.functionParameters.firstDecl; param != null; param = param.nextDecl) {
             if (param.type != argument.valType)
                 Syntax.error(this,
-                        "Paramter #" + counter + " is " + argument.valType.typeName() + ", not " + param.type.typeName() + ".");
+                        "Parameter #" + counter + " is " + argument.valType.typeName() + ", not " + param.type.typeName() + ".");
             argument = argument.nextExpr;
         }
     }

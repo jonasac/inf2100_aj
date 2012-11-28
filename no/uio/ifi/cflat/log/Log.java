@@ -31,7 +31,6 @@ public class Log {
     }
 
     public static void finish() {
-        // -- Must be changed in part 0:
     }
 
     private static void writeLogLine(String data) {
@@ -68,7 +67,6 @@ public class Log {
         if (!doLogParser)
             return;
 
-        // -- Must be changed in part 1:
         writeLogLine("Parser: " + indent + symbol);
         outdentTree();
     }
