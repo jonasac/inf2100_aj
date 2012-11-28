@@ -1073,7 +1073,7 @@ class Assignment extends Statement {
 	} else if (variable.declRef instanceof GlobalSimpleVarDecl) {
 	    expression.genCode(curFunc);
 	    Code.genInstr("", "movl", "%eax," + variable.varName, variable.varName + " =");
-	} else if (variable.declRef instanceof LocalArrayDecl) {
+	} else if (variable.declRef instanceof LocalArrayDecl || variable.declRef instanceof GlobalArrayDecl) {
 	    variable.index.genCode(curFunc);
 	    if (variable.index.valType == Types.doubleType) {
 		Code.genInstr("", "fstpl", "(%esp)", "");
@@ -1099,25 +1099,6 @@ class Assignment extends Statement {
 		Code.genInstr("", "fildl", ".tmp", "  (" + variable.declRef.type.typeName() + ")");
 	    }
 	    Code.genInstr("", "fstpl", variable.declRef.assemblerName, variable.varName + " =");
-	} else if (variable.declRef instanceof GlobalArrayDecl) {
-	    variable.index.genCode(curFunc);
-	    if (variable.index.valType == Types.doubleType) {
-		Code.genInstr("", "fstpl", "(%esp)", "");
-	    } else {
-		Code.genInstr("", "pushl", "%eax", "");
-	    }
-	    expression.genCode(curFunc);
-	    Code.genInstr("", "leal", variable.declRef.assemblerName + ",%edx", "");
-	    Code.genInstr("", "popl", "%ecx", "");
-	    if (((ArrayType)variable.declRef.type).elemType == Types.doubleType) {
-		if (expression.valType != Types.doubleType) {
-		    Code.genInstr("", "movl", "%eax,.tmp", "");
-		    Code.genInstr("", "fildl", ".tmp", "  (double)");
-		}
-		Code.genInstr("", "fstpl", "(%edx,%ecx,8)", variable.varName + "[...] =");
-	    } else {
-		Code.genInstr("", "movl", "%eax,(%edx,%ecx," + ((ArrayType)variable.declRef.type).elemType.size() + ")", variable.declRef.assemblerName + "[...] =");
-	    }
 	} else {
 	    expression.genCode(curFunc);
 	    Code.genInstr("", "movl", "%eax," + variable.declRef.assemblerName, variable.varName + " =");
