@@ -1063,16 +1063,17 @@ class Assignment extends Statement {
     }
 
     void genCode(FuncDecl curFunc){
-	if (variable.declRef.type == Types.doubleType && variable.declRef instanceof GlobalSimpleVarDecl) {
+	if (variable.declRef instanceof GlobalSimpleVarDecl) {
 	    expression.genCode(curFunc);
-	    if (expression.valType != Types.doubleType) {
+	    if (expression.valType != Types.doubleType && variable.declRef.type == Types.doubleType) {
 		Code.genInstr("", "movl", "%eax,.tmp", "");
 		Code.genInstr("", "fildl", ".tmp", "  (" + variable.declRef.type.typeName() + ")");
 	    }
-	    Code.genInstr("", "fstpl", variable.varName, variable.varName + " =");
-	} else if (variable.declRef instanceof GlobalSimpleVarDecl) {
-	    expression.genCode(curFunc);
-	    Code.genInstr("", "movl", "%eax," + variable.varName, variable.varName + " =");
+	    if (variable.declRef.type == Types.doubleType) {
+		Code.genInstr("", "fstpl", variable.varName, variable.varName + " =");
+	    } else {
+		Code.genInstr("", "movl", "%eax," + variable.varName, variable.varName + " =");
+	    }
 	} else if (variable.declRef instanceof LocalArrayDecl || variable.declRef instanceof GlobalArrayDecl) {
 	    variable.index.genCode(curFunc);
 	    if (variable.index.valType == Types.doubleType) {
@@ -1092,6 +1093,7 @@ class Assignment extends Statement {
 	    } else {
 		Code.genInstr("", "movl", "%eax,(%edx,%ecx," + ((ArrayType)variable.declRef.type).elemType.size() + ")", variable.varName + "[...] =");
 	    }
+
 	} else if (variable.declRef.type == Types.doubleType && variable.declRef instanceof LocalSimpleVarDecl) {
 	    expression.genCode(curFunc);
 	    if (expression.valType != Types.doubleType) {
@@ -1099,6 +1101,7 @@ class Assignment extends Statement {
 		Code.genInstr("", "fildl", ".tmp", "  (" + variable.declRef.type.typeName() + ")");
 	    }
 	    Code.genInstr("", "fstpl", variable.declRef.assemblerName, variable.varName + " =");
+
 	} else {
 	    expression.genCode(curFunc);
 	    Code.genInstr("", "movl", "%eax," + variable.declRef.assemblerName, variable.varName + " =");
