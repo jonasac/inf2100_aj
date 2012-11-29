@@ -47,30 +47,20 @@ public class Syntax {
      * Initializes the built-in functions
      */
     public static void init() {
-        // part 1
-        library = new GlobalDeclList();
-        addFnToLib("getdouble", Types.doubleType, null, null);
-        addFnToLib("getint", Types.intType, null, null);
-        addFnToLib("putdouble", Types.doubleType, "x", Types.doubleType);
-        addFnToLib("putint", Types.intType, "x", Types.intType);
-        addFnToLib("exit", Types.intType, "status", Types.intType);
-        addFnToLib("putchar", Types.intType, "c", Types.intType);
-        addFnToLib("getchar", Types.intType, null, null);
-        library.check(null);
+	// Add placeholders for the library that will be linked in with gcc
+	library = new GlobalDeclList();
+	addFnToLib("getdouble", Types.doubleType, null, null);
+	addFnToLib("getint", Types.intType, null, null);
+	addFnToLib("putdouble", Types.doubleType, "x", Types.doubleType);
+	addFnToLib("putint", Types.intType, "x", Types.intType);
+	addFnToLib("exit", Types.intType, "status", Types.intType);
+	addFnToLib("putchar", Types.intType, "c", Types.intType);
+	addFnToLib("getchar", Types.intType, null, null);
+	library.check(null);
     }
 
-    /**
-     * Adds a function to the Syntax library
-     * 
-     * @param name
-     *            The name of the function
-     * @param retrType
-     *            The return type of the function
-     * @param paramName
-     *            The name of the parameter
-     * @param paramType
-     *            The type of the parameter
-     */
+    // Adds the library to the library declList, only supports one paramter
+
     public static void addFnToLib(String name, Type retrType, String paramName, Type paramType) {
         FuncDecl d = new FuncDecl(name);
         d.type = retrType;
@@ -88,7 +78,7 @@ public class Syntax {
      * Called when cleaning up
      */
     public static void finish() {
-        // part 1
+
     }
 
     /**
@@ -132,6 +122,7 @@ public class Syntax {
         Error.error(use.lineNum, message);
     }
 
+
     /**
      * Helper function for printing errors
      * 
@@ -168,9 +159,12 @@ abstract class SyntaxUnit {
 }
 
 
-/**
- * A program
- */
+/*
+ ** A program
+**
+** Contains the declList defining our program
+** This is the starting point for genCode() check() parse() and printTree()
+*/
 class Program extends SyntaxUnit {
     DeclList progDecls = new GlobalDeclList();
 
@@ -215,7 +209,7 @@ class Program extends SyntaxUnit {
 
 /**
  * A declaration list. This class is not mentioned in the syntax diagrams.
- */
+**/
 abstract class DeclList extends SyntaxUnit {
     Declaration firstDecl;
     DeclList outerScope;
@@ -360,7 +354,8 @@ class GlobalDeclList extends DeclList {
  * diagrams.)
  */
 class LocalDeclList extends DeclList {
-
+    // Sets the assemblername for all the declarations
+    // Also makes sure we only generate native code if there actually is data 
     @Override
     void genCode(FuncDecl curFunc) {
         int dataSize = 0;
@@ -540,7 +535,6 @@ abstract class VarDecl extends Declaration {
         Log.wTree(type.typeName() + " " + name);
         Log.wTreeLn(";");
     }
-
 }
 
 
@@ -666,8 +660,7 @@ class LocalArrayDecl extends VarDecl {
 
     @Override
     void genCode(FuncDecl curFunc) {
-        // Code.genInstr("", "subl", "$" + type.size() + ",%esp", "Get " +
-        // type.size() + " bytes local data space");
+	/* No code needed here because of the specifications on how local declarations are handled */
     }
 
     @Override
@@ -719,8 +712,8 @@ class LocalSimpleVarDecl extends VarDecl {
 
     @Override
     void genCode(FuncDecl curFunc) {
-        // Code.genInstr("", "subl", "$" + type.size() + ",%esp", "Get " +
-        // type.size() + " bytes local data space");
+	/* No code needed here because of how local declarations are specified */
+	/* They are handeled in assignment if they are actually assigned to, leaving out native code if you declare a variable and never assign to it */
     }
 
     @Override
@@ -836,19 +829,17 @@ class FuncDecl extends Declaration {
 
     @Override
     void genCode(FuncDecl curFunc) {
-        Code.genInstr("", ".globl", assemblerName, "");
-        Code.genInstr(assemblerName, "pushl", "%ebp", "Start function " + name);
-        Code.genInstr("", "movl", "%esp,%ebp", "");
-        functionParameters.genCode(this);
-        functionBodyDecls.genCode(this);
-        functionBodyStatms.genCode(this);
-        if (type == Types.doubleType)
-            Code.genInstr("", "fldz", "", "");
-        Code.genInstr(".exit$" + name, "", "", "");
-        Code.genInstr("", "movl", "%ebp,%esp", "");
-        Code.genInstr("", "popl", "%ebp", "");
-        Code.genInstr("", "ret", "", "End function " + name);
-
+	Code.genInstr("", ".globl", assemblerName, "");
+	Code.genInstr(assemblerName, "pushl", "%ebp", "Start function " + name);
+	Code.genInstr("", "movl", "%esp,%ebp", "");
+	functionParameters.genCode(this);
+	functionBodyDecls.genCode(this);
+	functionBodyStatms.genCode(this);
+	if (type == Types.doubleType) Code.genInstr("", "fldz", "", "");
+	Code.genInstr(".exit$" + name, "","","");
+	Code.genInstr("", "movl", "%ebp,%esp", "");
+	Code.genInstr("", "popl", "%ebp", "");
+	Code.genInstr("", "ret", "", "End function " + name);
     }
 
     @Override
@@ -993,7 +984,7 @@ class EmptyStatm extends Statement {
 
     @Override
     void genCode(FuncDecl curFunc) {
-        // Its empty, just like the EmptyStatm
+	// Its empty, just like the EmptyStatm
     }
 
     @Override
@@ -1081,6 +1072,7 @@ class ForStatm extends Statement {
         Log.wTreeLn("}");
     }
 }
+
 
 
 /**
@@ -1171,55 +1163,45 @@ class Assignment extends Statement {
     }
 
     void check(DeclList curDecls) {
-        variable.check(curDecls);
-        expression.check(curDecls);
+	variable.check(curDecls);
+	expression.check(curDecls);
     }
 
-    void genCode(FuncDecl curFunc) {
-        if (variable.declRef instanceof GlobalSimpleVarDecl) {
-            expression.genCode(curFunc);
-            if (expression.valType != Types.doubleType && variable.declRef.type == Types.doubleType) {
-                Code.genInstr("", "movl", "%eax,.tmp", "");
-                Code.genInstr("", "fildl", ".tmp", "  (" + variable.declRef.type.typeName() + ")");
-            }
-            if (variable.declRef.type == Types.doubleType) {
-                Code.genInstr("", "fstpl", variable.varName, variable.varName + " =");
-            } else {
-                Code.genInstr("", "movl", "%eax," + variable.varName, variable.varName + " =");
-            }
-        } else if (variable.declRef instanceof LocalArrayDecl || variable.declRef instanceof GlobalArrayDecl) {
-            variable.index.genCode(curFunc);
-            if (variable.index.valType == Types.doubleType) {
-                Code.genInstr("", "fstpl", "(%esp)", "");
-            } else {
-                Code.genInstr("", "pushl", "%eax", "");
-            }
-            expression.genCode(curFunc);
-            Code.genInstr("", "leal", variable.declRef.assemblerName + ",%edx", "");
-            Code.genInstr("", "popl", "%ecx", "");
-            if (((ArrayType)variable.declRef.type).elemType == Types.doubleType) {
-                if (expression.valType != Types.doubleType) {
-                    Code.genInstr("", "movl", "%eax,.tmp", "");
-                    Code.genInstr("", "fildl", ".tmp", "  (double)");
-                }
-                Code.genInstr("", "fstpl", "(%edx,%ecx,8)", variable.varName + "[...] =");
-            } else {
-                Code.genInstr("", "movl", "%eax,(%edx,%ecx," + ((ArrayType)variable.declRef.type).elemType.size() + ")",
-                        variable.varName + "[...] =");
-            }
-
-        } else if (variable.declRef.type == Types.doubleType && variable.declRef instanceof LocalSimpleVarDecl) {
-            expression.genCode(curFunc);
-            if (expression.valType != Types.doubleType) {
-                Code.genInstr("", "movl", "%eax,.tmp", "");
-                Code.genInstr("", "fildl", ".tmp", "  (" + variable.declRef.type.typeName() + ")");
-            }
-            Code.genInstr("", "fstpl", variable.declRef.assemblerName, variable.varName + " =");
-
-        } else {
-            expression.genCode(curFunc);
-            Code.genInstr("", "movl", "%eax," + variable.declRef.assemblerName, variable.varName + " =");
-        }
+    void genCode(FuncDecl curFunc){
+	if (variable.declRef instanceof GlobalSimpleVarDecl || variable.declRef instanceof LocalSimpleVarDecl) { // Simple variable 
+	    expression.genCode(curFunc);
+	    if (expression.valType != Types.doubleType && variable.declRef.type == Types.doubleType) {
+		Code.genInstr("", "movl", "%eax,.tmp", "");
+		Code.genInstr("", "fildl", ".tmp", "  (" + variable.declRef.type.typeName() + ")");
+	    }
+	    if (variable.declRef.type == Types.doubleType) {
+		Code.genInstr("", "fstpl", variable.declRef.assemblerName, variable.varName + " =");
+	    } else {
+		Code.genInstr("", "movl", "%eax," + variable.declRef.assemblerName, variable.varName + " =");
+	    }
+	} else if (variable.declRef instanceof LocalArrayDecl || variable.declRef instanceof GlobalArrayDecl) { //Array
+	    variable.index.genCode(curFunc);
+	    if (variable.index.valType == Types.doubleType) {
+		Code.genInstr("", "fstpl", "(%esp)", "");
+	    } else {
+		Code.genInstr("", "pushl", "%eax", "");
+	    }
+	    expression.genCode(curFunc);
+	    Code.genInstr("", "leal", variable.declRef.assemblerName + ",%edx", "");
+	    Code.genInstr("", "popl", "%ecx", "");
+	    if (((ArrayType)variable.declRef.type).elemType == Types.doubleType) {
+		if (expression.valType != Types.doubleType) {
+		    Code.genInstr("", "movl", "%eax,.tmp", "");
+		    Code.genInstr("", "fildl", ".tmp", "  (double)");
+		}
+		Code.genInstr("", "fstpl", "(%edx,%ecx,8)", variable.varName + "[...] =");
+	    } else {
+		Code.genInstr("", "movl", "%eax,(%edx,%ecx," + ((ArrayType)variable.declRef.type).elemType.size() + ")", variable.varName + "[...] =");
+	    }
+	} else {
+	    expression.genCode(curFunc);
+	    Code.genInstr("", "movl", "%eax," + variable.declRef.assemblerName, variable.varName + " =");
+	}
     }
 
     void parse() {
@@ -1391,14 +1373,13 @@ class WhileStatm extends Statement {
 
     @Override
     void genCode(FuncDecl curFunc) {
-        String testLabel = Code.getLocalLabel(), endLabel = Code.getLocalLabel();
-
-        Code.genInstr(testLabel, "", "", "Start while-statement");
-        test.genCode(curFunc);
-        test.valType.genJumpIfZero(endLabel);
-        body.genCode(curFunc);
-        Code.genInstr("", "jmp", testLabel, "");
-        Code.genInstr(endLabel, "", "", "End while-statement");
+	String testLabel = Code.getLocalLabel(), endLabel = Code.getLocalLabel();
+	Code.genInstr(testLabel, "", "", "Start while-statement");
+	test.genCode(curFunc);
+	test.valType.genJumpIfZero(endLabel);
+	body.genCode(curFunc);
+	Code.genInstr("", "jmp", testLabel, "");
+	Code.genInstr(endLabel, "", "", "End while-statement");
     }
 
     @Override
@@ -1525,24 +1506,20 @@ class Expression extends Operand {
 
     @Override
     void check(DeclList curDecls) {
-        if (relOp != null) {
-
-            firstTerm.check(curDecls);
-            relOp.check(curDecls);
-            secondTerm.check(curDecls);
-            if (firstTerm.valType != secondTerm.valType) {
-                Syntax.error(this, " Comparison operand should have the same type, not " + firstTerm.valType.typeName() + " and "
-                        + secondTerm.valType.typeName());
-            } else {
-                relOp.opType = firstTerm.valType;
-                valType = Types.intType;
-            }
-
-        } else {
-            firstTerm.check(curDecls);
-            valType = firstTerm.valType;
-        }
-
+	if (relOp != null) {
+	    firstTerm.check(curDecls);
+	    relOp.check(curDecls);
+	    secondTerm.check(curDecls);
+	    if (firstTerm.valType != secondTerm.valType) {
+		Syntax.error(this, " Comparison operand should have the same type, not " + firstTerm.valType.typeName() + " and " + secondTerm.valType.typeName());
+	    } else {
+		relOp.opType = firstTerm.valType;
+		valType = Types.intType;
+	    }
+	} else {
+	    firstTerm.check(curDecls);
+	    valType = firstTerm.valType;
+	}
     }
 
     @Override
@@ -2059,23 +2036,21 @@ class FunctionCall extends Operand {
 
     @Override
     void check(DeclList curDecls) {
-        Declaration d = curDecls.findDecl(functionName, this);
-        if (d == null)
-            Syntax.error(this, functionName + " is not defined.");
-        if (d != null) {
-            declRef = (FuncDecl)d;
-            arguments.check(curDecls);
-            valType = declRef.type;
-        }
-        declRef.checkWhetherFunction(arguments.nExprs, this);
-        Expression argument = arguments.firstExpr;
-        int counter = 1;
-        for (Declaration param = declRef.functionParameters.firstDecl; param != null; param = param.nextDecl) {
-            if (param.type != argument.valType)
-                Syntax.error(this,
-                        "Parameter #" + counter + " is " + argument.valType.typeName() + ", not " + param.type.typeName() + ".");
-            argument = argument.nextExpr;
-        }
+	Declaration d = curDecls.findDecl(functionName, this);
+	if (d == null) Syntax.error(this, functionName + " is not defined.");
+	if (d != null) {
+	    declRef = (FuncDecl)d;
+	    arguments.check(curDecls);
+	    valType = declRef.type;
+	}
+	declRef.checkWhetherFunction(arguments.nExprs, this);
+	Expression argument = arguments.firstExpr;
+	int counter = 1;
+	for (Declaration param = declRef.functionParameters.firstDecl; param != null; param = param.nextDecl) {
+	    if (param.type != argument.valType) 
+		Syntax.error(this, "Paramter #" + counter + " is " + argument.valType.typeName() + ", not " + param.type.typeName() + ".");
+	    argument = argument.nextExpr;
+	}
     }
 
     @Override

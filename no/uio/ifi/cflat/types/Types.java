@@ -46,11 +46,9 @@ public class Types {
         Code.genInstr("", "je", jumpLabel, "");
       }
     };
-    //-- Must be changed in part 2:
   }
 
   public static void finish() {
-    //-- Must be changed in part 2:
   }
 
   public static Type getType(Token t) {
