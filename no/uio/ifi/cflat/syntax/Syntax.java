@@ -618,7 +618,7 @@ class GlobalSimpleVarDecl extends VarDecl {
 
     @Override
     void genCode(FuncDecl curFunc) {
-        Code.genVar(name, true, type.size(), type.typeName() + " " + name + ";");
+        Code.genVar(assemblerName, true, type.size(), type.typeName() + " " + name + ";");
     }
 
     @Override
